@@ -1,0 +1,510 @@
+@import "tailwindcss";
+
+:root {
+  /* DARK THEME: "DOUX VELOURS CUIR" (Rich espresso leather, tactile velvet, saddle stitching) */
+  --bg-app: #161311;
+  --bg-card: #211b17;
+  --bg-card-hover: #29221d;
+  --bg-elevated: #2d251f;
+  --bg-input: #26201a;
+  --text-primary: #f7eee4;
+  --text-secondary: #ab9a8a;
+  --text-muted: #857567;
+  --border-subtle: rgba(224, 192, 160, 0.12);
+  --border-strong: rgba(224, 192, 160, 0.22);
+  --accent-cognac: #c05a3e;
+  --accent-amber: #d97706;
+  --accent-gradient: linear-gradient(135deg, #c05a3e 0%, #d97706 100%);
+  --modal-backdrop: rgba(18, 14, 12, 0.88);
+}
+
+.theme-warm-light,
+body.theme-warm-light {
+  /* LIGHT THEME: "CRÈME #f3dfcb & CUIR CHAUD" */
+  --bg-app: #f3dfcb;
+  --bg-card: #faebe0;
+  --bg-card-hover: #fff3ea;
+  --bg-elevated: #f0ded0;
+  --bg-input: #fff7f0;
+  --text-primary: #3d2317;
+  --text-secondary: #7d5a47;
+  --text-muted: #9e7a64;
+  --border-subtle: rgba(78, 45, 30, 0.14);
+  --border-strong: rgba(78, 45, 30, 0.25);
+  --accent-cognac: #b85d38;
+  --accent-amber: #df9b58;
+  --accent-gradient: linear-gradient(135deg, #b85d38 0%, #df9b58 100%);
+  --modal-backdrop: rgba(61, 35, 23, 0.65);
+}
+
+@layer base {
+  body {
+    font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* Custom Gradients - Velours Cuir & Warm Leather feel */
+.gradient-main {
+  background: linear-gradient(135deg, #c05a3e 0%, #d97706 100%);
+}
+
+.gradient-energy {
+  background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+}
+
+.gradient-performance {
+  background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+}
+
+.gradient-premium {
+  background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+}
+
+.gradient-card-overlay {
+  background: linear-gradient(180deg, rgba(22, 19, 17, 0.05) 0%, rgba(22, 19, 17, 0.85) 60%, #161311 100%);
+}
+
+.gradient-hero-overlay {
+  background: linear-gradient(180deg, rgba(22, 19, 17, 0.15) 0%, rgba(22, 19, 17, 0.75) 45%, #161311 100%);
+}
+
+.text-gradient-main {
+  background: linear-gradient(135deg, #c05a3e 0%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-performance {
+  background: linear-gradient(135deg, #38BDF8 0%, #0072FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-energy {
+  background: linear-gradient(135deg, #FF6B4A 0%, #DD2476 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glow filters */
+.glow-main {
+  box-shadow: 0 8px 32px -4px rgba(192, 90, 62, 0.35);
+}
+
+.glow-energy {
+  box-shadow: 0 8px 32px -4px rgba(255, 81, 47, 0.35);
+}
+
+.glow-performance {
+  box-shadow: 0 8px 32px -4px rgba(0, 198, 255, 0.35);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
+}
+
+/* Completely remove native number input spin buttons / arrows column */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* Hide scrollbar completely when requested */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* ========================================================
+   DARK THEME: "DOUX VELOURS CUIR" OVERRIDES
+   Rich espresso/cognac leather, tactile warm surfaces
+   ======================================================== */
+body:not(.theme-warm-light),
+.theme-velours-dark {
+  background-color: #161311 !important;
+  color: #f7eee4 !important;
+}
+
+body:not(.theme-warm-light) .bg-\[\#090909\],
+body:not(.theme-warm-light) .bg-\[\#000000\],
+body:not(.theme-warm-light) .bg-black {
+  background-color: #161311 !important;
+}
+
+body:not(.theme-warm-light) .bg-\[\#0D0D0D\],
+body:not(.theme-warm-light) .bg-\[\#0E0E0E\],
+body:not(.theme-warm-light) .bg-\[\#101010\],
+body:not(.theme-warm-light) .bg-\[\#121212\],
+body:not(.theme-warm-light) .bg-\[\#141414\],
+body:not(.theme-warm-light) .bg-\[\#161616\],
+body:not(.theme-warm-light) .bg-\[\#181818\],
+body:not(.theme-warm-light) .bg-\[\#1A1A1A\],
+body:not(.theme-warm-light) .bg-\[\#1C1C1C\],
+body:not(.theme-warm-light) .bg-\[\#1E1E1E\],
+body:not(.theme-warm-light) .bg-\[\#202020\],
+body:not(.theme-warm-light) .bg-\[\#222222\],
+body:not(.theme-warm-light) .bg-\[\#252525\] {
+  background-color: #211b17 !important;
+  color: #f7eee4 !important;
+  border-color: rgba(224, 192, 160, 0.12) !important;
+}
+
+body:not(.theme-warm-light) .text-white {
+  color: #f7eee4 !important;
+}
+
+body:not(.theme-warm-light) .text-\[\#A7A7A7\],
+body:not(.theme-warm-light) .text-\[\#737373\],
+body:not(.theme-warm-light) .text-\[\#555555\],
+body:not(.theme-warm-light) .text-\[\#666666\] {
+  color: #ab9a8a !important;
+}
+
+body:not(.theme-warm-light) .border-white\/10,
+body:not(.theme-warm-light) .border-white\/15,
+body:not(.theme-warm-light) .border-white\/20,
+body:not(.theme-warm-light) .border-white\/\[0\.08\],
+body:not(.theme-warm-light) .border-white\/\[0\.06\],
+body:not(.theme-warm-light) .border-white\/5 {
+  border-color: rgba(224, 192, 160, 0.12) !important;
+}
+
+body:not(.theme-warm-light) .bg-white\/5,
+body:not(.theme-warm-light) .bg-white\/10,
+body:not(.theme-warm-light) .bg-white\/15 {
+  background-color: rgba(224, 192, 160, 0.08) !important;
+  color: #f7eee4 !important;
+}
+
+body:not(.theme-warm-light) .bg-black\/85,
+body:not(.theme-warm-light) .bg-black\/80,
+body:not(.theme-warm-light) .bg-black\/70 {
+  background-color: rgba(18, 14, 12, 0.88) !important;
+}
+
+body:not(.theme-warm-light) .from-\[\#090909\] {
+  --tw-gradient-from: #161311 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(22, 19, 17, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+body:not(.theme-warm-light) .to-\[\#090909\] {
+  --tw-gradient-to: #161311 var(--tw-gradient-to-position) !important;
+}
+
+/* ========================================================
+   LIGHT THEME: "CRÈME #f3dfcb & CUIR CHAUD" OVERRIDES
+   Full warm beige/crème, soft cocoa text, terracotta accents
+   ======================================================== */
+body.theme-warm-light,
+.theme-warm-light {
+  background-color: #f3dfcb !important;
+  color: #3d2317 !important;
+}
+
+.theme-warm-light .bg-\[\#090909\] {
+  background-color: #f3dfcb !important;
+}
+
+.theme-warm-light .bg-\[\#000000\],
+.theme-warm-light .bg-black {
+  background-color: #faebe0 !important;
+}
+
+.theme-warm-light .bg-\[\#0A0A0A\],
+.theme-warm-light .bg-\[\#0B0B0B\],
+.theme-warm-light .bg-\[\#0D0D0D\],
+.theme-warm-light .bg-\[\#0E0E0E\],
+.theme-warm-light .bg-\[\#101010\],
+.theme-warm-light .bg-\[\#111111\],
+.theme-warm-light .bg-\[\#121212\],
+.theme-warm-light .bg-\[\#131313\],
+.theme-warm-light .bg-\[\#141414\],
+.theme-warm-light .bg-\[\#151515\],
+.theme-warm-light .bg-\[\#161208\],
+.theme-warm-light .bg-\[\#161616\],
+.theme-warm-light .bg-\[\#171717\],
+.theme-warm-light .bg-\[\#181818\],
+.theme-warm-light .bg-\[\#191919\],
+.theme-warm-light .bg-\[\#1A1A1A\],
+.theme-warm-light .bg-\[\#1B1B1B\],
+.theme-warm-light .bg-\[\#1C1C1C\],
+.theme-warm-light .bg-\[\#1D1D1D\],
+.theme-warm-light .bg-\[\#1E1E1E\],
+.theme-warm-light .bg-\[\#1F1F1F\],
+.theme-warm-light .bg-\[\#202020\],
+.theme-warm-light .bg-\[\#222222\],
+.theme-warm-light .bg-\[\#242424\],
+.theme-warm-light .bg-\[\#252525\] {
+  background-color: #faebe0 !important;
+  color: #3d2317 !important;
+  border-color: rgba(78, 45, 30, 0.14) !important;
+}
+
+.theme-warm-light .text-white {
+  color: #3d2317 !important;
+}
+
+.theme-warm-light .text-\[\#A7A7A7\],
+.theme-warm-light .text-\[\#737373\],
+.theme-warm-light .text-\[\#555555\],
+.theme-warm-light .text-\[\#666666\],
+.theme-warm-light .text-\[\#D1D5DB\] {
+  color: #7d5a47 !important;
+}
+
+.theme-warm-light .border-white\/10,
+.theme-warm-light .border-white\/15,
+.theme-warm-light .border-white\/20,
+.theme-warm-light .border-white\/\[0\.08\],
+.theme-warm-light .border-white\/\[0\.06\],
+.theme-warm-light .border-white\/5 {
+  border-color: rgba(78, 45, 30, 0.14) !important;
+}
+
+.theme-warm-light .bg-white\/5,
+.theme-warm-light .bg-white\/10,
+.theme-warm-light .bg-white\/15,
+.theme-warm-light .bg-white\/20 {
+  background-color: rgba(78, 45, 30, 0.08) !important;
+  color: #3d2317 !important;
+}
+
+/* Ensure no dark-on-dark unreadable boxes with opacity in Light Theme */
+.theme-warm-light .bg-\[\#0D0D0D\]\/60,
+.theme-warm-light .bg-\[\#121212\]\/95,
+.theme-warm-light .bg-\[\#181818\]\/95,
+.theme-warm-light .bg-neutral-900\/40,
+.theme-warm-light .bg-neutral-900\/50,
+.theme-warm-light .bg-neutral-900\/30 {
+  background-color: rgba(61, 35, 23, 0.08) !important;
+}
+
+.theme-warm-light svg text.fill-\[\#737373\],
+.theme-warm-light svg text.fill-\[\#525252\] {
+  fill: #7d5a47 !important;
+}
+
+.theme-warm-light svg text.fill-\[\#E5E5E5\] {
+  fill: #3d2317 !important;
+}
+
+/* Modal Backdrops in Light Theme: warm semi-transparent espresso blur instead of pitch black */
+.theme-warm-light .bg-black\/95,
+.theme-warm-light .bg-black\/90,
+.theme-warm-light .bg-black\/85,
+.theme-warm-light .bg-black\/80,
+.theme-warm-light .bg-black\/75,
+.theme-warm-light .bg-black\/70,
+.theme-warm-light .bg-black\/60 {
+  background-color: rgba(61, 35, 23, 0.65) !important;
+}
+
+/* Modal Dialog Sheets in Light Theme */
+.theme-warm-light [id^="modal-"],
+.theme-warm-light #badge-detail-modal,
+.theme-warm-light .fixed.inset-0 > div[class*="rounded-"],
+.theme-warm-light .fixed.inset-0 > div[class*="max-w-"] {
+  background-color: #faebe0 !important;
+  border-color: rgba(78, 45, 30, 0.16) !important;
+  color: #3d2317 !important;
+  box-shadow: 0 25px 50px -12px rgba(61, 35, 23, 0.25) !important;
+}
+
+/* Internal card surfaces inside modals in light mode: softer elevated warmth */
+.theme-warm-light .fixed.inset-0 .bg-\[\#121212\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#141414\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#161616\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#181818\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#1A1A1A\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#0E0E0E\],
+.theme-warm-light .fixed.inset-0 .bg-\[\#0D0D0D\] {
+  background-color: #fff7f0 !important;
+  border-color: rgba(78, 45, 30, 0.12) !important;
+  color: #3d2317 !important;
+}
+
+/* Close & Escape Buttons inside Modals in Light Theme */
+.theme-warm-light .fixed.inset-0 button:has(svg.lucide-x),
+.theme-warm-light .fixed.inset-0 button[title*="Fermer"],
+.theme-warm-light #btn-close-finished-workout,
+.theme-warm-light #btn-close-detail {
+  background-color: #f3dfcb !important;
+  color: #7d5a47 !important;
+  border-color: rgba(78, 45, 30, 0.22) !important;
+}
+.theme-warm-light .fixed.inset-0 button:has(svg.lucide-x):hover,
+.theme-warm-light .fixed.inset-0 button[title*="Fermer"]:hover,
+.theme-warm-light #btn-close-finished-workout:hover,
+.theme-warm-light #btn-close-detail:hover {
+  background-color: #fff3ea !important;
+  color: #3d2317 !important;
+}
+
+/* Modal secondary cancel/neutral buttons */
+.theme-warm-light .fixed.inset-0 button.bg-\[\#202020\],
+.theme-warm-light .bg-\[\#202020\] {
+  background-color: #f0ded0 !important;
+  color: #7d5a47 !important;
+  border-color: rgba(78, 45, 30, 0.18) !important;
+}
+
+/* Gauges, sliders, and progress tracks in Light Theme */
+.theme-warm-light .relative.h-2\.5.bg-\[\#202020\],
+.theme-warm-light .w-full.h-2\.5.bg-\[\#121212\],
+.theme-warm-light .bg-\[\#202020\].rounded-full {
+  background-color: #e5d2c1 !important;
+  border-color: rgba(78, 45, 30, 0.16) !important;
+}
+
+/* Gradients in light theme - replace dark/black stops with soft warm light stops */
+.theme-warm-light .from-\[\#090909\],
+.theme-warm-light .from-\[\#181818\],
+.theme-warm-light .from-\[\#161616\],
+.theme-warm-light .from-\[\#141414\],
+.theme-warm-light .from-\[\#121212\],
+.theme-warm-light .from-\[\#0E0E0E\],
+.theme-warm-light .from-\[\#0D0D0D\],
+.theme-warm-light .from-\[\#181520\] {
+  --tw-gradient-from: #faebe0 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(250, 235, 224, 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.theme-warm-light .via-\[\#090909\]\/40,
+.theme-warm-light .via-\[\#181818\]\/60 {
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(250, 235, 224, 0.4) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.theme-warm-light .via-\[\#090909\]\/70,
+.theme-warm-light .via-\[\#090909\]\/95 {
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(250, 235, 224, 0.85) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.theme-warm-light .via-\[\#1C1422\],
+.theme-warm-light .via-\[\#181818\],
+.theme-warm-light .via-\[\#161616\],
+.theme-warm-light .via-\[\#141414\],
+.theme-warm-light .via-\[\#121212\] {
+  --tw-gradient-stops: var(--tw-gradient-from), #f5e3d4 var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.theme-warm-light .to-\[\#090909\],
+.theme-warm-light .to-\[\#181818\],
+.theme-warm-light .to-\[\#161616\],
+.theme-warm-light .to-\[\#141414\],
+.theme-warm-light .to-\[\#121212\],
+.theme-warm-light .to-\[\#0E0E0E\],
+.theme-warm-light .to-\[\#0D0D0D\] {
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+}
+
+/* Compartment specific colored cards in Light Mode */
+.theme-warm-light .from-\[\#1C1318\] {
+  --tw-gradient-from: #fff0f3 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#101824\] {
+  --tw-gradient-from: #f0f8ff var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#1C1810\] {
+  --tw-gradient-from: #fef8f0 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#101420\] {
+  --tw-gradient-from: #f5f0fe var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#1C1824\] {
+  --tw-gradient-from: #f5effc var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#241416\] {
+  --tw-gradient-from: #fff2f0 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#132219\] {
+  --tw-gradient-from: #f0fbf5 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#131B26\] {
+  --tw-gradient-from: #f0f8ff var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-warm-light .from-\[\#221620\] {
+  --tw-gradient-from: #fff1f4 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: #faebe0 var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.theme-warm-light .gradient-main {
+  background: linear-gradient(135deg, #b85d38 0%, #df9b58 100%) !important;
+}
+
+.theme-warm-light .bg-gradient-to-r.from-\[\#7C3AED\].to-\[\#EC4899\] {
+  background: linear-gradient(135deg, #b85d38 0%, #df9b58 100%) !important;
+}
+
+.theme-warm-light .text-gradient-main {
+  background: linear-gradient(135deg, #b85d38 0%, #df9b58 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Inputs in light theme */
+.theme-warm-light input,
+.theme-warm-light textarea,
+.theme-warm-light select {
+  background-color: #fff7f0 !important;
+  color: #3d2317 !important;
+  border-color: rgba(78, 45, 30, 0.20) !important;
+}
+
+.theme-warm-light input::placeholder,
+.theme-warm-light textarea::placeholder {
+  color: #9e7a64 !important;
+}
