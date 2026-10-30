@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { Trophy, Plus, Award, Activity, Lock, Edit3, Sparkles, Scale, TrendingUp, Target } from 'lucide-react';
 import { UserStats, AchievementBadge, PersonalRecord, MeasurementEntry } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
 import { EditStatModal, EditableStatType } from './EditStatModal';
 import { PerformanceTrackerView } from './PerformanceTrackerView';
-import { PRProgressionModal } from './PRProgressionModal';
 import { BadgeDetailModal } from './BadgeDetailModal';
 import { getBadgeUnlockRequirement } from './BadgeIcon';
+import { BadgeProgress } from './BadgeProgress';
 import { Manage1RmModal, MaxChargeExercise, DEFAULT_1RM_EXERCISES } from './Manage1RmModal';
+
+// Opened on demand only: separate chunk
+const PRProgressionModal = lazy(() => import('./PRProgressionModal').then((m) => ({ default: m.PRProgressionModal })));
+import { loadJSON, saveJSON } from '../utils/storage';
 
 interface ProgressionTabProps {
   userStats: UserStats;
@@ -57,24 +61,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
   const [newWeight, setNewWeight] = useState(110);
 
   // Custom 1RM Max Charges exercises persisted in localStorage (Image 1 request)
-  const [maxChargesExercises, setMaxChargesExercises] = useState<MaxChargeExercise[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_1rm_exercises');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return DEFAULT_1RM_EXERCISES;
-  });
+  const [maxChargesExercises, setMaxChargesExercises] = useState<MaxChargeExercise[]>(() => loadJSON('volt_1rm_exercises', DEFAULT_1RM_EXERCISES));
   const [show1RmModal, setShow1RmModal] = useState(false);
 
   const handleSave1RmExercises = (updated: MaxChargeExercise[]) => {
     setMaxChargesExercises(updated);
-    try {
-      localStorage.setItem('volt_1rm_exercises', JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
+    saveJSON('volt_1rm_exercises', updated);
   };
 
   const workoutsData = [
@@ -698,26 +690,13 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 </div>
 
                 {/* 3. Bottom Progress Bar: Fixed height container so all cards align perfectly */}
-                <div className="min-h-[2rem] flex flex-col justify-end z-20 relative pt-1">
-                  {isLocked && badge.progressTarget ? (
-                    <div className="space-y-1">
-                      <div className={`w-full h-1.5 rounded-full ${isLight ? 'bg-black/10' : 'bg-[#202020]'} overflow-hidden`}>
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-amber-500 to-[#EC4899]"
-                          style={{ width: `${progressPercent}%` }}
-                        />
-                      </div>
-                      <div className={`flex items-center justify-between text-[9px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                        <span>Objectif</span>
-                        <span className={isLight ? 'text-[#3d2317]' : 'text-white'}>
-                          {badge.progressCurrent}/{badge.progressTarget} {badge.progressUnit || ''}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                </div>
+                <BadgeProgress
+                  badge={badge}
+                  isLocked={isLocked}
+                  isLight={isLight}
+                  progressPercent={progressPercent}
+                  minHeightClass="min-h-[2rem]"
+                />
 
                 {/* 4. Subtle gray veil overlay: 100% card coverage without bottom gap */}
                 {isLocked && (
@@ -817,20 +796,22 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
       {/* Modal: Analyse & Modification du PR avec Graphique de Progression */}
       {selectedPrForModal && (
-        <PRProgressionModal
-          initialPr={selectedPrForModal}
-          allPrs={personalRecords}
-          onUpdatePR={(updated) => {
-            onUpdatePR?.(updated);
-            setSelectedPrForModal(null);
-          }}
-          onDeletePR={(id) => {
-            onDeletePR?.(id);
-            setSelectedPrForModal(null);
-          }}
-          onClose={() => setSelectedPrForModal(null)}
-          theme={theme}
-        />
+        <Suspense fallback={null}>
+          <PRProgressionModal
+            initialPr={selectedPrForModal}
+            allPrs={personalRecords}
+            onUpdatePR={(updated) => {
+              onUpdatePR?.(updated);
+              setSelectedPrForModal(null);
+            }}
+            onDeletePR={(id) => {
+              onDeletePR?.(id);
+              setSelectedPrForModal(null);
+            }}
+            onClose={() => setSelectedPrForModal(null)}
+            theme={theme}
+          />
+        </Suspense>
       )}
 
       {/* Modal: Détail d'un badge */}

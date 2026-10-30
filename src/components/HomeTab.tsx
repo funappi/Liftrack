@@ -4,6 +4,7 @@ import { Workout, UserStats, AchievementBadge, ScheduledDay } from '../types';
 import { EditStatModal, EditableStatType } from './EditStatModal';
 import { BadgeDetailModal } from './BadgeDetailModal';
 import { getBadgeUnlockRequirement } from './BadgeIcon';
+import { BadgeProgress } from './BadgeProgress';
 import { RotationModal } from './RotationModal';
 import { getRotationOrder, loadRotation, recommendWorkout, saveRotation } from '../utils/recommendation';
 
@@ -528,26 +529,13 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 </div>
 
                 {/* 3. Micro progress bar for locked badges */}
-                <div className="min-h-[1.75rem] flex flex-col justify-end z-20 relative pt-1">
-                  {isLocked && badge.progressTarget ? (
-                    <div className="space-y-1">
-                      <div className={`w-full h-1.5 rounded-full ${isLight ? 'bg-black/10' : 'bg-[#202020]'} overflow-hidden`}>
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-amber-500 to-[#EC4899]"
-                          style={{ width: `${progressPercent}%` }}
-                        />
-                      </div>
-                      <div className={`flex items-center justify-between text-[9px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                        <span>Objectif</span>
-                        <span className={isLight ? 'text-[#3d2317]' : 'text-white'}>
-                          {badge.progressCurrent}/{badge.progressTarget} {badge.progressUnit || ''}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                </div>
+                <BadgeProgress
+                  badge={badge}
+                  isLocked={isLocked}
+                  isLight={isLight}
+                  progressPercent={progressPercent}
+                  minHeightClass="min-h-[1.75rem]"
+                />
 
                 {/* 4. Subtle gray veil overlay: 100% card coverage */}
                 {isLocked && (

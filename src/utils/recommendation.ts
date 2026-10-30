@@ -1,47 +1,16 @@
 import { ScheduledDay, Workout } from '../types';
-
-type DayKey = ScheduledDay['dayKey'];
+import { getParisDayKey } from './dates';
+import { loadJSON, saveJSON } from './storage';
+import { isCustomWorkout } from './workouts';
 
 const ROTATION_KEY = 'volt_rotation_order';
-const DAY_KEYS: DayKey[] = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
-
-const isCustomWorkout = (w: Workout) => w.id.startsWith('custom-workout-');
 
 export const loadRotation = (): string[] => {
-  try {
-    const saved = localStorage.getItem(ROTATION_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) return parsed.filter((id) => typeof id === 'string');
-    }
-  } catch {
-    // ignore
-  }
-  return [];
+  const parsed = loadJSON<unknown>(ROTATION_KEY, []);
+  return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
 };
 
-export const saveRotation = (order: string[]) => {
-  try {
-    localStorage.setItem(ROTATION_KEY, JSON.stringify(order));
-  } catch {
-    // ignore
-  }
-};
-
-// Day key in Europe/Paris, `offsetDays` days from now (-1 = yesterday)
-const getParisDayKey = (offsetDays = 0): DayKey => {
-  const date = new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000);
-  try {
-    const weekday = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', weekday: 'short' })
-      .format(date)
-      .toLowerCase();
-    const found = DAY_KEYS.find((k) => weekday.startsWith(k.toLowerCase()));
-    if (found) return found;
-  } catch {
-    // fall through
-  }
-  return DAY_KEYS[(date.getDay() + 6) % 7];
-};
+export const saveRotation = (order: string[]) => saveJSON(ROTATION_KEY, order);
 
 // Created workouts in rotation order: saved order first, then any new ones
 export const getRotationOrder = (workouts: Workout[], saved: string[]): Workout[] => {

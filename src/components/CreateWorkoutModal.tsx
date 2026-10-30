@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CUSTOM_WORKOUT_PREFIX } from '../utils/workouts';
 import { 
   X, Plus, Trash2, Dumbbell, Clock, Check, 
   ChevronUp, ChevronDown, Target, Info
@@ -132,7 +133,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({
     const allMuscles: string[] = Array.from(new Set(exercises.flatMap((e) => e.targetMuscles || [])));
 
     const newWorkout: Workout = {
-      id: `custom-workout-${Date.now()}`,
+      id: `${CUSTOM_WORKOUT_PREFIX}${Date.now()}`,
       title: cleanTitle.toUpperCase(),
       subtitle: subtitle.trim() || 'SÉANCE SUR-MESURE',
       category,

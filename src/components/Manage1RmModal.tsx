@@ -192,7 +192,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({
           </div>
 
           <div className="space-y-2.5">
-            {exercises.map((item, idx) => (
+            {exercises.map((item) => (
               <div
                 key={item.id}
                 className={`p-3.5 rounded-2xl border space-y-2.5 transition-all ${

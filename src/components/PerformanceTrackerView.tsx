@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Clock, Scale, ArrowLeft, Check, Star } from 'lucide-react';
 import { MeasurementEntry } from '../types';
+import { saveJSON } from '../utils/storage';
 
 interface PerformanceTrackerViewProps {
   measurements: MeasurementEntry[];
@@ -198,11 +199,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
 
     const updated = [...favoriteExercises, newExo];
     setFavoriteExercises(updated);
-    try {
-      localStorage.setItem('volt_favorite_exercises', JSON.stringify(updated.filter((e) => e.isCustom)));
-    } catch {
-      // ignore
-    }
+    saveJSON('volt_favorite_exercises', updated.filter((e) => e.isCustom));
 
     // Add initial measurement for this exercise
     const now = new Date();
@@ -234,11 +231,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
     if (!window.confirm("Retirer cet exercice de tes favoris suivis ?")) return;
     const updated = favoriteExercises.filter((m) => m.id !== idToDelete);
     setFavoriteExercises(updated);
-    try {
-      localStorage.setItem('volt_favorite_exercises', JSON.stringify(updated.filter((e) => e.isCustom)));
-    } catch {
-      // ignore
-    }
+    saveJSON('volt_favorite_exercises', updated.filter((e) => e.isCustom));
     setSelectedMetric('poids');
   };
 

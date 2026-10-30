@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Calendar as Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, Trash2 } from 'lucide-react';
 import { ScheduledDay, Workout } from '../types';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
+import { getParisDayKey } from '../utils/dates';
+import { saveJSON } from '../utils/storage';
 
 interface WeeklyTrackerProps {
   schedule: ScheduledDay[];
@@ -23,31 +25,6 @@ const DAY_FULL_NAMES: Record<string, string> = {
   VEN: 'VENDREDI',
   SAM: 'SAMEDI',
   DIM: 'DIMANCHE',
-};
-
-// Returns current day of week in France timezone (Europe/Paris)
-export const getParisDayKey = (): 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM' => {
-  try {
-    const formatter = new Intl.DateTimeFormat('fr-FR', {
-      timeZone: 'Europe/Paris',
-      weekday: 'short',
-    });
-    const formatted = formatter.format(new Date()).toLowerCase();
-    if (formatted.startsWith('lun')) return 'LUN';
-    if (formatted.startsWith('mar')) return 'MAR';
-    if (formatted.startsWith('mer')) return 'MER';
-    if (formatted.startsWith('jeu')) return 'JEU';
-    if (formatted.startsWith('ven')) return 'VEN';
-    if (formatted.startsWith('sam')) return 'SAM';
-    if (formatted.startsWith('dim')) return 'DIM';
-  } catch {
-    // Fallback if Intl is unavailable
-  }
-  const day = new Date().getDay();
-  const map: ('LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM')[] = [
-    'DIM', 'LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM'
-  ];
-  return map[day];
 };
 
 export const getGradientClass = (type: string) => {
@@ -111,11 +88,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
         ...prev,
         [dayKey]: !prev[dayKey],
       };
-      try {
-        localStorage.setItem('volt_planning_checked_days', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_planning_checked_days', updated);
       return updated;
     });
   };

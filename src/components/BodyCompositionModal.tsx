@@ -114,6 +114,49 @@ function GraduatedGauge({
   );
 }
 
+interface OptionalWristInputProps {
+  show: boolean;
+  onToggle: () => void;
+  wristCm: number;
+  onWristChange: (value: number) => void;
+  sliderStyle: React.CSSProperties;
+}
+
+// Optional wrist circumference slider used by the formulas that need no tape measure
+const OptionalWristInput: React.FC<OptionalWristInputProps> = ({ show, onToggle, wristCm, onWristChange, sliderStyle }) => (
+  <div className="pt-2 border-t border-white/5">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="text-[11px] font-bold text-[#F59E0B] hover:underline flex items-center gap-1.5"
+    >
+      {show ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+      {show
+        ? 'Masquer l\'estimation osseuse (poignet)'
+        : 'Ajuster mon tour de poignet pour la masse osseuse (optionnel)'}
+    </button>
+
+    {show && (
+      <div className="mt-3 p-3 rounded-xl bg-[#121212] border border-white/5 space-y-1.5">
+        <div className="flex justify-between items-center text-xs">
+          <span className="font-bold text-[#D1D5DB]">Tour de poignet (Ossature Martin)</span>
+          <span className="font-black text-[#F59E0B] font-mono">{wristCm} cm</span>
+        </div>
+        <input
+          type="range"
+          min="13"
+          max="22"
+          step="0.5"
+          value={wristCm}
+          onChange={(e) => onWristChange(parseFloat(e.target.value))}
+          style={sliderStyle}
+          className="w-full accent-[#F59E0B] h-2 rounded-lg cursor-pointer appearance-none transition-all shadow-inner"
+        />
+      </div>
+    )}
+  </div>
+);
+
 interface BodyCompositionModalProps {
   userStats: UserStats;
   onSaveComposition: (updatedStats: Partial<UserStats>) => void;
@@ -199,12 +242,11 @@ export function BodyCompositionModal({
     return calculateCustomGoalStats(
       weightKg,
       results.fatPercent,
-      results.leanMassKg,
       customGoalType,
       customTargetWeight,
       gender
     );
-  }, [weightKg, results.fatPercent, results.leanMassKg, customGoalType, customTargetWeight, gender]);
+  }, [weightKg, results.fatPercent, customGoalType, customTargetWeight, gender]);
 
   // Formula metadata
   const currentFormulaMeta = FORMULA_METADATA[selectedFormula];
@@ -681,37 +723,13 @@ export function BodyCompositionModal({
               </div>
 
               {/* Bouton pour afficher optionnellement le poignet pour la masse osseuse */}
-              <div className="pt-2 border-t border-white/5">
-                <button
-                  type="button"
-                  onClick={() => setShowOptionalBoneInputs(!showOptionalBoneInputs)}
-                  className="text-[11px] font-bold text-[#F59E0B] hover:underline flex items-center gap-1.5"
-                >
-                  {showOptionalBoneInputs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                  {showOptionalBoneInputs 
-                    ? 'Masquer l\'estimation osseuse (poignet)' 
-                    : 'Ajuster mon tour de poignet pour la masse osseuse (optionnel)'}
-                </button>
-
-                {showOptionalBoneInputs && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#121212] border border-white/5 space-y-1.5">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-[#D1D5DB]">Tour de poignet (Ossature Martin)</span>
-                      <span className="font-black text-[#F59E0B] font-mono">{wristCm} cm</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="13"
-                      max="22"
-                      step="0.5"
-                      value={wristCm}
-                      onChange={(e) => setWristCm(parseFloat(e.target.value))}
-                      style={getSliderTrack(wristCm, 13, 22, '#F59E0B')}
-                      className="w-full accent-[#F59E0B] h-2 rounded-lg cursor-pointer appearance-none transition-all shadow-inner"
-                    />
-                  </div>
-                )}
-              </div>
+              <OptionalWristInput
+                show={showOptionalBoneInputs}
+                onToggle={() => setShowOptionalBoneInputs(!showOptionalBoneInputs)}
+                wristCm={wristCm}
+                onWristChange={setWristCm}
+                sliderStyle={getSliderTrack(wristCm, 13, 22, '#F59E0B')}
+              />
             </div>
           ) : selectedFormula === 'boer_derived' ? (
             /* Cas Boer & James : Aucune circonférence n'est requise */
@@ -730,37 +748,13 @@ export function BodyCompositionModal({
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-white/5">
-                <button
-                  type="button"
-                  onClick={() => setShowOptionalBoneInputs(!showOptionalBoneInputs)}
-                  className="text-[11px] font-bold text-[#F59E0B] hover:underline flex items-center gap-1.5"
-                >
-                  {showOptionalBoneInputs ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                  {showOptionalBoneInputs 
-                    ? 'Masquer l\'estimation osseuse (poignet)' 
-                    : 'Ajuster mon tour de poignet pour la masse osseuse (optionnel)'}
-                </button>
-
-                {showOptionalBoneInputs && (
-                  <div className="mt-3 p-3 rounded-xl bg-[#121212] border border-white/5 space-y-1.5">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-[#D1D5DB]">Tour de poignet (Ossature Martin)</span>
-                      <span className="font-black text-[#F59E0B] font-mono">{wristCm} cm</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="13"
-                      max="22"
-                      step="0.5"
-                      value={wristCm}
-                      onChange={(e) => setWristCm(parseFloat(e.target.value))}
-                      style={getSliderTrack(wristCm, 13, 22, '#F59E0B')}
-                      className="w-full accent-[#F59E0B] h-2 rounded-lg cursor-pointer appearance-none transition-all shadow-inner"
-                    />
-                  </div>
-                )}
-              </div>
+              <OptionalWristInput
+                show={showOptionalBoneInputs}
+                onToggle={() => setShowOptionalBoneInputs(!showOptionalBoneInputs)}
+                wristCm={wristCm}
+                onWristChange={setWristCm}
+                sliderStyle={getSliderTrack(wristCm, 13, 22, '#F59E0B')}
+              />
             </div>
           ) : (
             /* Cas US Navy & Synthèse : Circonférences au mètre ruban requises et interactives */

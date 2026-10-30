@@ -18,7 +18,6 @@ export interface Exercise {
   restSeconds: number;
   targetMuscles: string[];
   notes?: string;
-  videoThumb?: string;
 }
 
 export interface Workout {

@@ -247,7 +247,6 @@ export function calculateBodyRecommendation(
 export function calculateCustomGoalStats(
   currentWeightKg: number,
   currentFatPercent: number,
-  leanMassKg: number,
   goalType: 'seche' | 'prise_de_masse' | 'recomposition',
   targetWeightKg: number,
   gender: 'homme' | 'femme'

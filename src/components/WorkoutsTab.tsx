@@ -3,7 +3,8 @@ import { Calendar as Clock, Flame, Plus, ChevronRight, Trash2, Play } from 'luci
 import { ScheduledDay, Workout } from '../types';
 import { CreateWorkoutModal } from './CreateWorkoutModal';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
-import { WeeklyTracker, getGradientClass, getParisDayKey } from './WeeklyTracker';
+import { WeeklyTracker, getGradientClass } from './WeeklyTracker';
+import { DAY_KEYS, getParisDayKey } from '../utils/dates';
 
 interface WorkoutsTabProps {
   workouts: Workout[];
@@ -16,8 +17,6 @@ interface WorkoutsTabProps {
   onRemoveScheduledWorkout?: (dayKey: string, sessionId: string) => void;
   theme?: 'dark' | 'warm-light';
 }
-
-const DAY_ORDER: ScheduledDay['dayKey'][] = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
 
 const CATEGORY_LABELS: Record<string, string> = {
   force: 'FORCE',
@@ -46,10 +45,10 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
 
   // Next upcoming session per workout (closest day from today, then earliest time) → listed first
   const sortedWorkouts = useMemo(() => {
-    const todayIdx = DAY_ORDER.indexOf(getParisDayKey());
+    const todayIdx = DAY_KEYS.indexOf(getParisDayKey());
     const nextByWorkout = new Map<string, { rank: string; time: string }>();
     schedule.forEach((day) => {
-      const delta = (DAY_ORDER.indexOf(day.dayKey) - todayIdx + 7) % 7;
+      const delta = (DAY_KEYS.indexOf(day.dayKey) - todayIdx + 7) % 7;
       day.sessions.forEach((s) => {
         if (s.status !== 'upcoming') return;
         const rank = `${delta}-${s.time}`;

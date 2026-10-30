@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { TabType, Workout, UserStats, PersonalRecord, AchievementBadge, ScheduledDay, MeasurementEntry } from './types';
 import { initialUserStats, sampleWorkouts, sampleWeekSchedule, samplePersonalRecords, sampleBadges, sampleMeasurements } from './data/mockData';
 import { Header } from './components/Header';
@@ -14,57 +14,39 @@ import { PlanningTab } from './components/PlanningTab';
 import { ProgressionTab } from './components/ProgressionTab';
 import { WorkoutDetailModal } from './components/WorkoutDetailModal';
 import { LiveWorkoutView } from './components/LiveWorkoutView';
-import { WorkoutFinishedModal } from './components/WorkoutFinishedModal';
-import { BodyCompositionModal } from './components/BodyCompositionModal';
 import { QuickLaunchModal } from './components/QuickLaunchModal';
+import { loadJSON, saveJSON } from './utils/storage';
+import { CUSTOM_WORKOUT_PREFIX, isCustomWorkout } from './utils/workouts';
+
+// Heavy modals only opened on demand: loaded in separate chunks
+const WorkoutFinishedModal = lazy(() =>
+  import('./components/WorkoutFinishedModal').then((m) => ({ default: m.WorkoutFinishedModal }))
+);
+const BodyCompositionModal = lazy(() =>
+  import('./components/BodyCompositionModal').then((m) => ({ default: m.BodyCompositionModal }))
+);
+
+const CUSTOM_WORKOUTS_KEY = 'volt_custom_workouts';
+const DELETED_WORKOUTS_KEY = 'volt_deleted_workout_ids';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
 
   // Persisted user stats in localStorage
-  const [userStats, setUserStats] = useState<UserStats>(() => {
-    try {
-      const saved = localStorage.getItem('volt_user_stats');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return initialUserStats;
-  });
+  const [userStats, setUserStats] = useState<UserStats>(() => loadJSON('volt_user_stats', initialUserStats));
 
   const [workouts, setWorkouts] = useState<Workout[]>(() => {
-    let deletedIds: string[] = [];
-    try {
-      const savedDeleted = JSON.parse(localStorage.getItem('volt_deleted_workout_ids') || '[]');
-      if (Array.isArray(savedDeleted)) deletedIds = savedDeleted;
-    } catch {
-      // ignore
-    }
+    const deletedIds = loadJSON<string[]>(DELETED_WORKOUTS_KEY, []);
     const samples = sampleWorkouts.filter((w) => !deletedIds.includes(w.id));
-    try {
-      const saved = localStorage.getItem('volt_custom_workouts');
-      if (saved) {
-        const custom = JSON.parse(saved);
-        if (Array.isArray(custom) && custom.length > 0) {
-          return [...custom, ...samples];
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return samples;
+    const custom = loadJSON<Workout[]>(CUSTOM_WORKOUTS_KEY, []);
+    return Array.isArray(custom) ? [...custom, ...samples] : samples;
   });
 
   const handleSaveCustomWorkout = (workout: Workout, launchImmediately = false) => {
     setWorkouts((prev) => {
       const withoutThis = prev.filter((w) => w.id !== workout.id);
       const updated = [workout, ...withoutThis];
-      try {
-        const customOnly = updated.filter((w) => w.id.startsWith('custom-workout-'));
-        localStorage.setItem('volt_custom_workouts', JSON.stringify(customOnly));
-      } catch {
-        // ignore
-      }
+      saveJSON(CUSTOM_WORKOUTS_KEY, updated.filter(isCustomWorkout));
       return updated;
     });
 
@@ -76,30 +58,18 @@ export default function App() {
   // Single delete path for every workout: library, persistence and its planning slots
   const handleDeleteWorkout = (workoutId: string) => {
     setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
-    try {
-      if (workoutId.startsWith('custom-workout-')) {
-        const saved = JSON.parse(localStorage.getItem('volt_custom_workouts') || '[]');
-        const remaining = Array.isArray(saved) ? saved.filter((w: Workout) => w.id !== workoutId) : [];
-        localStorage.setItem('volt_custom_workouts', JSON.stringify(remaining));
-      } else {
-        const saved = JSON.parse(localStorage.getItem('volt_deleted_workout_ids') || '[]');
-        const ids: string[] = Array.isArray(saved) ? saved : [];
-        if (!ids.includes(workoutId)) ids.push(workoutId);
-        localStorage.setItem('volt_deleted_workout_ids', JSON.stringify(ids));
-      }
-    } catch {
-      // ignore
+    if (workoutId.startsWith(CUSTOM_WORKOUT_PREFIX)) {
+      saveJSON(CUSTOM_WORKOUTS_KEY, loadJSON<Workout[]>(CUSTOM_WORKOUTS_KEY, []).filter((w) => w.id !== workoutId));
+    } else {
+      const ids = loadJSON<string[]>(DELETED_WORKOUTS_KEY, []);
+      if (!ids.includes(workoutId)) saveJSON(DELETED_WORKOUTS_KEY, [...ids, workoutId]);
     }
     setSchedule((prev) => {
       const updated = prev.map((day) => ({
         ...day,
         sessions: day.sessions.filter((sess) => sess.workoutId !== workoutId),
       }));
-      try {
-        localStorage.setItem('volt_schedule', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_schedule', updated);
       return updated;
     });
   };
@@ -137,15 +107,7 @@ export default function App() {
     });
   };
 
-  const [schedule, setSchedule] = useState<ScheduledDay[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_schedule');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return sampleWeekSchedule;
-  });
+  const [schedule, setSchedule] = useState<ScheduledDay[]>(() => loadJSON('volt_schedule', sampleWeekSchedule));
 
   const handleScheduleWorkout = (
     dayKey: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM',
@@ -174,11 +136,7 @@ export default function App() {
           sessions: [...day.sessions, newSession],
         };
       });
-      try {
-        localStorage.setItem('volt_schedule', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_schedule', updated);
       return updated;
     });
   };
@@ -192,55 +150,25 @@ export default function App() {
           sessions: day.sessions.filter((s) => s.id !== sessionId),
         };
       });
-      try {
-        localStorage.setItem('volt_schedule', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_schedule', updated);
       return updated;
     });
   };
-  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_prs');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return samplePersonalRecords;
-  });
+  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>(() => loadJSON('volt_prs', samplePersonalRecords));
 
   // Persisted badges with unlocked and grayed-out locked achievements
   const [badges, setBadges] = useState<AchievementBadge[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_badges');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const savedMap = new Map(parsed.map((b: AchievementBadge) => [b.id, b]));
-          const merged = sampleBadges.map((sampleB) => {
-            const existing = savedMap.get(sampleB.id);
-            return existing ? { ...sampleB, ...existing, emoji: sampleB.emoji } : sampleB;
-          });
-          return merged;
-        }
-      }
-    } catch {
-      // ignore
-    }
-    return sampleBadges;
+    const saved = loadJSON<AchievementBadge[]>('volt_badges', []);
+    if (!Array.isArray(saved) || saved.length === 0) return sampleBadges;
+    const savedMap = new Map(saved.map((b) => [b.id, b]));
+    return sampleBadges.map((sampleB) => {
+      const existing = savedMap.get(sampleB.id);
+      return existing ? { ...sampleB, ...existing, emoji: sampleB.emoji } : sampleB;
+    });
   });
 
   // Persisted performance measurements history (Image 2 style)
-  const [measurements, setMeasurements] = useState<MeasurementEntry[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_measurements');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return sampleMeasurements;
-  });
+  const [measurements, setMeasurements] = useState<MeasurementEntry[]>(() => loadJSON('volt_measurements', sampleMeasurements));
 
   const handleAddMeasurement = (entry: Omit<MeasurementEntry, 'id'>) => {
     const newEntry: MeasurementEntry = {
@@ -249,11 +177,7 @@ export default function App() {
     };
     setMeasurements((prev) => {
       const updated = [newEntry, ...prev];
-      try {
-        localStorage.setItem('volt_measurements', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_measurements', updated);
       return updated;
     });
 
@@ -266,11 +190,7 @@ export default function App() {
   const handleDeleteMeasurement = (id: string) => {
     setMeasurements((prev) => {
       const updated = prev.filter((m) => m.id !== id);
-      try {
-        localStorage.setItem('volt_measurements', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_measurements', updated);
       return updated;
     });
   };
@@ -291,11 +211,7 @@ export default function App() {
   const handleUpdateUserStats = (updated: Partial<UserStats>) => {
     setUserStats((prev) => {
       const next = { ...prev, ...updated };
-      try {
-        localStorage.setItem('volt_user_stats', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_user_stats', next);
 
       // Check auto-unlock conditions for gamification badges
       setBadges((prevBadges) => {
@@ -331,11 +247,7 @@ export default function App() {
         });
 
         if (changed) {
-          try {
-            localStorage.setItem('volt_badges', JSON.stringify(nextBadges));
-          } catch {
-            // ignore
-          }
+          saveJSON('volt_badges', nextBadges);
         }
         return nextBadges;
       });
@@ -352,11 +264,7 @@ export default function App() {
           ? { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true }
           : b
       );
-      try {
-        localStorage.setItem('volt_badges', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_badges', updated);
 
       return updated;
     });
@@ -425,11 +333,7 @@ export default function App() {
       ];
     }
     setPersonalRecords(updatedPrs);
-    try {
-      localStorage.setItem('volt_prs', JSON.stringify(updatedPrs));
-    } catch {
-      // ignore
-    }
+    saveJSON('volt_prs', updatedPrs);
   };
 
   // Handle updating an existing PR (and its history graph)
@@ -439,11 +343,7 @@ export default function App() {
       const next = exists
         ? prev.map((p) => (p.id === updatedPr.id ? updatedPr : p))
         : [updatedPr, ...prev];
-      try {
-        localStorage.setItem('volt_prs', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_prs', next);
       return next;
     });
   };
@@ -452,11 +352,7 @@ export default function App() {
   const handleDeletePR = (prId: string) => {
     setPersonalRecords((prev) => {
       const next = prev.filter((p) => p.id !== prId);
-      try {
-        localStorage.setItem('volt_prs', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
+      saveJSON('volt_prs', next);
       return next;
     });
   };
@@ -567,7 +463,7 @@ export default function App() {
         {/* Lancement rapide : mes séances créées + décompte */}
         {showQuickLaunch && (
           <QuickLaunchModal
-            workouts={workouts.filter((w) => w.id.startsWith('custom-workout-'))}
+            workouts={workouts.filter(isCustomWorkout)}
             onStart={(w) => {
               setShowQuickLaunch(false);
               handleStartWorkout(w);
@@ -590,24 +486,26 @@ export default function App() {
           />
         )}
 
-        {/* Finished Workout Celebratory Recap Modal */}
-        {finishedSummary && (
-          <WorkoutFinishedModal
-            summary={finishedSummary}
-            onClose={() => setFinishedSummary(null)}
-            theme={theme}
-          />
-        )}
+        <Suspense fallback={null}>
+          {/* Finished Workout Celebratory Recap Modal */}
+          {finishedSummary && (
+            <WorkoutFinishedModal
+              summary={finishedSummary}
+              onClose={() => setFinishedSummary(null)}
+              theme={theme}
+            />
+          )}
 
-        {/* Body Composition Calculator Modal */}
-        {showBodyCompositionModal && (
-          <BodyCompositionModal
-            userStats={userStats}
-            onSaveComposition={handleUpdateUserStats}
-            onClose={() => setShowBodyCompositionModal(false)}
-            theme={theme}
-          />
-        )}
+          {/* Body Composition Calculator Modal */}
+          {showBodyCompositionModal && (
+            <BodyCompositionModal
+              userStats={userStats}
+              onSaveComposition={handleUpdateUserStats}
+              onClose={() => setShowBodyCompositionModal(false)}
+              theme={theme}
+            />
+          )}
+        </Suspense>
       </div>
     </div>
   );
