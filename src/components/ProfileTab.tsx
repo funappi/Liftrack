@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, QrCode, Shield, Settings, History, Target, ChevronRight, Zap, Flame, Bell, Volume2, Award, LogOut, Edit3, Mail } from 'lucide-react';
+import { QrCode, Shield, History, Target, ChevronRight, Zap, Bell, Volume2, Edit3, Mail } from 'lucide-react';
 import { UserStats } from '../types';
 import { EditProfileModal } from './EditProfileModal';
 

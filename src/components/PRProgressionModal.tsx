@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  X, Trophy, TrendingUp, Calendar, Dumbbell, Plus, Trash2, 
-  Edit3, Check, Sparkles, ArrowUpRight, ChevronRight, AlertCircle 
+  X, Trophy, TrendingUp, Calendar, Plus, Trash2, 
+  Edit3, Check, AlertCircle 
 } from 'lucide-react';
 import { PersonalRecord, PRHistoryPoint } from '../types';
 

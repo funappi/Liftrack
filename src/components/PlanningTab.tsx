@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar as CalendarIcon, Clock, Flame, CheckCircle, Plus, ChevronRight, Dumbbell, Zap, Check, Trash2 } from 'lucide-react';
+import { Calendar as Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, Trash2 } from 'lucide-react';
 import { ScheduledDay, Workout } from '../types';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
 
@@ -24,7 +24,7 @@ const DAY_FULL_NAMES: Record<string, string> = {
 };
 
 // Returns current day of week in France timezone (Europe/Paris)
-export const getParisDayKey = (): 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM' => {
+const getParisDayKey = (): 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM' => {
   try {
     const formatter = new Intl.DateTimeFormat('fr-FR', {
       timeZone: 'Europe/Paris',

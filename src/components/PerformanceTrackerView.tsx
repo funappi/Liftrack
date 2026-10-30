@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Clock, Scale, Dumbbell, ArrowLeft, Check, Sparkles, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Clock, Scale, ArrowLeft, Check, Star } from 'lucide-react';
 import { MeasurementEntry } from '../types';
 
 interface PerformanceTrackerViewProps {
@@ -11,7 +11,7 @@ interface PerformanceTrackerViewProps {
   theme?: 'dark' | 'warm-light';
 }
 
-export interface TrackedMetric {
+interface TrackedMetric {
   id: string;
   title: string;
   category?: string;

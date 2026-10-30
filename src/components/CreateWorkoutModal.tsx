@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  X, Plus, Trash2, Dumbbell, Clock, Flame, Check, Sparkles, 
-  ChevronUp, ChevronDown, Layers, Target, Info
+  X, Plus, Trash2, Dumbbell, Clock, Check, 
+  ChevronUp, ChevronDown, Target, Info
 } from 'lucide-react';
 import { Workout, Exercise, WorkoutCategory } from '../types';
 
@@ -43,7 +43,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({
   const [subtitle, setSubtitle] = useState('');
   const [category, setCategory] = useState<WorkoutCategory>('hypertrophie');
   const [durationMin, setDurationMin] = useState(45);
-  const [difficulty, setDifficulty] = useState<'DÉBUTANT' | 'INTERMÉDIAIRE' | 'AVANCÉ' | 'ÉLITE'>('INTERMÉDIAIRE');
+  const [difficulty] = useState<'DÉBUTANT' | 'INTERMÉDIAIRE' | 'AVANCÉ' | 'ÉLITE'>('INTERMÉDIAIRE');
   
   // Exercises list: All default reps & weight start at 0 as requested!
   const [exercises, setExercises] = useState<Exercise[]>([

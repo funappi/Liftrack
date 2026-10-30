@@ -16,7 +16,7 @@ export interface BodyCompositionInputs {
 
 export type BodyFatFormulaType = 'us_navy' | 'deurenberg' | 'boer_derived' | 'average';
 
-export type RequiredFieldKey = 'gender' | 'age' | 'weight' | 'height' | 'waist' | 'neck' | 'hip' | 'wrist';
+type RequiredFieldKey = 'gender' | 'age' | 'weight' | 'height' | 'waist' | 'neck' | 'hip' | 'wrist';
 
 export interface FormulaMeta {
   id: BodyFatFormulaType;
@@ -540,7 +540,7 @@ export function calculateBodyComposition(
   };
 }
 
-export interface LadderTier {
+interface LadderTier {
   id: string;
   name: string;
   minPercentMale: number;

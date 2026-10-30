@@ -1,4 +1,4 @@
-import { Workout, UserStats, ScheduledDay, AchievementBadge, PersonalRecord, AudioTrack, MeasurementEntry } from '../types';
+import { Workout, UserStats, ScheduledDay, AchievementBadge, PersonalRecord, MeasurementEntry } from '../types';
 
 export const initialUserStats: UserStats = {
   name: "Alexandre",
@@ -866,33 +866,6 @@ export const sampleWeekSchedule: ScheduledDay[] = [
     month: "SEP",
     isToday: false,
     sessions: [] // Rest day
-  }
-];
-
-export const sampleAudioTracks: AudioTrack[] = [
-  {
-    id: "trk-1",
-    title: "NEON OVERLOAD (VOLT MIX)",
-    artist: "VOLT Gym Sessions",
-    bpm: 135,
-    durationStr: "3:42",
-    type: "synthwave"
-  },
-  {
-    id: "trk-2",
-    title: "HYPERTROPHY PULSE 140",
-    artist: "Dark Cyber Gym",
-    bpm: 140,
-    durationStr: "4:15",
-    type: "phonk"
-  },
-  {
-    id: "trk-3",
-    title: "PR CRUSHER // BASS BOOST",
-    artist: "Kavinsky x Volt Lab",
-    bpm: 148,
-    durationStr: "3:18",
-    type: "industrial"
   }
 ];
 

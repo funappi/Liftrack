@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Mail, Shield, Scale, Target, Camera, Check, Sparkles } from 'lucide-react';
+import { X, User, Mail, Shield, Scale, Target, Check } from 'lucide-react';
 import { UserStats } from '../types';
 
 interface EditProfileModalProps {
@@ -41,7 +41,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   );
   const [currentWeightKg, setCurrentWeightKg] = useState(userStats.currentWeightKg || 82);
   const [targetWeightKg, setTargetWeightKg] = useState(userStats.targetWeightKg || 85);
-  const [membershipType, setMembershipType] = useState(
+  const [membershipType] = useState(
     userStats.membership?.type || 'VOLT BLACK PASS'
   );
   const [goalDescription, setGoalDescription] = useState(

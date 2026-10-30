@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Flame, Clock, Dumbbell, Zap, Filter, Plus, Trash2, Sparkles, Edit3 } from 'lucide-react';
+import { Search, Flame, Clock, Dumbbell, Zap, Plus, Trash2 } from 'lucide-react';
 import { Workout, WorkoutCategory } from '../types';
 import { CreateWorkoutModal } from './CreateWorkoutModal';
 

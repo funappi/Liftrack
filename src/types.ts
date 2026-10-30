@@ -150,15 +150,6 @@ export interface ScheduledDay {
   }[];
 }
 
-export interface AudioTrack {
-  id: string;
-  title: string;
-  artist: string;
-  bpm: number;
-  durationStr: string;
-  type: 'synthwave' | 'phonk' | 'industrial' | 'ambient';
-}
-
 export interface MeasurementEntry {
   id: string;
   metricType: string; // 'poids' | 'bench' | 'squat' | 'deadlift' | 'volume' | or custom favorite exercise

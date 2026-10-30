@@ -14,7 +14,7 @@ import {
   HeartPulse,
   Target,
   Dumbbell,
-  ArrowRight,
+  
   Zap,
   ChevronDown,
   ChevronUp
@@ -28,8 +28,8 @@ import {
   calculateCustomGoalStats,
   BodyRecommendation,
   COMPARTMENT_LADDERS,
-  CompartmentLadder,
-  LadderTier
+  
+  
 } from '../utils/bodyComposition';
 import { UserStats } from '../types';
 

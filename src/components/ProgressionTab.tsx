@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trophy, Flame, Zap, Plus, ArrowUpRight, Award, Dumbbell, Activity, Check, Lock, Edit3, Sparkles, Scale, Info, TrendingUp, Target } from 'lucide-react';
+import { Trophy, Plus, Award, Activity, Lock, Edit3, Sparkles, Scale, TrendingUp, Target } from 'lucide-react';
 import { UserStats, AchievementBadge, PersonalRecord, MeasurementEntry } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
@@ -55,16 +55,6 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
   const [newExerciseName, setNewExerciseName] = useState('Développé couché');
   const [newWeight, setNewWeight] = useState(110);
-
-  // SVG Chart data sets based on real/updated user stats
-  const weightData = [
-    { label: 'Jan', val: 78.5 },
-    { label: 'Fév', val: 79.2 },
-    { label: 'Mar', val: 80.0 },
-    { label: 'Avr', val: 80.8 },
-    { label: 'Mai', val: 81.4 },
-    { label: 'Actuel', val: userStats.currentWeightKg },
-  ];
 
   // Custom 1RM Max Charges exercises persisted in localStorage (Image 1 request)
   const [maxChargesExercises, setMaxChargesExercises] = useState<MaxChargeExercise[]>(() => {
@@ -953,16 +943,6 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
             </div>
           </div>
         </div>
-      )}
-
-      {/* Modal: Inspection & Détail d'un badge (BadgeDetailModal) */}
-      {selectedBadgeForModal && (
-        <BadgeDetailModal
-          badge={selectedBadgeForModal}
-          onClose={() => setSelectedBadgeForModal(null)}
-          onUnlockBadge={onUnlockBadge}
-          theme={theme}
-        />
       )}
 
       {/* Modal: Gérer et personnaliser les charges maximales (1RM) (Image 1) */}

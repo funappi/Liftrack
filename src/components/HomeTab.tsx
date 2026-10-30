@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Sparkles, Scale } from 'lucide-react';
+import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Scale } from 'lucide-react';
 import { Workout, UserStats, AchievementBadge } from '../types';
 import { EditStatModal, EditableStatType } from './EditStatModal';
 import { BadgeDetailModal } from './BadgeDetailModal';
@@ -40,11 +40,9 @@ export const HomeTab: React.FC<HomeTabProps> = ({
 
   // Calculate weight difference
   const weightDiff = Math.abs(Math.round((userStats.targetWeightKg - userStats.currentWeightKg) * 10) / 10);
-  const isGaining = userStats.targetWeightKg >= userStats.currentWeightKg;
 
   // Unlocked & locked badges preview (e.g. first 2 unlocked and first 3 locked/grisés)
   const unlockedBadges = badges.filter((b) => !b.isLocked);
-  const lockedBadges = badges.filter((b) => b.isLocked);
 
   // Calcul intelligent de progression : gère fidèlement la perte de poids (sèche) et la progression croissante
   const goalProgress = useMemo(() => {

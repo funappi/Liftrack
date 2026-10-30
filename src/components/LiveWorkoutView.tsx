@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Clock, Check, Plus, MoreVertical, Settings, AlertCircle, 
-  Trash2, ChevronDown, Play, Pause, X, Dumbbell, ShieldAlert, Sparkles,
-  ArrowLeft, Edit2, SkipForward, RotateCcw, Keyboard, SlidersHorizontal
+  Clock, Check, Plus, MoreVertical, Settings, 
+  Trash2, ChevronDown, Play, Pause, X, Dumbbell, ShieldAlert, 
+  Edit2, SkipForward, Keyboard, 
 } from 'lucide-react';
 import { Workout, WorkoutExerciseSession, WorkoutSetSession } from '../types';
 import { audioSynth } from '../utils/audioSynth';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Bell, Flame, Dumbbell, Sun, Moon, Palette } from 'lucide-react';
+import { Zap, Flame, Dumbbell, Sun, Moon } from 'lucide-react';
 import { UserStats } from '../types';
 
 interface HeaderProps {

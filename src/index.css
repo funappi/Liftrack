@@ -60,18 +60,6 @@ body.theme-warm-light {
   background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
 }
 
-.gradient-premium {
-  background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
-}
-
-.gradient-card-overlay {
-  background: linear-gradient(180deg, rgba(22, 19, 17, 0.05) 0%, rgba(22, 19, 17, 0.85) 60%, #161311 100%);
-}
-
-.gradient-hero-overlay {
-  background: linear-gradient(180deg, rgba(22, 19, 17, 0.15) 0%, rgba(22, 19, 17, 0.75) 45%, #161311 100%);
-}
-
 .text-gradient-main {
   background: linear-gradient(135deg, #c05a3e 0%, #d97706 100%);
   -webkit-background-clip: text;
@@ -97,10 +85,6 @@ body.theme-warm-light {
 
 .glow-energy {
   box-shadow: 0 8px 32px -4px rgba(255, 81, 47, 0.35);
-}
-
-.glow-performance {
-  box-shadow: 0 8px 32px -4px rgba(0, 198, 255, 0.35);
 }
 
 /* Custom Scrollbars */

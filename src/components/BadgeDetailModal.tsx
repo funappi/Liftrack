@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Lock, CheckCircle2, Award, Zap, Sparkles, Play } from 'lucide-react';
+import { X, Lock, CheckCircle2, Zap, Play } from 'lucide-react';
 import { AchievementBadge } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, Dumbbell, Check, Plus } from 'lucide-react';
+import { X, Calendar, Clock, Check } from 'lucide-react';
 import { Workout } from '../types';
 
 interface ScheduleWorkoutModalProps {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2, Dumbbell, Check, RotateCcw, Sparkles, Target, ArrowUpRight } from 'lucide-react';
+import { X, Plus, Trash2, Dumbbell, Check, RotateCcw } from 'lucide-react';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
 
