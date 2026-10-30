@@ -8,36 +8,71 @@ import { PerformanceTrackerView } from './PerformanceTrackerView';
 import { BadgeDetailModal } from './BadgeDetailModal';
 import { getBadgeUnlockRequirement } from './BadgeIcon';
 import { BadgeProgress } from './BadgeProgress';
-import { Manage1RmModal, MaxChargeExercise, DEFAULT_1RM_EXERCISES } from './Manage1RmModal';
+import { Manage1RmModal } from './Manage1RmModal';
+import { useVoltData } from '../data/VoltDataContext';
+import { LIMITS, PREntry, TrackedExercise, formatShortDate, sanitizeNumber } from '../data/model';
+import {
+  averageMaxChargesProgress,
+  currentPR,
+  currentWeight,
+  findExerciseByName,
+  kcalPerDay,
+  kcalThisMonth,
+  latestComposition,
+  maxChargesExercises,
+  prGain,
+  sessionsPerWeek,
+  sortedHistory,
+  startPR,
+  totalKcal,
+  totalVisits,
+} from '../data/selectors';
 
 // Opened on demand only: separate chunk
 const PRProgressionModal = lazy(() => import('./PRProgressionModal').then((m) => ({ default: m.PRProgressionModal })));
-import { loadJSON, saveJSON } from '../utils/storage';
 
 interface ProgressionTabProps {
   userStats: UserStats;
-  personalRecords: PersonalRecord[];
   badges: AchievementBadge[];
-  measurements?: MeasurementEntry[];
-  onLogNewRecord: (record: { exercise: string; weightKg: number }) => void;
-  onUpdatePR?: (updated: PersonalRecord) => void;
-  onDeletePR?: (id: string) => void;
   onUpdateUserStats?: (updated: Partial<UserStats>) => void;
   onUnlockBadge?: (badgeId: string) => void;
   onOpenBodyComposition?: () => void;
+  theme?: 'dark' | 'warm-light';
+  /** @deprecated records come from useVoltData(); still passed to PerformanceTrackerView until it migrates */
+  measurements?: MeasurementEntry[];
   onAddMeasurement?: (entry: Omit<MeasurementEntry, 'id'>) => void;
   onDeleteMeasurement?: (id: string) => void;
-  theme?: 'dark' | 'warm-light';
+  /** @deprecated unused: records come from useVoltData() */
+  personalRecords?: PersonalRecord[];
+  /** @deprecated unused */
+  onLogNewRecord?: (record: { exercise: string; weightKg: number }) => void;
+  /** @deprecated unused */
+  onUpdatePR?: (updated: PersonalRecord) => void;
+  /** @deprecated unused */
+  onDeletePR?: (id: string) => void;
 }
+
+const NEW_EXERCISE = '__new__';
+
+/** Valid load (> 0, within LIMITS) or null */
+const parseLoad = (s: string): number | null => {
+  const n = sanitizeNumber(s, LIMITS.loadKg[0], LIMITS.loadKg[1]);
+  return n !== null && n > 0 ? n : null;
+};
+const signed = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+
+/** Entry holding the current record (latest one if reached several times) */
+const recordEntry = (ex: TrackedExercise): PREntry | null => {
+  const cur = currentPR(ex);
+  if (cur === null) return null;
+  const hits = sortedHistory(ex).filter((h) => h.weightKg === cur);
+  return hits[hits.length - 1] ?? null;
+};
 
 export const ProgressionTab: React.FC<ProgressionTabProps> = ({
   userStats,
-  personalRecords,
   badges,
   measurements = [],
-  onLogNewRecord,
-  onUpdatePR,
-  onDeletePR,
   onUpdateUserStats,
   onUnlockBadge,
   onOpenBodyComposition,
@@ -46,65 +81,118 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
   theme,
 }) => {
   const isLight = theme === 'warm-light';
+  const { data, addExercise, updateExercise, logRecord } = useVoltData();
   const [activeMetric, setActiveMetric] = useState<'force' | 'poids' | 'composition' | 'workouts' | 'calories'>('force');
   const [showAddPrModal, setShowAddPrModal] = useState(false);
   const [selectedBadgeForModal, setSelectedBadgeForModal] = useState<AchievementBadge | null>(null);
-  const [selectedPrForModal, setSelectedPrForModal] = useState<PersonalRecord | null>(null);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [editingStatType, setEditingStatType] = useState<EditableStatType | null>(null);
-  const [editingStartWeightPr, setEditingStartWeightPr] = useState<PersonalRecord | null>(null);
-  const [inputStartWeight, setInputStartWeight] = useState<number>(0);
+  const [editingStartExerciseId, setEditingStartExerciseId] = useState<string | null>(null);
+  const [inputStartWeight, setInputStartWeight] = useState('');
+  const [startError, setStartError] = useState<string | null>(null);
 
   // Badge filter tab: 'all' | 'unlocked' | 'locked'
   const [badgeFilter, setBadgeFilter] = useState<'all' | 'unlocked' | 'locked'>('all');
 
-  const [newExerciseName, setNewExerciseName] = useState('Développé couché');
-  const [newWeight, setNewWeight] = useState(110);
+  // "Nouveau record" form
+  const [newExerciseChoice, setNewExerciseChoice] = useState<string>(NEW_EXERCISE);
+  const [newExerciseName, setNewExerciseName] = useState('');
+  const [newWeight, setNewWeight] = useState('');
+  const [newReps, setNewReps] = useState('');
+  const [prError, setPrError] = useState<string | null>(null);
 
-  // Custom 1RM Max Charges exercises persisted in localStorage (Image 1 request)
-  const [maxChargesExercises, setMaxChargesExercises] = useState<MaxChargeExercise[]>(() => loadJSON('volt_1rm_exercises', DEFAULT_1RM_EXERCISES));
   const [show1RmModal, setShow1RmModal] = useState(false);
 
-  const handleSave1RmExercises = (updated: MaxChargeExercise[]) => {
-    setMaxChargesExercises(updated);
-    saveJSON('volt_1rm_exercises', updated);
+  // --- Derived from the dated histories ---
+  const maxCharges = maxChargesExercises(data);
+  const avgProgress = averageMaxChargesProgress(data);
+  const recordExercises = data.exercises.filter((ex) => ex.history.length > 0 || typeof ex.startKg === 'number');
+  const editingStartExercise = data.exercises.find((ex) => ex.id === editingStartExerciseId) ?? null;
+  const startCur = editingStartExercise ? currentPR(editingStartExercise) : null;
+  const startPreview = parseLoad(inputStartWeight);
+  const startPreviewGain = startCur !== null && startPreview !== null ? Math.round((startCur - startPreview) * 10) / 10 : null;
+  const startFirstEntry = editingStartExercise ? sortedHistory(editingStartExercise)[0] : undefined;
+
+  const weeks = sessionsPerWeek(data, 4);
+  const days = kcalPerDay(data, 7);
+  const maxWeekCount = Math.max(1, ...weeks.map((w) => w.count));
+  const maxDayKcal = Math.max(1, ...days.map((d) => d.kcal));
+  const visits = totalVisits(data);
+  const kcalTotal = totalKcal(data);
+  const kcalMonth = kcalThisMonth(data);
+  const monthLabel = new Date().toLocaleDateString('fr-FR', { month: 'long' });
+
+  const composition = latestComposition(data);
+  const compWeight = composition?.weightKg ?? currentWeight(data);
+  const compParts = composition
+    ? [
+        { key: 'fat', label: 'Gras', kg: composition.fatKg ?? (compWeight && composition.fatPercent !== undefined ? (compWeight * composition.fatPercent) / 100 : undefined), cls: 'bg-[#EC4899]' },
+        { key: 'muscle', label: 'Muscle', kg: composition.muscleMassKg, cls: 'bg-[#00C6FF]' },
+        { key: 'bone', label: 'Os', kg: composition.boneMassKg, cls: 'bg-[#F59E0B]' },
+        { key: 'organ', label: 'Organes', kg: composition.organMassKg, cls: 'bg-[#3B82F6]/60' },
+      ].filter((p): p is { key: string; label: string; kg: number; cls: string } => typeof p.kg === 'number' && p.kg > 0)
+    : [];
+  const partsSum = compParts.reduce((s, p) => s + p.kg, 0);
+  // Ratio to body weight; normalised if the parts exceed it (rounding between formulas)
+  const compDenominator = Math.max(compWeight ?? 0, partsSum) || 1;
+  const fmt1 = (n: number | undefined) => (typeof n === 'number' ? `${Math.round(n * 10) / 10}` : '—');
+
+  const openNewRecord = () => {
+    setNewExerciseChoice(data.exercises[0]?.id ?? NEW_EXERCISE);
+    setNewExerciseName('');
+    setNewWeight('');
+    setNewReps('');
+    setPrError(null);
+    setShowAddPrModal(true);
   };
-
-  const workoutsData = [
-    { label: 'Sem 1', val: 4 },
-    { label: 'Sem 2', val: 5 },
-    { label: 'Sem 3', val: 4 },
-    { label: 'Sem 4', val: userStats.weeklyCompletedWorkouts || 4 },
-  ];
-
-  const caloriesData = [
-    { label: 'Lun', val: 580 },
-    { label: 'Mar', val: 690 },
-    { label: 'Mer', val: 540 },
-    { label: 'Jeu', val: 620 },
-    { label: 'Ven', val: 510 },
-  ];
 
   const handleSavePr = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newExerciseName || newWeight <= 0) return;
-
-    audioSynth.playCelebrationSound();
-    try {
-      confetti({
-        particleCount: 60,
-        spread: 60,
-        origin: { y: 0.5 },
-        colors: ['#EC4899', '#7C3AED', '#00C6FF'],
-      });
-    } catch {
-      // Ignore
+    const weightKg = parseLoad(newWeight);
+    if (weightKg === null) return setPrError(`Charge invalide : entre 0 et ${LIMITS.loadKg[1]} kg.`);
+    let reps: number | undefined;
+    if (newReps.trim()) {
+      const r = sanitizeNumber(newReps, 1, LIMITS.reps[1]);
+      if (r === null) return setPrError(`Répétitions invalides : de 1 à ${LIMITS.reps[1]}.`);
+      reps = Math.round(r);
     }
 
-    onLogNewRecord({
-      exercise: newExerciseName,
-      weightKg: newWeight,
-    });
+    let exerciseId: string | null = newExerciseChoice;
+    if (newExerciseChoice === NEW_EXERCISE) {
+      const name = newExerciseName.trim().slice(0, 60);
+      if (!name) return setPrError("Donne un nom à l'exercice.");
+      exerciseId = findExerciseByName(data, name)?.id ?? addExercise(name);
+    }
+    if (!exerciseId) return setPrError("Impossible de créer l'exercice.");
+
+    const previous = data.exercises.find((ex) => ex.id === exerciseId);
+    const previousBest = previous ? currentPR(previous) : null;
+    if (!logRecord(exerciseId, { weightKg, reps })) return setPrError('Valeur refusée : vérifie la saisie.');
+
+    if (previousBest === null || weightKg > previousBest) {
+      audioSynth.playCelebrationSound();
+      try {
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.5 }, colors: ['#EC4899', '#7C3AED', '#00C6FF'] });
+      } catch {
+        // Ignore
+      }
+    }
     setShowAddPrModal(false);
+  };
+
+  const openStartEditor = (ex: TrackedExercise) => {
+    const start = startPR(ex);
+    setEditingStartExerciseId(ex.id);
+    setInputStartWeight(start === null ? '' : String(start));
+    setStartError(null);
+  };
+
+  const handleSaveStart = () => {
+    if (!editingStartExercise) return;
+    const v = parseLoad(inputStartWeight);
+    if (v === null) return setStartError(`Poids de départ invalide : entre 0 et ${LIMITS.loadKg[1]} kg.`);
+    updateExercise(editingStartExercise.id, { startKg: v });
+    setEditingStartExerciseId(null);
   };
 
   const unlockedCount = badges.filter((b) => !b.isLocked).length;
@@ -173,23 +261,24 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               {activeMetric === 'force' && 'CHARGES MAXIMALES (1RM)'}
               {activeMetric === 'poids' && 'COURBE DE MASSE CORPORELLE'}
               {activeMetric === 'composition' && 'COMPOSITION CORPORELLE ESTIMÉE'}
-              {activeMetric === 'workouts' && 'FRÉQUENCE MENSUELLE'}
-              {activeMetric === 'calories' && 'DÉPENSE PAR SÉANCE'}
+              {activeMetric === 'workouts' && 'SÉANCES PAR SEMAINE (4 SEM.)'}
+              {activeMetric === 'calories' && 'DÉPENSE PAR JOUR (7 J)'}
             </span>
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-2 flex-wrap">
               <span className={`text-2xl font-black ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
-                {activeMetric === 'force' && '+12.5%'}
+                {activeMetric === 'force' && (avgProgress === null ? '—' : `${signed(avgProgress)}%`)}
                 {activeMetric === 'poids' && `${userStats.currentWeightKg} KG`}
-                {activeMetric === 'composition' && `${userStats.currentWeightKg} KG TOTAL`}
-                {activeMetric === 'workouts' && `${userStats.totalWorkouts} SÉANCES`}
-                {activeMetric === 'calories' && `${userStats.totalCaloriesBurned.toLocaleString('fr-FR')} KCAL`}
+                {activeMetric === 'composition' && (compWeight ? `${compWeight} KG TOTAL` : '—')}
+                {activeMetric === 'workouts' && `${visits} SÉANCE${visits > 1 ? 'S' : ''}`}
+                {activeMetric === 'calories' && `${kcalTotal.toLocaleString('fr-FR')} KCAL`}
               </span>
-              <span className="text-xs font-bold text-emerald-500">
-                {activeMetric === 'force' && 'En progression constante'}
+              <span className={`text-xs font-bold ${activeMetric === 'force' && avgProgress !== null && avgProgress < 0 ? 'text-rose-400' : 'text-emerald-500'}`}>
+                {activeMetric === 'force' &&
+                  (avgProgress === null ? 'Ajoute un départ et un record pour mesurer ta progression' : 'Progression moyenne depuis le départ')}
                 {activeMetric === 'poids' && `Cible: ${userStats.targetWeightKg} kg`}
-                {activeMetric === 'composition' && 'US Navy & Boer'}
+                {activeMetric === 'composition' && (composition ? composition.formula || `Mesure du ${formatShortDate(composition.date)}` : 'Aucune mesure')}
                 {activeMetric === 'workouts' && 'Total validé'}
-                {activeMetric === 'calories' && 'Ce mois-ci'}
+                {activeMetric === 'calories' && `${kcalMonth.toLocaleString('fr-FR')} kcal en ${monthLabel}`}
               </span>
             </div>
           </div>
@@ -208,7 +297,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 title="Choisir et modifier les exercices affichés"
               >
                 <Edit3 className="w-3.5 h-3.5 text-[#EC4899]" />
-                <span className="text-[11px] font-black uppercase">Gérer ({maxChargesExercises.length})</span>
+                <span className="text-[11px] font-black uppercase">Gérer ({maxCharges.length})</span>
               </button>
             )}
             <Activity className="w-5 h-5 text-[#EC4899]" />
@@ -219,8 +308,16 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         <div className="pt-2">
           {activeMetric === 'force' && (
             <div className="space-y-3">
-              {maxChargesExercises.map((item) => {
-                const percent = Math.min(100, Math.round((item.val / item.target) * 100));
+              {maxCharges.length === 0 && (
+                <p className={`text-xs py-3 text-center ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                  Aucun exercice affiché. Choisis tes exercices avec « Gérer ».
+                </p>
+              )}
+              {maxCharges.map((ex) => {
+                const cur = currentPR(ex);
+                const target = ex.targetKg;
+                const percent = cur === null ? 0 : target ? Math.min(100, Math.round((cur / target) * 100)) : 100;
+                const item = { id: ex.id, label: ex.name, color: ex.color ?? '#EC4899' };
                 return (
                   <div
                     key={item.id}
@@ -234,7 +331,8 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                         <span className="group-hover:text-[#EC4899] transition-colors">{item.label}</span>
                       </span>
                       <span className={`font-mono ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
-                        {item.val} kg <span className={`${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} font-normal`}>/ {item.target} kg</span>
+                        {cur === null ? '—' : `${cur} kg`}{' '}
+                        <span className={`${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} font-normal`}>/ {target ? `${target} kg` : 'sans objectif'}</span>
                       </span>
                     </div>
                     <div className={`w-full h-2.5 rounded-full overflow-hidden p-0.5 ${
@@ -294,42 +392,51 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
           {activeMetric === 'composition' && (
             <div className="space-y-3.5">
-              {/* 4 mini cards (Grasse, Musculaire, Osseuse, Organes) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+              {!composition && (
+                <div className="py-4 text-center space-y-1">
+                  <p className="text-sm font-black text-white uppercase">Aucune composition mesurée</p>
+                  <p className="text-xs text-[#A7A7A7]">Calcule ta masse grasse, musculaire et osseuse pour voir le détail ici.</p>
+                </div>
+              )}
+
+              {/* Mini cards (Grasse, Musculaire, Osseuse, Organes, Eau) from the latest dated measurement */}
+              {composition && (
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-[#EC4899]/30">
                   <span className="text-[10px] font-bold text-[#EC4899] uppercase block">Masse Grasse</span>
                   <span className="text-base font-black text-white font-mono">
-                    {userStats.bodyComposition ? `${userStats.bodyComposition.fatPercent}%` : '~15.2%'}
+                    {typeof composition.fatPercent === 'number' ? `${fmt1(composition.fatPercent)}%` : '—'}
                   </span>
                   <span className="text-[9px] text-[#A7A7A7] block mt-0.5">
-                    {userStats.bodyComposition ? `${userStats.bodyComposition.fatKg} kg` : `~${Math.round(userStats.currentWeightKg * 0.152)} kg`}
+                    {compParts.find((p) => p.key === 'fat') ? `${fmt1(compParts.find((p) => p.key === 'fat')!.kg)} kg` : '—'}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-[#00C6FF]/30">
                   <span className="text-[10px] font-bold text-[#00C6FF] uppercase block">Masse Musculaire</span>
-                  <span className="text-base font-black text-white font-mono">
-                    {userStats.bodyComposition ? `${userStats.bodyComposition.muscleMassKg}` : `~${Math.round(userStats.currentWeightKg * 0.52)}`}
-                  </span>
+                  <span className="text-base font-black text-white font-mono">{fmt1(composition.muscleMassKg)}</span>
                   <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG contractile</span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-[#F59E0B]/30">
                   <span className="text-[10px] font-bold text-[#F59E0B] uppercase block">Masse Osseuse</span>
-                  <span className="text-base font-black text-white font-mono">
-                    {userStats.bodyComposition ? `${userStats.bodyComposition.boneMassKg}` : '~3.8'}
-                  </span>
+                  <span className="text-base font-black text-white font-mono">{fmt1(composition.boneMassKg)}</span>
                   <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG squelette</span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-[#3B82F6]/30">
                   <span className="text-[10px] font-bold text-[#3B82F6] uppercase block">Organes & Fluides</span>
-                  <span className="text-base font-black text-white font-mono">
-                    {userStats.bodyComposition ? `${userStats.bodyComposition.organMassKg || 18.2}` : '~18.2'}
-                  </span>
+                  <span className="text-base font-black text-white font-mono">{fmt1(composition.organMassKg)}</span>
                   <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG vitaux</span>
                 </div>
+
+                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#0088FF]/30 col-span-2 sm:col-span-1">
+                  <span className="text-[10px] font-bold text-[#0088FF] uppercase block">Eau corporelle</span>
+                  <span className="text-base font-black text-white font-mono">{fmt1(composition.waterLiters)}</span>
+                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">Litres</span>
+                </div>
               </div>
+              )}
 
               {/* Cap Stratégique & Objectif Actif si défini */}
               {userStats.bodyComposition?.chosenGoal && (
@@ -363,21 +470,30 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 </div>
               )}
 
-              {/* Composition Bar */}
-              <div className="space-y-1.5 pt-1">
-                <div className="h-3 rounded-full overflow-hidden flex bg-[#121212]">
-                  <div style={{ width: '16%' }} className="bg-[#EC4899]" title="Gras ~16%" />
-                  <div style={{ width: '60%' }} className="bg-[#00C6FF]" title="Muscle ~60%" />
-                  <div style={{ width: '5%' }} className="bg-[#F59E0B]" title="Os ~5%" />
-                  <div style={{ width: '19%' }} className="bg-[#3B82F6]/60" title="Eau/Organes" />
+              {/* Composition Bar: real masses relative to body weight */}
+              {composition && compParts.length > 0 && (
+                <div className="space-y-1.5 pt-1">
+                  <div className="h-3 rounded-full overflow-hidden flex bg-[#121212]">
+                    {compParts.map((p) => {
+                      const pct = (p.kg / compDenominator) * 100;
+                      return <div key={p.key} style={{ width: `${pct}%` }} className={p.cls} title={`${p.label} ${fmt1(p.kg)} kg (${Math.round(pct)}%)`} />;
+                    })}
+                  </div>
+                  <div className="flex justify-between flex-wrap gap-x-2 text-[10px] text-[#A7A7A7]">
+                    {compParts.map((p) => (
+                      <span key={p.key} className="flex items-center gap-1">
+                        <span className={`w-2 h-2 rounded-full ${p.cls}`} /> {p.label} {Math.round((p.kg / compDenominator) * 100)}%
+                      </span>
+                    ))}
+                    {compWeight && partsSum < compWeight && (
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-white/10" /> Reste {Math.round(((compWeight - partsSum) / compWeight) * 100)}%
+                      </span>
+                    )}
+                  </div>
+                  {!compWeight && <p className="text-[10px] text-[#737373]">Sans poids enregistré, les parts sont calculées sur la somme des masses.</p>}
                 </div>
-                <div className="flex justify-between text-[10px] text-[#A7A7A7]">
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#EC4899]" /> Gras</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#00C6FF]" /> Muscle</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F59E0B]" /> Os</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#3B82F6]" /> Eau</span>
-                </div>
-              </div>
+              )}
 
               {onOpenBodyComposition && (
                 <button
@@ -392,35 +508,48 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
             </div>
           )}
 
-          {activeMetric === 'workouts' && (
-            <div className="h-28 flex items-end justify-between gap-3 pt-2">
-              {workoutsData.map((pt, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                  <span className="text-xs font-black text-white">{pt.val}</span>
-                  <div
-                    className="w-full rounded-t-lg bg-gradient-to-t from-[#7C3AED] to-[#EC4899] transition-all duration-500 glow-main"
-                    style={{ height: `${Math.min(100, (pt.val / 6) * 100)}%` }}
-                  />
-                  <span className="text-[11px] font-bold text-[#A7A7A7]">{pt.label}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {activeMetric === 'workouts' &&
+            (weeks.every((w) => w.count === 0) ? (
+              <div className="h-28 flex flex-col items-center justify-center text-center gap-1">
+                <p className="text-sm font-black text-white uppercase">Aucune séance sur 4 semaines</p>
+                <p className="text-xs text-[#A7A7A7]">Termine une séance ou coche un jour du planning pour la voir ici.</p>
+              </div>
+            ) : (
+              <div className="h-28 flex items-end justify-between gap-3 pt-2">
+                {weeks.map((pt) => (
+                  <div key={pt.from} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+                    <span className="text-xs font-black text-white">{pt.count}</span>
+                    <div
+                      className="w-full rounded-t-lg bg-gradient-to-t from-[#7C3AED] to-[#EC4899] transition-all duration-500 glow-main"
+                      style={{ height: `${pt.count === 0 ? 2 : Math.max(6, (pt.count / maxWeekCount) * 100)}%` }}
+                    />
+                    <span className="text-[11px] font-bold text-[#A7A7A7] whitespace-nowrap">{pt.label}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
 
-          {activeMetric === 'calories' && (
-            <div className="h-28 flex items-end justify-between gap-3 pt-2">
-              {caloriesData.map((pt, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                  <span className="text-[10px] font-bold text-[#FF512F]">{pt.val}</span>
-                  <div
-                    className="w-full rounded-t-lg bg-gradient-to-t from-[#FF512F] to-[#DD2476] transition-all duration-500 glow-energy"
-                    style={{ height: `${(pt.val / 750) * 100}%` }}
-                  />
-                  <span className="text-[11px] font-bold text-[#A7A7A7]">{pt.label}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {activeMetric === 'calories' &&
+            (days.every((d) => d.kcal === 0) ? (
+              <div className="h-28 flex flex-col items-center justify-center text-center gap-1">
+                <p className="text-sm font-black text-white uppercase">Aucune calorie sur 7 jours</p>
+                <p className="text-xs text-[#A7A7A7]">Les calories des séances terminées dans l’appli apparaîtront ici.</p>
+              </div>
+            ) : (
+              <div className="h-28 flex items-end justify-between gap-2 pt-2">
+                {days.map((pt) => (
+                  <div key={pt.date} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+                    <span className="text-[10px] font-bold text-[#FF512F]">{pt.kcal || ''}</span>
+                    <div
+                      className="w-full rounded-t-lg bg-gradient-to-t from-[#FF512F] to-[#DD2476] transition-all duration-500 glow-energy"
+                      style={{ height: `${pt.kcal === 0 ? 2 : Math.max(6, (pt.kcal / maxDayKcal) * 100)}%` }}
+                    />
+                    <span className="text-[11px] font-bold text-[#A7A7A7] capitalize">{pt.label}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+
         </div>
       </div>
 
@@ -452,7 +581,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           </div>
           <button
             id="btn-add-record"
-            onClick={() => setShowAddPrModal(true)}
+            onClick={openNewRecord}
             className="text-xs font-black text-[#EC4899] uppercase hover:underline flex items-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -460,49 +589,63 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           </button>
         </div>
 
+        {recordExercises.length === 0 && (
+          <div className={`p-5 rounded-2xl border text-center space-y-1 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/[0.08]'}`}>
+            <p className={`text-sm font-black uppercase ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>Aucun record pour l’instant</p>
+            <p className={`text-xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Enregistre ta première charge avec « Nouveau record ».</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {personalRecords.map((pr) => {
-            const startWeight = pr.previousWeightKg || 0;
-            const gain = pr.weightKg - startWeight;
+          {recordExercises.map((ex) => {
+            const cur = currentPR(ex);
+            const start = startPR(ex);
+            const gain = prGain(ex);
+            const lastRecord = recordEntry(ex);
 
             return (
               <div
-                key={pr.id}
+                key={ex.id}
                 className={`p-4 rounded-2xl border transition-all space-y-3 relative overflow-hidden group shadow-lg ${
                   isLight
                     ? 'bg-[#fff7f0] border-[#7d5a47]/20 hover:border-[#EC4899]/50 hover:bg-[#faebe0] shadow-sm'
                     : 'bg-[#181818] border-white/[0.08] hover:border-[#EC4899]/40 hover:bg-[#202020]'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className={`text-[10px] font-black uppercase tracking-wider ${
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-[10px] font-black uppercase tracking-wider truncate ${
                     isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                   }`}>
-                    {pr.category}
+                    {ex.category || (lastRecord ? `Record du ${formatShortDate(lastRecord.date)}` : 'Sans entrée')}
                   </span>
-                  <span className="text-[11px] text-emerald-500 font-bold font-mono">
-                    {gain >= 0 ? `+${gain}` : gain} kg de progression
+                  <span className={`text-[11px] font-bold font-mono shrink-0 ${gain !== null && gain < 0 ? 'text-rose-400' : 'text-emerald-500'}`}>
+                    {gain === null ? '—' : `${signed(gain)} kg de progression`}
                   </span>
                 </div>
 
-                <div 
-                  onClick={() => setSelectedPrForModal(pr)}
+                <div
+                  onClick={() => setSelectedExerciseId(ex.id)}
                   className="cursor-pointer space-y-1"
                 >
                   <h4 className={`text-base font-black uppercase tracking-tight leading-tight group-hover:text-[#EC4899] transition-colors ${
                     isLight ? 'text-[#3d2317]' : 'text-white'
                   }`}>
-                    {pr.exercise}
+                    {ex.name}
                   </h4>
 
-                  <div className="flex items-baseline gap-2 pt-0.5">
+                  <div className="flex items-baseline gap-2 pt-0.5 flex-wrap">
                     <span className={`text-3xl font-black tracking-tight font-mono ${
                       isLight ? 'text-[#3d2317]' : 'text-white'
                     }`}>
-                      {pr.weightKg}
+                      {cur === null ? '—' : cur}
                     </span>
                     <span className="text-xs font-bold text-[#EC4899]">KG (RECORD ACTUEL)</span>
                   </div>
+                  <span className={`text-[10px] font-bold block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                    {lastRecord
+                      ? `Le ${formatShortDate(lastRecord.date)}${lastRecord.reps ? ` • ${lastRecord.reps} reps` : ''}`
+                      : 'Aucune entrée datée'}
+                  </span>
                 </div>
 
                 {/* Starting weight section with direct modifier button */}
@@ -518,7 +661,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     <span className={`text-sm font-black font-mono ${
                       isLight ? 'text-[#3d2317]' : 'text-white'
                     }`}>
-                      {startWeight} kg
+                      {start === null ? '—' : `${start} kg`}
                     </span>
                   </div>
 
@@ -527,8 +670,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setEditingStartWeightPr(pr);
-                        setInputStartWeight(startWeight);
+                        openStartEditor(ex);
                       }}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border flex items-center gap-1 transition-colors cursor-pointer ${
                         isLight
@@ -543,7 +685,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
                     <button
                       type="button"
-                      onClick={() => setSelectedPrForModal(pr)}
+                      onClick={() => setSelectedExerciseId(ex.id)}
                       className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                         isLight
                           ? 'bg-[#faebe0] hover:bg-[#f0ded0] text-[#7d5a47] hover:text-[#3d2317]'
@@ -559,6 +701,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
             );
           })}
         </div>
+
       </div>
 
       {/* SECTION: BADGES & GAMIFICATION (AVEC BADGES GRISÉS À DÉBLOQUER) */}
@@ -723,6 +866,9 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <h3 className={`text-xl font-black uppercase tracking-tight ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                 Enregistrer un record
               </h3>
+              <p className={`text-[11px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                Entrée datée d’aujourd’hui (remplace celle du jour si elle existe déjà).
+              </p>
             </div>
 
             <form onSubmit={handleSavePr} className="space-y-3">
@@ -730,33 +876,78 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 <label className={`text-xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   Mouvement
                 </label>
-                <input
-                  type="text"
-                  value={newExerciseName}
-                  onChange={(e) => setNewExerciseName(e.target.value)}
+                <select
+                  value={newExerciseChoice}
+                  onChange={(e) => {
+                    setNewExerciseChoice(e.target.value);
+                    setPrError(null);
+                  }}
                   className={`w-full rounded-xl px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
                     isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                   }`}
-                />
-              </div>
-
-              <div>
-                <label className={`text-xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                  Charge maximale (KG)
-                </label>
-                <div className="flex items-center gap-2">
+                >
+                  {data.exercises.map((ex) => {
+                    const cur = currentPR(ex);
+                    return (
+                      <option key={ex.id} value={ex.id}>
+                        {ex.name}{cur !== null ? ` (record ${cur} kg)` : ''}
+                      </option>
+                    );
+                  })}
+                  <option value={NEW_EXERCISE}>+ Nouvel exercice…</option>
+                </select>
+                {newExerciseChoice === NEW_EXERCISE && (
                   <input
-                    type="number"
-                    step="0.5"
-                    value={newWeight}
-                    onChange={(e) => setNewWeight(parseFloat(e.target.value) || 0)}
-                    className={`flex-1 rounded-xl px-3 py-2 text-xl font-black font-mono border focus:outline-none focus:border-[#EC4899] ${
+                    type="text"
+                    value={newExerciseName}
+                    maxLength={60}
+                    autoFocus
+                    placeholder="Ex: Développé couché"
+                    onChange={(e) => setNewExerciseName(e.target.value)}
+                    className={`mt-2 w-full rounded-xl px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
                       isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                     }`}
                   />
-                  <span className={`text-sm font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>KG</span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="col-span-2">
+                  <label className={`text-xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                    Charge (KG)
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.5"
+                    min="0"
+                    value={newWeight}
+                    placeholder="0"
+                    onChange={(e) => setNewWeight(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xl font-black font-mono border focus:outline-none focus:border-[#EC4899] ${
+                      isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`text-xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                    Reps
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="1"
+                    value={newReps}
+                    placeholder="—"
+                    onChange={(e) => setNewReps(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xl font-black font-mono border focus:outline-none focus:border-[#EC4899] ${
+                      isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
+                    }`}
+                  />
                 </div>
               </div>
+
+              {prError && <p className="text-xs font-bold text-rose-400">{prError}</p>}
 
               <div className="flex items-center gap-2 pt-3">
                 <button
@@ -794,23 +985,10 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         />
       )}
 
-      {/* Modal: Analyse & Modification du PR avec Graphique de Progression */}
-      {selectedPrForModal && (
+      {/* Modal: Analyse & Modification d'un exercice (historique daté) */}
+      {selectedExerciseId && (
         <Suspense fallback={null}>
-          <PRProgressionModal
-            initialPr={selectedPrForModal}
-            allPrs={personalRecords}
-            onUpdatePR={(updated) => {
-              onUpdatePR?.(updated);
-              setSelectedPrForModal(null);
-            }}
-            onDeletePR={(id) => {
-              onDeletePR?.(id);
-              setSelectedPrForModal(null);
-            }}
-            onClose={() => setSelectedPrForModal(null)}
-            theme={theme}
-          />
+          <PRProgressionModal exerciseId={selectedExerciseId} onClose={() => setSelectedExerciseId(null)} theme={theme} />
         </Suspense>
       )}
 
@@ -825,12 +1003,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
       )}
 
       {/* Modal: Modifier Poids de Départ d'un Exercice */}
-      {editingStartWeightPr && (
+      {editingStartExercise && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200 ${
             isLight ? 'bg-[#3d2317]/65 backdrop-blur-xl' : 'bg-black/85 backdrop-blur-sm'
           }`}
-          onClick={() => setEditingStartWeightPr(null)}
+          onClick={() => setEditingStartExerciseId(null)}
         >
           <div
             className={`w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl border transition-colors ${
@@ -846,12 +1024,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                   PROGRESSION
                 </span>
                 <h3 className={`text-sm font-black uppercase ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
-                  Poids de départ : {editingStartWeightPr.exercise}
+                  Poids de départ : {editingStartExercise.name}
                 </h3>
               </div>
               <button
                 type="button"
-                onClick={() => setEditingStartWeightPr(null)}
+                onClick={() => setEditingStartExerciseId(null)}
                 className={`p-1 rounded-full ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
               >
                 ✕
@@ -860,6 +1038,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
             <p className="text-xs text-[#A7A7A7]">
               Indique la charge avec laquelle tu as débuté cet exercice pour calculer ton gain réel de force.
+              {startFirstEntry && ` Sans saisie, le départ est ta 1re entrée (${startFirstEntry.weightKg} kg le ${formatShortDate(startFirstEntry.date)}).`}
             </p>
 
             <div className="space-y-1.5 py-1">
@@ -869,11 +1048,15 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <div className="relative">
                 <input
                   type="number"
+                  inputMode="decimal"
                   min="0"
-                  max="500"
+                  max={LIMITS.loadKg[1]}
                   step="0.5"
                   value={inputStartWeight}
-                  onChange={(e) => setInputStartWeight(parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    setInputStartWeight(e.target.value);
+                    setStartError(null);
+                  }}
                   className="w-full bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl py-3 px-4 text-2xl font-black font-mono text-white text-center focus:outline-none"
                   autoFocus
                 />
@@ -881,42 +1064,46 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                   KG
                 </span>
               </div>
+              {startError && <p className="text-xs font-bold text-rose-400">{startError}</p>}
             </div>
 
             <div className="p-3 rounded-xl bg-[#202020] border border-white/5 space-y-1 text-xs">
               <div className="flex justify-between text-[#A7A7A7]">
                 <span>Record actuel :</span>
-                <span className="text-white font-bold">{editingStartWeightPr.weightKg} kg</span>
+                <span className="text-white font-bold">{startCur === null ? '—' : `${startCur} kg`}</span>
               </div>
               <div className="flex justify-between text-[#A7A7A7]">
                 <span>Gain de progression :</span>
-                <span className="text-emerald-400 font-bold font-mono">
-                  {editingStartWeightPr.weightKg - inputStartWeight >= 0 
-                    ? `+${editingStartWeightPr.weightKg - inputStartWeight} kg` 
-                    : `${editingStartWeightPr.weightKg - inputStartWeight} kg`}
+                <span className={`font-bold font-mono ${startPreviewGain !== null && startPreviewGain < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  {startPreviewGain === null ? '—' : `${signed(startPreviewGain)} kg`}
                 </span>
               </div>
             </div>
 
             <div className="flex gap-2 pt-2">
+              {typeof editingStartExercise.startKg === 'number' && startFirstEntry && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateExercise(editingStartExercise.id, { startKg: undefined });
+                    setEditingStartExerciseId(null);
+                  }}
+                  className="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[11px] font-bold text-[#A7A7A7] hover:text-white transition-colors"
+                  title="Revenir à la première entrée de l'historique"
+                >
+                  1re entrée
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setEditingStartWeightPr(null)}
+                onClick={() => setEditingStartExerciseId(null)}
                 className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-white transition-colors"
               >
                 Annuler
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  if (onUpdatePR && editingStartWeightPr) {
-                    onUpdatePR({
-                      ...editingStartWeightPr,
-                      previousWeightKg: inputStartWeight,
-                    });
-                  }
-                  setEditingStartWeightPr(null);
-                }}
+                onClick={handleSaveStart}
                 className="flex-1 py-2.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#0088FF]/30 transition-all cursor-pointer"
               >
                 Enregistrer
@@ -926,15 +1113,8 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         </div>
       )}
 
-      {/* Modal: Gérer et personnaliser les charges maximales (1RM) (Image 1) */}
-      {show1RmModal && (
-        <Manage1RmModal
-          initialExercises={maxChargesExercises}
-          onSave={handleSave1RmExercises}
-          onClose={() => setShow1RmModal(false)}
-          theme={theme}
-        />
-      )}
+      {/* Modal: Gérer et personnaliser les charges maximales (1RM) */}
+      {show1RmModal && <Manage1RmModal onClose={() => setShow1RmModal(false)} theme={theme} />}
     </div>
   );
 };
