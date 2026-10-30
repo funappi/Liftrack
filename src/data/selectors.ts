@@ -1,4 +1,4 @@
-import { BodyMetricEntry, CompletedSession, ISODate, PREntry, TrackedExercise, VoltData, parseISODate, toISODate, todayISO } from './model';
+import { BodyMetricEntry, CompletedSession, ISODate, PREntry, TrackedExercise, VoltData, toISODate } from './model';
 import { DAY_KEYS, DayKey } from '../utils/dates';
 
 // Derived values only: nothing here is ever stored.
@@ -34,11 +34,6 @@ export const prProgressPct = (ex: TrackedExercise): number | null => {
   return Math.round(((cur - start) / start) * 1000) / 10;
 };
 
-export const latestPREntry = (ex: TrackedExercise): PREntry | null => {
-  const h = sortedHistory(ex);
-  return h.length ? h[h.length - 1] : null;
-};
-
 export const maxChargesExercises = (data: VoltData) => data.exercises.filter((e) => e.showInMaxCharges);
 
 /** Average progress of the "Charges max" exercises (replaces the hard-coded "+12.5%") */
@@ -66,7 +61,7 @@ export const currentWeight = (data: VoltData): number | null => {
   return s.length ? s[s.length - 1].weightKg : null;
 };
 
-export const compositionSeries = (data: VoltData) =>
+const compositionSeries = (data: VoltData) =>
   data.bodyMetrics.filter((m) => typeof m.fatPercent === 'number').sort(byDate);
 
 export const latestComposition = (data: VoltData): BodyMetricEntry | null => {
@@ -77,7 +72,7 @@ export const latestComposition = (data: VoltData): BodyMetricEntry | null => {
 // --- Sessions ---
 
 /** Monday of the week containing `date` */
-export const weekStart = (date: Date): Date => {
+const weekStart = (date: Date): Date => {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
   return d;
@@ -147,6 +142,3 @@ export const kcalPerDay = (data: VoltData, days = 7, ref: Date = new Date()) =>
     };
   });
 
-export const isToday = (iso: ISODate) => iso === todayISO();
-
-export { parseISODate };

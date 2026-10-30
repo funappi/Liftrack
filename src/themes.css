@@ -158,7 +158,7 @@ body.theme-custom .text-gradient-performance { background-image: linear-gradient
 body.theme-custom .glow-main { box-shadow: 0 8px 32px -4px color-mix(in oklab, var(--t-accent1) 35%, transparent) !important; }
 body.theme-custom .glow-energy { box-shadow: 0 8px 32px -4px color-mix(in oklab, var(--t-energy) 35%, transparent) !important; }
 
-/* ===== Classes de couleur des composants (331 règles) ===== */
+/* ===== Classes de couleur des composants (335 règles) ===== */
 body.theme-custom .bg-\[\#000000\] {
   background-color: var(--t-app) !important;
 }
@@ -255,6 +255,10 @@ body.theme-custom .bg-\[\#141414\] {
   border-color: var(--t-border) !important;
 }
 
+body.theme-custom .bg-\[\#141414\]\/90 {
+  background-color: color-mix(in oklab, var(--t-card) 90%, transparent) !important;
+}
+
 body.theme-custom .bg-\[\#161208\] {
   background-color: color-mix(in oklab, var(--t-card) 90%, var(--t-warn)) !important;
   color: var(--t-text) !important;
@@ -287,6 +291,10 @@ body.theme-custom .bg-\[\#1C1C1C\] {
   background-color: var(--t-card) !important;
   color: var(--t-text) !important;
   border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#1C1C1C\]\/60 {
+  background-color: color-mix(in oklab, var(--t-card) 60%, transparent) !important;
 }
 
 body.theme-custom .bg-\[\#1E1E1E\] {
@@ -451,6 +459,10 @@ body.theme-custom .bg-\[\#faebe0\] {
   background-color: var(--t-card) !important;
 }
 
+body.theme-custom .bg-\[\#faebe0\]\/60 {
+  background-color: color-mix(in oklab, var(--t-card) 60%, transparent) !important;
+}
+
 body.theme-custom .bg-\[\#FF512F\]\/10 {
   background-color: color-mix(in oklab, var(--t-energy) 10%, transparent) !important;
 }
@@ -461,6 +473,10 @@ body.theme-custom .bg-\[\#FF512F\]\/20 {
 
 body.theme-custom .bg-\[\#fff7f0\] {
   background-color: var(--t-input) !important;
+}
+
+body.theme-custom .bg-\[\#fff7f0\]\/90 {
+  background-color: color-mix(in oklab, var(--t-input) 90%, transparent) !important;
 }
 
 body.theme-custom .bg-\[\#fffaf5\] {
@@ -1010,12 +1026,6 @@ body.theme-custom .hover\:border-\[\#EC4899\]\/60:hover {
 @media (hover: hover) {
 body.theme-custom .hover\:border-\[\#FF512F\]\/50:hover {
   border-color: color-mix(in oklab, var(--t-energy) 50%, transparent) !important;
-}
-}
-
-@media (hover: hover) {
-body.theme-custom .hover\:border-\[\#FF512F\]\/60:hover {
-  border-color: color-mix(in oklab, var(--t-energy) 60%, transparent) !important;
 }
 }
 
@@ -1666,6 +1676,10 @@ body.theme-custom .hover\:text-white:hover {
 }
 
 body.theme-custom .placeholder\:text-\[\#555\]::placeholder {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#555555\]::placeholder {
   color: var(--t-text2) !important;
 }
 

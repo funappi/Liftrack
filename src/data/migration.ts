@@ -1,5 +1,5 @@
 import { MeasurementEntry, PersonalRecord, UserStats } from '../types';
-import { BodyMetricEntry, DATA_VERSION, ISODate, TrackedExercise, VoltData, emptyData, newId, toISODate, todayISO } from './model';
+import { BodyMetricEntry, DATA_VERSION, ISODate, TrackedExercise, VoltData, emptyData, newId, toISODate } from './model';
 import { weekDates } from './selectors';
 import { DAY_KEYS } from '../utils/dates';
 
@@ -33,7 +33,7 @@ const stripAccents = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
  * Converts the v1 free-text dates ("15 Jan", "Aujourd'hui", "Il y a 3 jours", ISO…) to ISO.
  * Dates without a year are assumed to be in the reference year (or the previous one if that would be in the future).
  */
-export const parseLegacyDate = (raw: string | undefined, ref: Date = new Date()): ISODate => {
+const parseLegacyDate = (raw: string | undefined, ref: Date = new Date()): ISODate => {
   if (!raw) return toISODate(ref);
   const text = stripAccents(raw.trim().toLowerCase());
   if (/^\d{4}-\d{2}-\d{2}/.test(text)) return text.slice(0, 10);
@@ -203,4 +203,3 @@ export const upgradeData = (stored: VoltData): VoltData => {
   };
 };
 
-export { todayISO };

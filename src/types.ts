@@ -37,7 +37,7 @@ export interface Workout {
   targetAreas: string[];
 }
 
-export interface PRHistoryPoint {
+interface PRHistoryPoint {
   id: string;
   date: string;
   weightKg: number;
