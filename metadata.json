@@ -1,6 +1,0 @@
-{
-  "name": "VOLT - Gym & Fitness Experience",
-  "description": "Application mobile pour salle de sport premium inspirée de l'esthétique Spotify : dark UI immersive, gradients dynamiques et suivi haute performance.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
