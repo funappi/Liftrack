@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bell, Palette, SlidersHorizontal, Target, User } from 'lucide-react';
+import { ArrowLeft, Bell, LayoutGrid, Palette, SlidersHorizontal, Target, User } from 'lucide-react';
 import { ScheduledDay, UserStats, Workout } from '../types';
 import { ProfileSection } from './settings/ProfileSection';
 import { ThemePicker } from './settings/ThemePicker';
 import { GoalsSection } from './settings/GoalsSection';
 import NotificationSettings from './settings/NotificationSettings';
 import { OtherSettingsSection } from './settings/OtherSettingsSection';
+import { LayoutSection } from './settings/LayoutSection';
 
-export type SettingsSectionId = 'profile' | 'themes' | 'goals' | 'notifications' | 'other';
+export type SettingsSectionId = 'profile' | 'themes' | 'layout' | 'goals' | 'notifications' | 'other';
 
 interface SettingsScreenProps {
   initialSection?: SettingsSectionId;
@@ -23,6 +24,7 @@ interface SettingsScreenProps {
 const SECTIONS: { id: SettingsSectionId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'profile', label: 'Profil', icon: User },
   { id: 'themes', label: 'Thèmes', icon: Palette },
+  { id: 'layout', label: 'Disposition', icon: LayoutGrid },
   { id: 'goals', label: 'Objectifs', icon: Target },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'other', label: 'Autres', icon: SlidersHorizontal },
@@ -94,6 +96,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-[max(2rem,env(safe-area-inset-bottom))] space-y-4">
         {section === 'profile' && <ProfileSection userStats={userStats} onUpdateUserStats={onUpdateUserStats} theme={theme} />}
         {section === 'themes' && <ThemePicker currentThemeId={themeId} onApply={onApplyTheme} theme={theme} />}
+        {section === 'layout' && <LayoutSection theme={theme} />}
         {section === 'goals' && <GoalsSection userStats={userStats} onUpdateUserStats={onUpdateUserStats} theme={theme} />}
         {section === 'notifications' && <NotificationSettings theme={theme} getContext={getNotificationContext} />}
         {section === 'other' && <OtherSettingsSection theme={theme} />}

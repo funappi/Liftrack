@@ -339,6 +339,7 @@ export default function App() {
               onUpdateUserStats={handleUpdateUserStats}
               onUnlockBadge={handleUnlockBadge}
               onOpenBodyComposition={() => setShowBodyCompositionModal(true)}
+              onOpenProfile={() => setSettingsSection('profile')}
               theme={theme}
             />
           )}

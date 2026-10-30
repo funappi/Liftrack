@@ -1,3 +1,4 @@
+import { UserStats } from '../types';
 // Pure metabolism helpers: BMR, TDEE, target calories and daily macros.
 
 type Gender = 'homme' | 'femme';
@@ -9,7 +10,7 @@ interface Range {
   max: number;
 }
 
-export interface MetabolismInput {
+interface MetabolismInput {
   gender: Gender;
   age: number;
   heightCm: number;
@@ -113,7 +114,7 @@ function macroRanges(weightKg: number, calories: Range, goal: MetabolicGoal): { 
   return { proteinG, fatG, carbsG };
 }
 
-export function computeMetabolism(input: MetabolismInput): MetabolismResult {
+function computeMetabolism(input: MetabolismInput): MetabolismResult {
   const { gender, age, heightCm, weightKg, activityLevel, goal, leanMassKg } = input;
 
   const bmrMifflin = Math.round(bmrMifflinStJeor(gender, weightKg, heightCm, age));
@@ -146,3 +147,28 @@ export function computeMetabolism(input: MetabolismInput): MetabolismResult {
 
   return { bmrMifflin, bmrKatch, bmr, bmrFormula, activityFactor, tdee, calories, proteinG, fatG, carbsG, formulas };
 }
+
+type UserProfile = NonNullable<UserStats['profile']>;
+
+/** Defaults used until the user fills in their profile */
+export const DEFAULT_PROFILE: UserProfile = {
+  gender: 'homme',
+  age: 26,
+  heightCm: 180,
+  activityLevel: 'modere',
+  goal: 'maintien',
+};
+
+/** Single entry point shared by the Profile section and the Home macros card */
+export const metabolismForUser = (userStats: UserStats): MetabolismResult => {
+  const profile = { ...DEFAULT_PROFILE, ...userStats.profile };
+  return computeMetabolism({
+    gender: profile.gender,
+    age: profile.age,
+    heightCm: profile.heightCm,
+    weightKg: userStats.currentWeightKg,
+    activityLevel: profile.activityLevel,
+    goal: profile.goal,
+    leanMassKg: userStats.bodyComposition?.leanMassKg,
+  });
+};

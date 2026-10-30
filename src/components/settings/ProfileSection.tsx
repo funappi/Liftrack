@@ -6,7 +6,8 @@ import {
   ActivityLevel,
   GOAL_LABELS,
   MetabolicGoal,
-  computeMetabolism,
+  DEFAULT_PROFILE,
+  metabolismForUser,
 } from '../../utils/metabolism';
 
 type Profile = NonNullable<UserStats['profile']>;
@@ -17,13 +18,6 @@ export interface ProfileSectionProps {
   theme: 'dark' | 'warm-light';
 }
 
-const DEFAULT_PROFILE: Profile = {
-  gender: 'homme',
-  age: 26,
-  heightCm: 180,
-  activityLevel: 'modere',
-  goal: 'maintien',
-};
 
 const AVATAR_SIZE = 256;
 const AVATAR_QUALITY = 0.85;
@@ -322,19 +316,7 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
 
   // Metabolism
   const updateProfile = (patch: Partial<Profile>) => onUpdateUserStats({ profile: { ...profile, ...patch } });
-  const result = useMemo(
-    () =>
-      computeMetabolism({
-        gender: profile.gender,
-        age: profile.age,
-        heightCm: profile.heightCm,
-        weightKg,
-        activityLevel: profile.activityLevel,
-        goal: profile.goal,
-        leanMassKg,
-      }),
-    [profile.gender, profile.age, profile.heightCm, profile.activityLevel, profile.goal, weightKg, leanMassKg],
-  );
+  const result = useMemo(() => metabolismForUser(userStats), [userStats]);
 
   // Style tokens
   const card = `rounded-2xl border p-4 sm:p-5 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/[0.08]'}`;

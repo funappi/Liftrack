@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Scale } from 'lucide-react';
+import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Scale, Utensils } from 'lucide-react';
 import { Workout, UserStats, AchievementBadge, ScheduledDay } from '../types';
 import { EditStatModal, EditableStatType } from './EditStatModal';
 import { BadgeDetailModal } from './BadgeDetailModal';
@@ -10,6 +10,8 @@ import { getRotationOrder, loadRotation, recommendWorkout, saveRotation } from '
 import { useVoltData } from '../data/VoltDataContext';
 import { weightSeries } from '../data/selectors';
 import { todayISO } from '../data/model';
+import { BlockGrid } from './layout/BlockGrid';
+import { DEFAULT_PROFILE, GOAL_LABELS, metabolismForUser } from '../utils/metabolism';
 
 interface HomeTabProps {
   userStats: UserStats;
@@ -22,6 +24,8 @@ interface HomeTabProps {
   onUpdateUserStats: (updated: Partial<UserStats>) => void;
   onUnlockBadge?: (badgeId: string) => void;
   onOpenBodyComposition?: () => void;
+  // Opens Settings > Profil (the macros card links to the metabolism calculator)
+  onOpenProfile?: () => void;
   theme?: 'dark' | 'warm-light';
 }
 
@@ -36,6 +40,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
   onUpdateUserStats,
   onUnlockBadge,
   onOpenBodyComposition,
+  onOpenProfile,
   theme,
 }) => {
   const isLight = theme === 'warm-light';
@@ -74,6 +79,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
     if (!ref || ref === last) return null;
     return Math.round((last.weightKg - ref.weightKg) * 10) / 10;
   }, [weights, monthPrefix]);
+
+  // Daily calories & macros: same computation as Settings > Profil (always in sync)
+  const metabolism = useMemo(() => (hasWeight ? metabolismForUser(userStats) : null), [hasWeight, userStats]);
+  const macroGoal = { ...DEFAULT_PROFILE, ...userStats.profile }.goal;
+  const formatRange = (r: { min: number; max: number }) =>
+    r.min === r.max ? r.min.toLocaleString('fr-FR') : `${r.min.toLocaleString('fr-FR')}–${r.max.toLocaleString('fr-FR')}`;
 
   const sessionsThisMonth = data.sessions.filter((s) => s.date.startsWith(monthPrefix)).length;
 
@@ -127,6 +138,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         </button>
       </div>
 
+      {/* Blocks in the order and width chosen in Settings > Disposition */}
+      <BlockGrid
+        tab="home"
+        blocks={{
+          'quick-start': (
+            <div className="@container min-w-0">
       {/* BOUTON EXERCICE / SÉANCE EN DIRECT (ACCÈS DIRECT DEMANDÉ PAR L'UTILISATEUR) */}
       <div 
         id="banner-direct-workout-launch"
@@ -160,13 +177,13 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           };
           onStartWorkout(quickSession);
         }}
-        className="p-4 rounded-2xl bg-gradient-to-r from-[#0088FF] via-[#0070DD] to-[#0055CC] text-white shadow-xl shadow-[#0088FF]/30 border border-white/20 cursor-pointer hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-between gap-3 group"
+        className="p-4 rounded-2xl bg-gradient-to-r from-[#0088FF] via-[#0070DD] to-[#0055CC] text-white shadow-xl shadow-[#0088FF]/30 border border-white/20 cursor-pointer hover:brightness-110 active:scale-[0.98] transition-all flex flex-wrap items-center justify-between gap-3 group"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-11 h-11 rounded-xl bg-black/30 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/15">
             <Dumbbell className="w-5 h-5 text-white group-hover:rotate-12 transition-transform stroke-[2.5]" />
           </div>
-          <div>
+          <div className="min-w-0">
             <span className="text-2xs font-black uppercase tracking-wider text-white/90 block flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-white" />
               SÉANCE DU JOUR EN DIRECT
@@ -184,13 +201,15 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           Lancer
         </span>
       </div>
-
-      {/* 2. STATS DE PROGRESSION EN HAUT DE L'APPLICATION (DEMANDE UTILISATEUR) */}
+            </div>
+          ),
+          stats: (
+            <div className="@container min-w-0">
       <section className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-black text-white tracking-tight uppercase flex items-center gap-2">
-              <span>Ta progression</span>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <h3 className="text-lg font-black text-white tracking-tight uppercase flex items-center gap-2 min-w-0">
+              <span className="truncate">Ta progression</span>
               <span className="w-2 h-2 rounded-full bg-[#00C6FF] shadow-sm shadow-[#00C6FF]/50" />
             </h3>
             <span className="text-2xs text-[#A7A7A7] font-bold hidden sm:inline">
@@ -208,7 +227,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         </div>
 
         {/* The 4 Main Interactive Stat Cards (from user screenshot) */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 @xs:grid-cols-2 gap-3">
           {/* Card: Poids Actuel (Clickable to edit) */}
           <div
             id="stat-card-poids-actuel"
@@ -224,7 +243,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Poids actuel
             </span>
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
               <span className="text-3xl font-black text-white tracking-tight num group-hover:text-[#00C6FF] transition-colors">
                 {hasWeight ? userStats.currentWeightKg : '—'}
               </span>
@@ -255,7 +274,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Objectif
             </span>
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
               <span className="text-3xl font-black text-gradient-performance tracking-tight num">
                 {hasTarget ? userStats.targetWeightKg : '—'}
               </span>
@@ -279,7 +298,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div
             id="stat-card-workouts"
             onClick={() => setEditingStatType('workouts')}
-            className="col-span-2 p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
+            className="@xs:col-span-2 p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
             <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-3xs text-[#EC4899] font-bold">
               <Edit3 className="w-2.5 h-2.5" />
@@ -289,7 +308,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Workouts
             </span>
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
               <span className="text-3xl font-black text-white tracking-tight num group-hover:text-[#EC4899] transition-colors">
                 {userStats.totalWorkouts}
               </span>
@@ -297,46 +316,112 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             </div>
             <div className="mt-auto flex items-center gap-1 text-2xs font-bold text-[#EC4899] pt-1 min-w-0">
               <Zap className="w-3 h-3 fill-[#EC4899] shrink-0" />
-              <span>{sessionsThisMonth === 0 ? 'Aucune ce mois-ci' : `${sessionsThisMonth} ce mois-ci`}</span>
+              <span className="truncate">{sessionsThisMonth === 0 ? 'Aucune ce mois-ci' : `${sessionsThisMonth} ce mois-ci`}</span>
             </div>
           </div>
         </div>
-
+      </section>
+            </div>
+          ),
+          calories: (
+            <div className="@container min-w-0">
         {/* Highlight Banner: Calories Brûlées (Clickable to edit) */}
         <div
           id="stat-card-calories"
           onClick={() => setEditingStatType('calories')}
-          className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#FF512F]/50 transition-all cursor-pointer flex items-center justify-between group shadow-xl active:scale-[0.99]"
+          className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#FF512F]/50 transition-all cursor-pointer flex items-center justify-between gap-3 group shadow-xl active:scale-[0.99]"
         >
-          <div>
-            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
-              <span>Énergie dépensée au total</span>
-              <Edit3 className="w-3 h-3 text-[#A7A7A7] group-hover:text-[#FF512F] transition-colors" />
+          <div className="min-w-0">
+            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5 min-w-0">
+              <span className="truncate">Énergie dépensée au total</span>
+              <Edit3 className="w-3 h-3 shrink-0 text-[#A7A7A7] group-hover:text-[#FF512F] transition-colors" />
             </span>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-3xl font-black text-white tracking-tight num group-hover:text-gradient-energy transition-colors">
+            <div className="flex flex-wrap items-baseline gap-x-2 mt-0.5">
+              <span className="text-2xl @xs:text-3xl font-black text-white tracking-tight num group-hover:text-gradient-energy transition-colors">
                 {userStats.totalCaloriesBurned.toLocaleString('fr-FR')}
               </span>
               <span className="text-xs font-bold text-[#FF512F] uppercase">KCAL</span>
             </div>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-[#FF512F]/10 border border-[#FF512F]/30 flex items-center justify-center text-[#FF512F] group-hover:scale-105 transition-transform">
+          <div className="hidden @xs:flex shrink-0 w-12 h-12 rounded-xl bg-[#FF512F]/10 border border-[#FF512F]/30 items-center justify-center text-[#FF512F] group-hover:scale-105 transition-transform">
             <Flame className="w-6 h-6 fill-[#FF512F]" />
           </div>
         </div>
+            </div>
+          ),
+          macros: (
+            <div className="@container min-w-0">
+        <div
+          id="stat-card-macros"
+          onClick={onOpenProfile}
+          role={onOpenProfile ? 'button' : undefined}
+          className={`p-4 rounded-card bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/50 transition-all space-y-3 group shadow-xl ${
+            onOpenProfile ? 'cursor-pointer active:scale-[0.99]' : ''
+          }`}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 rounded-control bg-gradient-to-br from-[#7C3AED] to-[#EC4899] flex items-center justify-center text-white shrink-0">
+                <Utensils className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] block truncate">Macros du jour</span>
+                <span className="text-caption font-bold text-[#A7A7A7] block truncate">Objectif : {GOAL_LABELS[macroGoal]}</span>
+              </div>
+            </div>
+            {onOpenProfile && (
+              <span className="text-xs font-black text-[#EC4899] group-hover:translate-x-0.5 transition-transform whitespace-nowrap ml-auto">
+                Profil →
+              </span>
+            )}
+          </div>
 
-        {/* Biometrics & Body Composition Card in Home */}
-        {onOpenBodyComposition && (
+          {metabolism ? (
+            <>
+              <div className="flex flex-wrap items-baseline gap-x-1.5">
+                <span className="text-2xl font-black text-white tracking-tight num">{formatRange(metabolism.calories)}</span>
+                <span className="text-xs font-bold text-[#A7A7A7]">kcal / jour</span>
+              </div>
+
+              <div className="grid grid-cols-1 @xs:grid-cols-3 gap-2">
+                {[
+                  { k: 'Protéines', r: metabolism.proteinG, c: '#EC4899' },
+                  { k: 'Glucides', r: metabolism.carbsG, c: '#00C6FF' },
+                  { k: 'Lipides', r: metabolism.fatG, c: '#F59E0B' },
+                ].map((m) => (
+                  <div key={m.k} className="flex flex-col p-3 rounded-control bg-[#121212] border border-white/5 min-w-0">
+                    <span className="block w-6 h-1 rounded-full mb-2" style={{ background: m.c }} />
+                    <span className="text-2xs font-black uppercase tracking-tight text-[#A7A7A7] truncate">{m.k}</span>
+                    <span className="mt-0.5 text-sm font-black text-white num leading-tight break-words">{formatRange(m.r)}</span>
+                    <span className="mt-auto pt-0.5 text-2xs font-bold text-[#A7A7A7]">g / jour</span>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-caption font-bold text-[#A7A7A7] num">
+                TDEE {metabolism.tdee.toLocaleString('fr-FR')} kcal · {GOAL_LABELS[macroGoal]}
+              </p>
+            </>
+          ) : (
+            <p className="text-caption font-bold text-[#A7A7A7]">
+              Ajoute ton poids pour calculer tes calories et tes macros du jour.
+            </p>
+          )}
+        </div>
+            </div>
+          ),
+          composition: onOpenBodyComposition ? (
+            <div className="@container min-w-0">
           <div
             onClick={onOpenBodyComposition}
-            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/50 transition-all cursor-pointer flex items-center justify-between group shadow-xl active:scale-[0.99]"
+            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/50 transition-all cursor-pointer flex flex-wrap items-center justify-between gap-2 group shadow-xl active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#7C3AED] to-[#EC4899] flex items-center justify-center text-white shadow-md glow-main shrink-0">
                 <Scale className="w-5 h-5" />
               </div>
-              <div>
-                <span className="text-2xs font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="min-w-0">
+                <span className="text-2xs font-bold text-[#A7A7A7] uppercase tracking-wider flex flex-wrap items-center gap-1.5">
                   <span>Composition Corporelle</span>
                   <span className="text-3xs px-1.5 py-0.2 rounded bg-[#EC4899]/20 text-[#EC4899] font-black">
                     ESTIMATION
@@ -349,7 +434,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                         Gras: <span className="text-[#EC4899]">{userStats.bodyComposition.fatPercent}%</span> • Muscle: <span className="text-[#00C6FF]">{userStats.bodyComposition.muscleMassKg}kg</span> • Os: <span className="text-[#F59E0B]">{userStats.bodyComposition.boneMassKg}kg</span>
                       </span>
                       {userStats.bodyComposition.chosenGoal && (
-                        <span className="text-2xs font-bold text-[#10B981] flex items-center gap-1">
+                        <span className="text-2xs font-bold text-[#10B981] flex flex-wrap items-center gap-1">
                           <span className="px-1.5 py-0.2 rounded bg-[#10B981]/20 uppercase">
                             {userStats.bodyComposition.chosenGoal.type === 'seche' ? 'Sèche' : userStats.bodyComposition.chosenGoal.type === 'prise_de_masse' ? 'Prise de Masse' : 'Recomposition'}
                           </span>
@@ -366,30 +451,32 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               </div>
             </div>
 
-            <span className="text-xs font-black text-[#EC4899] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 whitespace-nowrap ml-2">
+            <span className="text-xs font-black text-[#EC4899] group-hover:translate-x-0.5 transition-transform flex items-center gap-1 whitespace-nowrap ml-auto">
               Calculer →
             </span>
           </div>
-        )}
-
+            </div>
+          ) : null,
+          goal: (
+            <div className="@container min-w-0">
         {/* TON PROCHAIN OBJECTIF with Animated Progress Bar (Clickable to edit) */}
         <div
           id="stat-card-challenge"
           onClick={() => setEditingStatType('nextGoal')}
           className="p-4 sm:p-5 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/50 transition-all cursor-pointer space-y-3 relative overflow-hidden group shadow-xl"
         >
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
               <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1">
                 <span>CHALLENGE EN COURS</span>
                 <Edit3 className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </span>
-              <h4 className="text-base font-black text-white tracking-tight uppercase group-hover:text-[#EC4899] transition-colors">
+              <h4 className="text-base font-black text-white tracking-tight uppercase break-words group-hover:text-[#EC4899] transition-colors">
                 {userStats.nextGoal.title}
               </h4>
             </div>
             {goalProgress && (
-              <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10 num">
+              <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10 num shrink-0">
                 {goalProgress.percent}%
               </span>
             )}
@@ -408,7 +495,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                   style={{ width: `${goalProgress.percent}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-caption font-bold text-[#A7A7A7] num">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-caption font-bold text-[#A7A7A7] num">
                 <span>Départ : {goalProgress.start} kg</span>
                 <span className="text-[#00C6FF] font-semibold">
                   {goalProgress.isPertePoids ? `Actuel : ${goalProgress.current} kg` : goalProgress.deltaText}
@@ -424,14 +511,16 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             </p>
           )}
         </div>
-      </section>
-
+            </div>
+          ),
+          badges: (
+            <div className="@container min-w-0">
       {/* 3. GAMIFICATION & BADGES GRISÉS (POUR DONNER ENVIE DE LES OBTENIR) */}
       <section className="space-y-3.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-400" />
-            <h3 className="text-lg font-black text-white uppercase tracking-tight">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <Award className="w-5 h-5 shrink-0 text-amber-400" />
+            <h3 className="text-lg font-black text-white uppercase tracking-tight truncate">
               Badges & Défis
             </h3>
           </div>
@@ -445,7 +534,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         </div>
 
         {/* Horizontal Badges Reel with Unlocked (Glowing) and Locked (Grisés / Grayed-out) */}
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 -mx-4 px-4">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 @xs:-mx-4 @xs:px-4">
           {badges.map((badge) => {
             const isLocked = badge.isLocked ?? false;
             const progressPercent = badge.progressTarget && badge.progressCurrent
@@ -457,7 +546,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 key={badge.id}
                 id={`badge-card-${badge.id}`}
                 onClick={() => setSelectedBadge(badge)}
-                className={`shrink-0 w-48 p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-44 relative overflow-hidden group select-none active:scale-95 ${
+                className={`shrink-0 w-48 max-w-full p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-44 relative overflow-hidden group select-none active:scale-95 ${
                   isLocked
                     ? isLight
                       ? 'bg-[#f0dfd0] border-[#7d5a47]/20 hover:border-[#7d5a47]/40 shadow-sm'
@@ -530,14 +619,17 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           })}
         </div>
       </section>
-
+            </div>
+          ),
+          workouts: (
+            <div className="@container min-w-0">
       {/* 4. LES SÉANCES D'ENTRAÎNEMENT EN BAS (DEMANDE UTILISATEUR) */}
-      <section className="space-y-5 pt-2 border-t border-white/[0.06]">
+      <section className="space-y-5 pt-2 border-t border-white/[0.06] min-w-0">
         <div className="space-y-1">
           <span className="text-xs font-extrabold uppercase tracking-widest text-[#A7A7A7]">
             SÉANCES D'ENTRAÎNEMENT
           </span>
-          <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-tight">
+          <h3 className="text-xl @xs:text-2xl font-black text-white tracking-tight uppercase leading-tight break-words">
             Prêt pour ton entraînement ?
           </h3>
         </div>
@@ -560,8 +652,8 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED]/35 via-transparent to-[#EC4899]/30 mix-blend-screen pointer-events-none" />
 
           {/* Top Tag Badges */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-caption font-black tracking-widest text-white uppercase">
+          <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+            <span className="max-w-full truncate px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-caption font-black tracking-widest text-white uppercase">
               SESSION RECOMMANDÉE{recommendation ? ` · ${recommendation.reason}` : ''}
             </span>
             <span className="px-2.5 py-1 rounded-full bg-[#EC4899] text-black font-black text-2xs tracking-wider uppercase">
@@ -572,7 +664,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           {/* Bottom Content */}
           <div className="absolute bottom-4 left-4 right-4 space-y-3">
             <div className="space-y-1">
-              <div className="flex items-center gap-3 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider num">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider num">
                 <span className="flex items-center gap-1 text-white">
                   <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                   {heroWorkout.durationMin} MIN
@@ -586,7 +678,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 <span>{heroWorkout.exerciseCount} EXERCICES</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase leading-none drop-shadow-md">
+              <h3 className="text-xl @xs:text-2xl @sm:text-3xl font-black text-white tracking-tight uppercase leading-none drop-shadow-md break-words">
                 {heroWorkout.title}
               </h3>
               <p className="text-xs text-[#A7A7A7] line-clamp-2 leading-relaxed">
@@ -602,10 +694,10 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                   e.stopPropagation();
                   onStartWorkout(heroWorkout);
                 }}
-                className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-[#EC4899]/30 hover:brightness-110 active:scale-95 transition-all"
+                className="flex-1 min-w-0 py-3.5 px-3 @xs:px-6 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white font-black text-xs @xs:text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-[#EC4899]/30 hover:brightness-110 active:scale-95 transition-all"
               >
-                <Play className="w-4 h-4 fill-white" />
-                <span>COMMENCER LA SÉANCE</span>
+                <Play className="w-4 h-4 shrink-0 fill-white" />
+                <span className="truncate">COMMENCER LA SÉANCE</span>
               </button>
 
               <button
@@ -614,7 +706,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                   e.stopPropagation();
                   onSelectWorkout(heroWorkout);
                 }}
-                className="py-3.5 px-4 rounded-xl bg-[#202020]/90 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all"
+                className="shrink-0 py-3.5 px-4 rounded-xl bg-[#202020]/90 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-all"
               >
                 <ArrowRight className="w-4 h-4" />
               </button>
@@ -638,7 +730,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <p className="text-xs font-black tracking-widest text-[#A7A7A7] uppercase mb-1">
             MANIFESTE VOLT
           </p>
-          <h4 className="text-xl font-black text-white tracking-tight uppercase leading-tight">
+          <h4 className="text-lg @xs:text-xl font-black text-white tracking-tight uppercase leading-tight break-words">
             PRÊT À <span className="text-gradient-main">DÉPASSER</span> TES LIMITES ?
           </h4>
           <p className="text-xs text-[#A7A7A7] mt-1 font-medium">
@@ -648,8 +740,8 @@ export const HomeTab: React.FC<HomeTabProps> = ({
 
         {/* HORIZONTAL CAROUSEL - SÉANCES RECOMMANDÉES */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="text-base font-black text-white tracking-tight uppercase">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+            <h4 className="text-base font-black text-white tracking-tight uppercase min-w-0">
               Autres Séances Recommandées
             </h4>
             <button 
@@ -661,12 +753,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             </button>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 -mx-4 px-4">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 pt-1 @xs:-mx-4 @xs:px-4">
             {workouts.map((w) => (
               <div
                 key={w.id}
                 onClick={() => onSelectWorkout(w)}
-                className="shrink-0 w-56 rounded-2xl bg-[#181818] border border-white/[0.08] overflow-hidden cursor-pointer hover:border-white/20 transition-all group active:scale-95"
+                className="shrink-0 w-56 max-w-full rounded-2xl bg-[#181818] border border-white/[0.08] overflow-hidden cursor-pointer hover:border-white/20 transition-all group active:scale-95"
               >
                 <div className="relative h-28 w-full overflow-hidden">
                   <img
@@ -697,6 +789,11 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           </div>
         </div>
       </section>
+            </div>
+          ),
+        }}
+      />
+
 
       {showRotation && (
         <RotationModal
