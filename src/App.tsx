@@ -3,9 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { TabType, Workout, UserStats, PersonalRecord, AchievementBadge, ScheduledDay, MeasurementEntry } from './types';
-import { initialUserStats, sampleWorkouts, sampleWeekSchedule, samplePersonalRecords, sampleBadges, sampleMeasurements } from './data/mockData';
+import React, { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
+import { TabType, Workout, UserStats, AchievementBadge, ScheduledDay } from './types';
+import { initialUserStats, sampleWorkouts, sampleWeekSchedule, sampleBadges } from './data/mockData';
+import { useVoltData } from './data/VoltDataContext';
+import { todayISO } from './data/model';
+import { currentWeight, latestComposition, totalKcal, totalVisits, checkedDaysCount } from './data/selectors';
 import { Header } from './components/Header';
 import { Navbar } from './components/Navbar';
 import { HomeTab } from './components/HomeTab';
@@ -15,7 +18,7 @@ import { WorkoutDetailModal } from './components/WorkoutDetailModal';
 import { LiveWorkoutView } from './components/LiveWorkoutView';
 import { loadJSON, saveJSON } from './utils/storage';
 import { CUSTOM_WORKOUT_PREFIX, isCustomWorkout } from './utils/workouts';
-import { DayKey } from './utils/dates';
+import { DayKey, getParisDayKey } from './utils/dates';
 import { applyThemeToDocument, getThemeBase, loadThemeId, saveThemeId } from './themes';
 import { startNotificationScheduler } from './utils/notifications';
 import { SettingsScreen, SettingsSectionId } from './components/SettingsScreen';
@@ -131,8 +134,6 @@ export default function App() {
       return updated;
     });
   };
-  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>(() => loadJSON('volt_prs', samplePersonalRecords));
-
   // Persisted badges with unlocked and grayed-out locked achievements
   const [badges, setBadges] = useState<AchievementBadge[]>(() => {
     const saved = loadJSON<AchievementBadge[]>('volt_badges', []);
@@ -143,34 +144,6 @@ export default function App() {
       return existing ? { ...sampleB, ...existing, emoji: sampleB.emoji } : sampleB;
     });
   });
-
-  // Persisted performance measurements history (Image 2 style)
-  const [measurements, setMeasurements] = useState<MeasurementEntry[]>(() => loadJSON('volt_measurements', sampleMeasurements));
-
-  const handleAddMeasurement = (entry: Omit<MeasurementEntry, 'id'>) => {
-    const newEntry: MeasurementEntry = {
-      ...entry,
-      id: `m-${Date.now()}`,
-    };
-    setMeasurements((prev) => {
-      const updated = [newEntry, ...prev];
-      saveJSON('volt_measurements', updated);
-      return updated;
-    });
-
-    // If metric is weight, also update currentWeightKg in userStats
-    if (entry.metricType === 'poids') {
-      handleUpdateUserStats({ currentWeightKg: entry.value });
-    }
-  };
-
-  const handleDeleteMeasurement = (id: string) => {
-    setMeasurements((prev) => {
-      const updated = prev.filter((m) => m.id !== id);
-      saveJSON('volt_measurements', updated);
-      return updated;
-    });
-  };
 
   // Latest data for the daily notification scheduler
   const scheduleRef = useRef(schedule);
@@ -191,54 +164,89 @@ export default function App() {
     totalVolumeKg: number;
   } | null>(null);
 
-  // Sync state changes to localStorage
+  const voltData = useVoltData();
+  const { data, logBodyMetrics, addSession, setBaseline } = voltData;
+
+  // User stats shown everywhere: counters, weight and composition are derived from the histories
+  const stats = useMemo<UserStats>(() => {
+    const composition = latestComposition(data);
+    return {
+      ...userStats,
+      currentWeightKg: currentWeight(data) ?? userStats.currentWeightKg,
+      totalWorkouts: totalVisits(data),
+      totalCaloriesBurned: totalKcal(data),
+      weeklyCompletedWorkouts: checkedDaysCount(data),
+      streakDays: 0,
+      bodyComposition:
+        composition && userStats.bodyComposition
+          ? {
+              ...userStats.bodyComposition,
+              fatPercent: composition.fatPercent ?? userStats.bodyComposition.fatPercent,
+              fatKg: composition.fatKg ?? userStats.bodyComposition.fatKg,
+              leanMassKg: composition.leanMassKg ?? userStats.bodyComposition.leanMassKg,
+              muscleMassKg: composition.muscleMassKg ?? userStats.bodyComposition.muscleMassKg,
+              boneMassKg: composition.boneMassKg ?? userStats.bodyComposition.boneMassKg,
+              organMassKg: composition.organMassKg ?? userStats.bodyComposition.organMassKg,
+              waterLiters: composition.waterLiters ?? userStats.bodyComposition.waterLiters,
+              date: composition.date,
+            }
+          : userStats.bodyComposition,
+    };
+  }, [userStats, data]);
+
+  // Writes: derived fields go to the histories, the rest to the stored profile
   const handleUpdateUserStats = (updated: Partial<UserStats>) => {
-    setUserStats((prev) => {
-      const next = { ...prev, ...updated };
-      saveJSON('volt_user_stats', next);
-
-      // Check auto-unlock conditions for gamification badges
-      setBadges((prevBadges) => {
-        let changed = false;
-        const nextBadges = prevBadges.map((b) => {
-          if (!b.isLocked) return b;
-          // Centurion 50 séances
-          if (b.id === 'b-lock-1' && next.totalWorkouts >= 50) {
-            changed = true;
-            return { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true };
-          }
-          // Guerrier d'acier 30 jours
-          if (b.id === 'b-lock-2' && next.streakDays >= 30) {
-            changed = true;
-            return { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true };
-          }
-          // Fournaise 10 000 kcal
-          if (b.id === 'b-lock-4' && next.totalCaloriesBurned >= 10000) {
-            changed = true;
-            return { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true };
-          }
-          // Update progress if still locked
-          if (b.id === 'b-lock-1') {
-            return { ...b, progressCurrent: next.totalWorkouts };
-          }
-          if (b.id === 'b-lock-2') {
-            return { ...b, progressCurrent: next.streakDays };
-          }
-          if (b.id === 'b-lock-4') {
-            return { ...b, progressCurrent: next.totalCaloriesBurned };
-          }
-          return b;
-        });
-
-        if (changed) {
-          saveJSON('volt_badges', nextBadges);
-        }
-        return nextBadges;
+    const { currentWeightKg, totalWorkouts, totalCaloriesBurned, bodyComposition, streakDays: _streak, ...rest } = updated;
+    if (typeof currentWeightKg === 'number') logBodyMetrics({ weightKg: currentWeightKg });
+    if (bodyComposition) {
+      logBodyMetrics({
+        fatPercent: bodyComposition.fatPercent,
+        fatKg: bodyComposition.fatKg,
+        leanMassKg: bodyComposition.leanMassKg,
+        muscleMassKg: bodyComposition.muscleMassKg,
+        boneMassKg: bodyComposition.boneMassKg,
+        organMassKg: bodyComposition.organMassKg,
+        waterLiters: bodyComposition.waterLiters,
+        formula: bodyComposition.formula,
       });
-
+    }
+    if (typeof totalWorkouts === 'number') setBaseline({ sessions: totalWorkouts - data.sessions.length });
+    if (typeof totalCaloriesBurned === 'number') {
+      setBaseline({ kcal: totalCaloriesBurned - data.sessions.reduce((sum, ses) => sum + ses.kcal, 0) });
+    }
+    // Recommendation / chosen goal of the composition stay in the profile
+    const profilePatch: Partial<UserStats> = bodyComposition ? { ...rest, bodyComposition } : rest;
+    if (Object.keys(profilePatch).length === 0) return;
+    setUserStats((prev) => {
+      const next = { ...prev, ...profilePatch };
+      saveJSON('volt_user_stats', next);
       return next;
     });
   };
+
+  // Badge progress and auto-unlock follow the derived totals
+  useEffect(() => {
+    setBadges((prevBadges) => {
+      let changed = false;
+      const nextBadges = prevBadges.map((b) => {
+        const progress = b.id === 'b-lock-1' ? stats.totalWorkouts : b.id === 'b-lock-4' ? stats.totalCaloriesBurned : null;
+        if (progress === null) return b;
+        const target = b.id === 'b-lock-1' ? 50 : 10000;
+        if (b.isLocked && progress >= target) {
+          changed = true;
+          return { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true, progressCurrent: progress };
+        }
+        if (b.progressCurrent !== progress) {
+          changed = true;
+          return { ...b, progressCurrent: progress };
+        }
+        return b;
+      });
+      if (!changed) return prevBadges;
+      saveJSON('volt_badges', nextBadges);
+      return nextBadges;
+    });
+  }, [stats.totalWorkouts, stats.totalCaloriesBurned]);
 
   // Unlock badge manually (e.g. from demo modal)
   const handleUnlockBadge = (badgeId: string) => {
@@ -270,74 +278,33 @@ export default function App() {
     setActiveLiveWorkout(null);
     setFinishedSummary(summary);
 
-    handleUpdateUserStats({
-      totalWorkouts: userStats.totalWorkouts + 1,
-      totalCaloriesBurned: userStats.totalCaloriesBurned + summary.workout.estimatedCalories,
-      weeklyCompletedWorkouts: (userStats.weeklyCompletedWorkouts || 4) + 1,
+    const plannedSec = Math.max(1, summary.workout.durationMin * 60);
+    const kcal = Math.round(summary.workout.estimatedCalories * Math.min(3, summary.durationSeconds / plannedSec));
+    addSession({
+      date: todayISO(),
+      source: 'app',
+      workoutId: summary.workout.id,
+      title: summary.workout.title,
+      durationSec: summary.durationSeconds,
+      kcal,
+      volumeKg: summary.totalVolumeKg,
     });
 
-    // Mark session in schedule as completed if present
-    setSchedule((prevSchedule) =>
-      prevSchedule.map((day) => ({
-        ...day,
-        sessions: day.sessions.map((sess) =>
-          sess.workoutId === summary.workout.id ? { ...sess, status: 'completed' as const } : sess
-        ),
-      }))
-    );
-  };
-
-  // Handle adding new PR
-  const handleLogNewRecord = (newPr: { exercise: string; weightKg: number }) => {
-    const existingPrIndex = personalRecords.findIndex(
-      (pr) => pr.exercise.toLowerCase() === newPr.exercise.toLowerCase()
-    );
-
-    let updatedPrs: PersonalRecord[];
-    if (existingPrIndex !== -1) {
-      updatedPrs = [...personalRecords];
-      const prevWeight = updatedPrs[existingPrIndex].weightKg;
-      updatedPrs[existingPrIndex] = {
-        ...updatedPrs[existingPrIndex],
-        previousWeightKg: prevWeight,
-        weightKg: newPr.weightKg,
-        date: "Aujourd'hui",
-      };
-    } else {
-      updatedPrs = [
-        {
-          id: `pr-${Date.now()}`,
-          exercise: newPr.exercise,
-          weightKg: newPr.weightKg,
-          previousWeightKg: newPr.weightKg - 5,
-          date: "Aujourd'hui",
-          category: 'Force',
-        },
-        ...personalRecords,
-      ];
-    }
-    setPersonalRecords(updatedPrs);
-    saveJSON('volt_prs', updatedPrs);
-  };
-
-  // Handle updating an existing PR (and its history graph)
-  const handleUpdatePR = (updatedPr: PersonalRecord) => {
-    setPersonalRecords((prev) => {
-      const exists = prev.some((p) => p.id === updatedPr.id);
-      const next = exists
-        ? prev.map((p) => (p.id === updatedPr.id ? updatedPr : p))
-        : [updatedPr, ...prev];
-      saveJSON('volt_prs', next);
-      return next;
-    });
-  };
-
-  // Handle deleting a PR
-  const handleDeletePR = (prId: string) => {
-    setPersonalRecords((prev) => {
-      const next = prev.filter((p) => p.id !== prId);
-      saveJSON('volt_prs', next);
-      return next;
+    // Mark today's planned session of this workout as done (persisted)
+    const todayKey = getParisDayKey();
+    setSchedule((prevSchedule) => {
+      const updated = prevSchedule.map((day) =>
+        day.dayKey !== todayKey
+          ? day
+          : {
+              ...day,
+              sessions: day.sessions.map((sess) =>
+                sess.workoutId === summary.workout.id ? { ...sess, status: 'completed' as const } : sess
+              ),
+            }
+      );
+      saveJSON('volt_schedule', updated);
+      return updated;
     });
   };
 
@@ -351,7 +318,7 @@ export default function App() {
         {/* Sticky Top Header (Only when not in full-screen Live Workout) */}
         {!activeLiveWorkout && (
           <Header
-            userStats={userStats}
+            userStats={stats}
             onOpenSettings={() => setSettingsSection('themes')}
             onOpenProfile={() => setSettingsSection('profile')}
             theme={theme}
@@ -362,7 +329,7 @@ export default function App() {
         <main className="flex-1">
           {activeTab === 'home' && (
             <HomeTab
-              userStats={userStats}
+              userStats={stats}
               workouts={workouts}
               badges={badges}
               schedule={schedule}
@@ -387,24 +354,18 @@ export default function App() {
               onScheduleWorkout={handleScheduleWorkout}
               onRemoveScheduledWorkout={handleRemoveScheduledWorkout}
               weeklyGoal={userStats.weeklyGoalWorkouts}
+              weeklyVolumeTargetKg={userStats.weeklyVolumeTargetKg}
               theme={theme}
             />
           )}
 
           {activeTab === 'progress' && (
             <ProgressionTab
-              userStats={userStats}
-              personalRecords={personalRecords}
+              userStats={stats}
               badges={badges}
-              measurements={measurements}
-              onLogNewRecord={handleLogNewRecord}
-              onUpdatePR={handleUpdatePR}
-              onDeletePR={handleDeletePR}
               onUpdateUserStats={handleUpdateUserStats}
               onUnlockBadge={handleUnlockBadge}
               onOpenBodyComposition={() => setShowBodyCompositionModal(true)}
-              onAddMeasurement={handleAddMeasurement}
-              onDeleteMeasurement={handleDeleteMeasurement}
               theme={theme}
             />
           )}
@@ -429,7 +390,7 @@ export default function App() {
         {settingsSection && !activeLiveWorkout && (
           <SettingsScreen
             initialSection={settingsSection}
-            userStats={userStats}
+            userStats={stats}
             onUpdateUserStats={handleUpdateUserStats}
             themeId={themeId}
             onApplyTheme={handleApplyTheme}
@@ -461,7 +422,7 @@ export default function App() {
           {/* Body Composition Calculator Modal */}
           {showBodyCompositionModal && (
             <BodyCompositionModal
-              userStats={userStats}
+              userStats={stats}
               onSaveComposition={handleUpdateUserStats}
               onClose={() => setShowBodyCompositionModal(false)}
               theme={theme}

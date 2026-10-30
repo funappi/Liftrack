@@ -15,6 +15,7 @@ interface WorkoutsTabProps {
   onDeleteWorkout?: (workoutId: string) => void;
   onScheduleWorkout?: (dayKey: DayKey, workoutId: string) => void;
   weeklyGoal?: number;
+  weeklyVolumeTargetKg?: number;
   onRemoveScheduledWorkout?: (dayKey: string, sessionId: string) => void;
   theme?: 'dark' | 'warm-light';
 }
@@ -37,6 +38,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
   onDeleteWorkout,
   onScheduleWorkout,
   weeklyGoal,
+  weeklyVolumeTargetKg,
   onRemoveScheduledWorkout,
   theme,
 }) => {
@@ -90,6 +92,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
         }}
         onScheduleWorkout={onScheduleWorkout}
         weeklyGoal={weeklyGoal}
+        weeklyVolumeTargetKg={weeklyVolumeTargetKg}
         onRemoveScheduledWorkout={onRemoveScheduledWorkout}
         theme={theme}
         renderHeader={() => (
