@@ -11,7 +11,7 @@ interface HomeTabProps {
   badges: AchievementBadge[];
   onSelectWorkout: (workout: Workout) => void;
   onStartWorkout: (workout: Workout) => void;
-  onNavigateToTab: (tab: 'workouts' | 'progress' | 'planning' | 'profile') => void;
+  onNavigateToTab: (tab: 'workouts' | 'progress' | 'planning') => void;
   onUpdateUserStats: (updated: Partial<UserStats>) => void;
   onUnlockBadge?: (badgeId: string) => void;
   onOpenBodyComposition?: () => void;

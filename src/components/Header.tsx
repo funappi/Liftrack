@@ -1,10 +1,9 @@
 import React from 'react';
-import { Zap, Flame, Dumbbell, Sun, Moon } from 'lucide-react';
+import { Flame, Dumbbell, Sun, Moon } from 'lucide-react';
 import { UserStats } from '../types';
 
 interface HeaderProps {
   userStats: UserStats;
-  onOpenProfile?: () => void;
   onStartQuickWorkout?: () => void;
   theme?: 'dark' | 'warm-light';
   onToggleTheme?: () => void;
@@ -12,7 +11,6 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   userStats,
-  onOpenProfile,
   onStartQuickWorkout,
   theme = 'dark',
   onToggleTheme,
@@ -26,8 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Brand & User Greeting */}
       <div className="flex items-center gap-3">
         <div 
-          onClick={onOpenProfile}
-          className={`relative w-10 h-10 rounded-full cursor-pointer overflow-hidden ring-2 transition-all ${
+          className={`relative w-10 h-10 rounded-full overflow-hidden ring-2 transition-all ${
             isLight ? 'ring-[#b85d38]/60 hover:ring-[#b85d38]' : 'ring-[#c05a3e]/60 hover:ring-[#d97706]'
           }`}
         >
@@ -92,25 +89,12 @@ export const Header: React.FC<HeaderProps> = ({
             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full active:scale-95 text-xs font-black text-white shadow-md transition-all cursor-pointer ${
               isLight ? 'bg-[#b85d38] hover:bg-[#a04e2e]' : 'bg-[#c05a3e] hover:bg-[#a84d33]'
             }`}
-            title="Démarrer la séance en direct (Curl Biceps, Séries, Chrono)"
+            title="Lancer une de mes séances créées"
           >
             <Dumbbell className="w-3.5 h-3.5 stroke-[2.5]" />
             <span className="hidden xs:inline">Exercice</span>
           </button>
         )}
-
-        {/* VOLT Score Pill */}
-        <div 
-          title="Score VOLT - Indice de puissance et régularité"
-          className={`flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-black cursor-default transition-all ${
-            isLight
-              ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]'
-              : 'bg-[#211b17] border-[#3e342b]/80 text-[#f7eee4]'
-          }`}
-        >
-          <Zap className="w-3 h-3 text-[#d97706] fill-[#d97706]" />
-          <span className="tracking-wide text-[11px]">{userStats.voltScore}</span>
-        </div>
 
         {/* Streak Pill */}
         <div 

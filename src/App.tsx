@@ -12,11 +12,11 @@ import { HomeTab } from './components/HomeTab';
 import { WorkoutsTab } from './components/WorkoutsTab';
 import { PlanningTab } from './components/PlanningTab';
 import { ProgressionTab } from './components/ProgressionTab';
-import { ProfileTab } from './components/ProfileTab';
 import { WorkoutDetailModal } from './components/WorkoutDetailModal';
 import { LiveWorkoutView } from './components/LiveWorkoutView';
 import { WorkoutFinishedModal } from './components/WorkoutFinishedModal';
 import { BodyCompositionModal } from './components/BodyCompositionModal';
+import { QuickLaunchModal } from './components/QuickLaunchModal';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
@@ -252,6 +252,7 @@ export default function App() {
   const [selectedWorkoutForModal, setSelectedWorkoutForModal] = useState<Workout | null>(null);
   const [activeLiveWorkout, setActiveLiveWorkout] = useState<Workout | null>(null);
   const [showBodyCompositionModal, setShowBodyCompositionModal] = useState(false);
+  const [showQuickLaunch, setShowQuickLaunch] = useState(false);
   const [finishedSummary, setFinishedSummary] = useState<{
     workout: Workout;
     durationSeconds: number;
@@ -319,7 +320,6 @@ export default function App() {
   // Unlock badge manually (e.g. from demo modal)
   const handleUnlockBadge = (badgeId: string) => {
     setBadges((prevBadges) => {
-      const targetBadge = prevBadges.find((b) => b.id === badgeId);
       const updated = prevBadges.map((b) =>
         b.id === badgeId
           ? { ...b, isLocked: false, unlockedAt: "À l'instant", isNew: true }
@@ -331,21 +331,6 @@ export default function App() {
         // ignore
       }
 
-      if (targetBadge && targetBadge.isLocked) {
-        setUserStats((prev) => {
-          const next = {
-            ...prev,
-            voltScore: Math.min(99, prev.voltScore + 2),
-          };
-          try {
-            localStorage.setItem('volt_user_stats', JSON.stringify(next));
-          } catch {
-            // ignore
-          }
-          return next;
-        });
-      }
-
       return updated;
     });
   };
@@ -354,38 +339,6 @@ export default function App() {
   const handleStartWorkout = (workout: Workout) => {
     setSelectedWorkoutForModal(null);
     setActiveLiveWorkout(workout);
-  };
-
-  // Quick direct workout launcher (matches user request with Curl Biceps)
-  const handleStartQuickLiveWorkout = () => {
-    const quickSession: Workout = {
-      id: "quick-curl-session",
-      title: "Entraînement",
-      subtitle: "SÉANCE EN DIRECT",
-      category: "hypertrophie",
-      durationMin: 45,
-      exerciseCount: 1,
-      difficulty: "INTERMÉDIAIRE",
-      estimatedCalories: 350,
-      intensity: "ÉLEVÉE",
-      gradientType: "main",
-      imageUrl: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=80",
-      description: "Séance en direct avec suivi des séries, charges et répétitions.",
-      targetAreas: ["Biceps", "Avant-bras"],
-      exercises: [
-        {
-          id: "ex-curl-1",
-          name: "Curl Biceps (Haltère)",
-          sets: 4,
-          reps: 0,
-          targetWeightKg: 0,
-          restSeconds: null,
-          targetMuscles: ["Biceps", "Avant-bras"],
-          notes: ""
-        }
-      ]
-    };
-    handleStartWorkout(quickSession);
   };
 
   // Handle finishing workout from Live View
@@ -401,7 +354,6 @@ export default function App() {
     handleUpdateUserStats({
       totalWorkouts: userStats.totalWorkouts + 1,
       totalCaloriesBurned: userStats.totalCaloriesBurned + summary.workout.estimatedCalories,
-      voltScore: Math.min(99, userStats.voltScore + 2),
       weeklyCompletedWorkouts: (userStats.weeklyCompletedWorkouts || 4) + 1,
     });
 
@@ -451,11 +403,6 @@ export default function App() {
     } catch {
       // ignore
     }
-
-    // Boost VOLT score
-    handleUpdateUserStats({
-      voltScore: Math.min(99, userStats.voltScore + 3),
-    });
   };
 
   // Handle updating an existing PR (and its history graph)
@@ -506,8 +453,7 @@ export default function App() {
         {!activeLiveWorkout && (
           <Header
             userStats={userStats}
-            onOpenProfile={() => setActiveTab('profile')}
-            onStartQuickWorkout={handleStartQuickLiveWorkout}
+            onStartQuickWorkout={() => setShowQuickLaunch(true)}
             theme={theme}
             onToggleTheme={handleToggleTheme}
           />
@@ -570,18 +516,9 @@ export default function App() {
               theme={theme}
             />
           )}
-
-          {activeTab === 'profile' && (
-            <ProfileTab
-              userStats={userStats}
-              onUpdateUserStats={handleUpdateUserStats}
-              onNavigateToTab={(tab) => setActiveTab(tab)}
-              theme={theme}
-            />
-          )}
         </main>
 
-        {/* Bottom Mobile Navigation (5 tabs) */}
+        {/* Bottom Mobile Navigation (4 tabs) */}
         {!activeLiveWorkout && (
           <Navbar activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} theme={theme} />
         )}
@@ -592,6 +529,23 @@ export default function App() {
             workout={selectedWorkoutForModal}
             onClose={() => setSelectedWorkoutForModal(null)}
             onStart={handleStartWorkout}
+            theme={theme}
+          />
+        )}
+
+        {/* Lancement rapide : mes séances créées + décompte */}
+        {showQuickLaunch && (
+          <QuickLaunchModal
+            workouts={workouts.filter((w) => w.id.startsWith('custom-workout-'))}
+            onStart={(w) => {
+              setShowQuickLaunch(false);
+              handleStartWorkout(w);
+            }}
+            onClose={() => setShowQuickLaunch(false)}
+            onCreate={() => {
+              setShowQuickLaunch(false);
+              setActiveTab('workouts');
+            }}
             theme={theme}
           />
         )}
