@@ -3,7 +3,9 @@ import { Calendar as Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, 
 import { ScheduledDay, Workout } from '../types';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
 import { DayKey, getParisDayKey } from '../utils/dates';
-import { saveJSON } from '../utils/storage';
+import { useVoltData } from '../data/VoltDataContext';
+import { checkedDaysCount, checkedDaysThisWeek, dateOfDayKey, sessionsOn, weeklyVolume } from '../data/selectors';
+import { todayISO } from '../data/model';
 
 interface WeeklyTrackerProps {
   schedule: ScheduledDay[];
@@ -17,6 +19,8 @@ interface WeeklyTrackerProps {
   // Screen title row; receives the opener of the schedule modal for its "Programmer" button
   renderHeader: (openSchedule: () => void) => React.ReactNode;
   theme?: 'dark' | 'warm-light';
+  // Weekly lifted volume goal (kg), shown next to the volume of the week
+  weeklyVolumeTargetKg?: number;
 }
 
 const DAY_FULL_NAMES: Record<string, string> = {
@@ -54,6 +58,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
   onRemoveScheduledWorkout,
   renderHeader,
   theme,
+  weeklyVolumeTargetKg,
 }) => {
   const isLight = theme === 'warm-light';
   const currentParisDayKey = getParisDayKey();
@@ -67,38 +72,31 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
 
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
-  // Checkable days state: dayKey -> boolean (persisted in localStorage)
-  const [checkedDays, setCheckedDays] = useState<Record<string, boolean>>(() => {
-    try {
-      const saved = localStorage.getItem('volt_planning_checked_days');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    const initialMap: Record<string, boolean> = {};
-    schedule.forEach((d) => {
-      initialMap[d.dayKey] = d.sessions.some((s) => s.status === 'completed');
-    });
-    return initialMap;
-  });
+  // Checked days come from the dated completed sessions (single source of truth):
+  // a day is checked when at least one session (app or manual) exists that day.
+  const { data, setDayChecked } = useVoltData();
+  const checkedDays = checkedDaysThisWeek(data);
+  const today = todayISO();
 
-  const toggleDayChecked = (dayKey: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.stopPropagation(); // don't interfere with parent if called from inner button
+  const isFutureDay = (dayKey: DayKey) => dateOfDayKey(dayKey) > today;
+
+  const toggleDayChecked = (dayKey: DayKey) => {
+    if (isFutureDay(dayKey)) return;
+    const date = dateOfDayKey(dayKey);
+    if (!checkedDays[dayKey]) {
+      setDayChecked(date, true);
+      return;
     }
-    setCheckedDays((prev) => {
-      const updated = {
-        ...prev,
-        [dayKey]: !prev[dayKey],
-      };
-      saveJSON('volt_planning_checked_days', updated);
-      return updated;
-    });
+    const hasAppSession = sessionsOn(data, date).some((s) => s.source === 'app');
+    if (hasAppSession && !window.confirm('Supprimer la séance réalisée ce jour ?')) return;
+    setDayChecked(date, false);
   };
 
   const selectedDay = schedule[selectedDayIndex] || schedule[0];
 
-  const totalCheckedCount = Object.values(checkedDays).filter(Boolean).length;
+  const totalCheckedCount = checkedDaysCount(data);
+  const volumeKg = Math.round(weeklyVolume(data));
+  const formatKg = (kg: number) => kg.toLocaleString('fr-FR');
 
   const handleOpenScheduleForSelected = () => {
     setShowScheduleModal(true);
@@ -115,6 +113,10 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
             VOLUME HEBDOMADAIRE
           </span>
           <p className="text-sm font-black text-white uppercase">{totalCheckedCount} JOURS VALIDÉS / {weeklyGoal}</p>
+          <p className="text-[11px] font-bold text-[#A7A7A7] tabular-nums">
+            {formatKg(volumeKg)} kg soulevés
+            {weeklyVolumeTargetKg ? ` / ${formatKg(weeklyVolumeTargetKg)} kg` : ''}
+          </p>
         </div>
         <div className="text-right">
           <span className="text-base font-black text-gradient-main">
@@ -136,6 +138,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
           {schedule.map((day, idx) => {
             const isSelected = selectedDayIndex === idx;
             const isChecked = Boolean(checkedDays[day.dayKey]);
+            const isFuture = isFutureDay(day.dayKey);
 
             return (
               <div
@@ -181,13 +184,19 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                     setSelectedDayIndex(idx);
                     toggleDayChecked(day.dayKey);
                   }}
-                  title={isChecked ? `Décocher ${day.dayKey}` : `Cocher ${day.dayKey}`}
-                  className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all cursor-pointer ${
-                    isChecked
-                      ? 'bg-emerald-500 border-emerald-400 text-black shadow-md shadow-emerald-500/20'
+                  disabled={isFuture}
+                  aria-pressed={isChecked}
+                  title={isFuture ? `${day.dayKey} : jour à venir` : isChecked ? `Décocher ${day.dayKey}` : `Cocher ${day.dayKey}`}
+                  className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
+                    isFuture
+                      ? isLight
+                        ? 'bg-[#faebe0]/60 border-[#7d5a47]/15 text-transparent opacity-40 cursor-not-allowed'
+                        : 'bg-[#1C1C1C]/60 border-white/10 text-transparent opacity-40 cursor-not-allowed'
+                      : isChecked
+                      ? 'bg-emerald-500 border-emerald-400 text-black shadow-md shadow-emerald-500/20 cursor-pointer'
                       : isLight
-                      ? 'bg-[#faebe0] border-[#7d5a47]/30 hover:border-[#7d5a47] text-transparent'
-                      : 'bg-[#1C1C1C] border-white/20 hover:border-white/40 text-transparent'
+                      ? 'bg-[#faebe0] border-[#7d5a47]/30 hover:border-[#7d5a47] text-transparent cursor-pointer'
+                      : 'bg-[#1C1C1C] border-white/20 hover:border-white/40 text-transparent cursor-pointer'
                   }`}
                 >
                   <Check className={`w-4 h-4 stroke-[3] ${isChecked ? 'text-black' : 'opacity-0'}`} />

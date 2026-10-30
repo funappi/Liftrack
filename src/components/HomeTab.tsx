@@ -7,6 +7,9 @@ import { getBadgeUnlockRequirement } from './BadgeIcon';
 import { BadgeProgress } from './BadgeProgress';
 import { RotationModal } from './RotationModal';
 import { getRotationOrder, loadRotation, recommendWorkout, saveRotation } from '../utils/recommendation';
+import { useVoltData } from '../data/VoltDataContext';
+import { weightSeries } from '../data/selectors';
+import { todayISO } from '../data/model';
 
 interface HomeTabProps {
   userStats: UserStats;
@@ -51,62 +54,55 @@ export const HomeTab: React.FC<HomeTabProps> = ({
   // Featured workout: recommendation if any created workout exists, else the default one
   const heroWorkout = recommendation?.workout || workouts.find((w) => w.id === 'full-body-beast') || workouts[0];
 
-  // Calculate weight difference
+  const { data } = useVoltData();
+  const weights = useMemo(() => weightSeries(data), [data]);
+  const monthPrefix = todayISO().slice(0, 7);
+
+  const hasWeight = userStats.currentWeightKg > 0;
+  const hasTarget = userStats.targetWeightKg > 0;
+
+  // Weight difference to the single weight target (userStats.targetWeightKg)
   const weightDiff = Math.abs(Math.round((userStats.targetWeightKg - userStats.currentWeightKg) * 10) / 10);
+
+  // Weight change this month: latest weigh-in vs the last one before the month (or the month's first)
+  const monthWeightDelta = useMemo(() => {
+    if (weights.length < 2) return null;
+    const last = weights[weights.length - 1];
+    if (!last.date.startsWith(monthPrefix)) return null;
+    const before = [...weights].reverse().find((w) => w.date < `${monthPrefix}-01`);
+    const ref = before ?? weights.find((w) => w.date.startsWith(monthPrefix));
+    if (!ref || ref === last) return null;
+    return Math.round((last.weightKg - ref.weightKg) * 10) / 10;
+  }, [weights, monthPrefix]);
+
+  const sessionsThisMonth = data.sessions.filter((s) => s.date.startsWith(monthPrefix)).length;
 
   // Unlocked & locked badges preview (e.g. first 2 unlocked and first 3 locked/grisés)
   const unlockedBadges = badges.filter((b) => !b.isLocked);
 
-  // Calcul intelligent de progression : gère fidèlement la perte de poids (sèche) et la progression croissante
+  // Weight goal progress: one target (userStats.targetWeightKg), starting from
+  // nextGoal.startValue when set, otherwise from the first dated weigh-in.
   const goalProgress = useMemo(() => {
-    const goal = userStats.nextGoal;
-    const isPertePoids = 
-      goal.goalType === 'perte_poids' ||
-      (goal.unit?.toLowerCase() === 'kg' && goal.current > goal.target) ||
-      goal.title?.toLowerCase().includes('sèche') ||
-      goal.title?.toLowerCase().includes('perte');
-
-    if (isPertePoids) {
-      // Pour une perte de poids : le départ est supérieur à la cible.
-      const start = goal.startValue ?? (
-        userStats.bodyComposition?.recommendation?.currentWeightKg ??
-        Math.max(goal.current, goal.target + 5)
-      );
-
-      const totalToLose = Math.max(0.1, start - goal.target);
-      const lost = start - goal.current;
-      // Pourcentage de progression : 0% au départ, 100% à l'arrivée (ou dépassement)
-      const percent = Math.min(100, Math.max(0, Math.round((lost / totalToLose) * 100)));
-      const remainingToLose = Math.max(0, Math.round((goal.current - goal.target) * 10) / 10);
-
-      return {
-        percent,
-        isPertePoids: true,
-        start,
-        current: goal.current,
-        target: goal.target,
-        remainingText: remainingToLose > 0 ? `${remainingToLose} kg restants` : 'Objectif atteint !',
-        deltaText: lost > 0 ? `-${lost.toFixed(1)} kg perdus` : lost < 0 ? `+${Math.abs(lost).toFixed(1)} kg` : 'Départ',
-      };
-    } else {
-      // Progression croissante (charge, volume, prise de masse)
-      const start = goal.startValue ?? 0;
-      const totalToGain = Math.max(0.1, goal.target - start);
-      const gained = goal.current - start;
-      const percent = Math.min(100, Math.max(0, Math.round((gained / totalToGain) * 100)));
-      const remaining = Math.max(0, Math.round((goal.target - goal.current) * 10) / 10);
-
-      return {
-        percent,
-        isPertePoids: false,
-        start,
-        current: goal.current,
-        target: goal.target,
-        remainingText: remaining > 0 ? `${remaining} ${goal.unit} restants` : 'Objectif atteint !',
-        deltaText: gained > 0 ? `+${gained.toFixed(1)} ${goal.unit}` : 'Départ',
-      };
-    }
-  }, [userStats.nextGoal, userStats.bodyComposition]);
+    if (!hasWeight || !hasTarget) return null;
+    const current = userStats.currentWeightKg;
+    const target = userStats.targetWeightKg;
+    const start = userStats.nextGoal.startValue ?? weights[0]?.weightKg ?? current;
+    const isPertePoids = start > target || (start === target && current > target);
+    const total = Math.abs(target - start);
+    const done = isPertePoids ? start - current : current - start;
+    const percent = total < 0.1
+      ? (Math.abs(current - target) < 0.1 ? 100 : 0)
+      : Math.min(100, Math.max(0, Math.round((done / total) * 100)));
+    const delta = Math.round((current - start) * 10) / 10;
+    return {
+      percent,
+      isPertePoids,
+      start,
+      current,
+      target,
+      deltaText: delta === 0 ? 'Départ' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)} kg`,
+    };
+  }, [hasWeight, hasTarget, userStats.currentWeightKg, userStats.targetWeightKg, userStats.nextGoal.startValue, weights]);
 
   return (
     <div className="pb-36 pt-2 px-4 space-y-7 max-w-lg mx-auto">
@@ -229,13 +225,19 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               Poids actuel
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white tracking-tight group-hover:text-[#00C6FF] transition-colors">
-                {userStats.currentWeightKg}
+              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-[#00C6FF] transition-colors">
+                {hasWeight ? userStats.currentWeightKg : '—'}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">KG</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 pt-1">
-              <span>+0.8 kg ce mois</span>
+            <div className={`flex items-center gap-1 text-[10px] font-bold pt-1 ${monthWeightDelta === null ? 'text-[#A7A7A7]' : 'text-emerald-400'}`}>
+              <span>
+                {!hasWeight
+                  ? 'Ajoute ta première pesée'
+                  : monthWeightDelta === null
+                  ? 'Pas d’évolution ce mois'
+                  : `${monthWeightDelta > 0 ? '+' : ''}${monthWeightDelta} kg ce mois`}
+              </span>
             </div>
           </div>
 
@@ -254,42 +256,22 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               Objectif
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-gradient-performance tracking-tight">
-                {userStats.targetWeightKg}
+              <span className="text-3xl font-black text-gradient-performance tracking-tight tabular-nums">
+                {hasTarget ? userStats.targetWeightKg : '—'}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">KG</span>
             </div>
             <div className="flex items-center gap-1 text-[10px] font-bold text-[#00C6FF] pt-1">
               <Target className="w-3 h-3 shrink-0" />
               <span className="truncate">
-                {weightDiff === 0 ? 'Objectif atteint !' : `Plus que ${weightDiff} kg`}
+                {!hasTarget
+                  ? 'Définis ton objectif'
+                  : !hasWeight
+                  ? 'Ajoute une pesée'
+                  : weightDiff === 0
+                  ? 'Objectif atteint !'
+                  : `Plus que ${weightDiff} kg`}
               </span>
-            </div>
-          </div>
-
-          {/* Card: Série Active (Clickable to edit) */}
-          <div
-            id="stat-card-serie-active"
-            onClick={() => setEditingStatType('streak')}
-            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#FF512F]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
-          >
-            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-[#FF512F] font-bold">
-              <Edit3 className="w-2.5 h-2.5" />
-              <span>Éditer</span>
-            </div>
-
-            <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider block">
-              Série active
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-gradient-energy tracking-tight">
-                {userStats.streakDays}
-              </span>
-              <span className="text-xs font-bold text-[#A7A7A7]">JOURS</span>
-            </div>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-amber-400 pt-1">
-              <Flame className="w-3 h-3 fill-amber-400 shrink-0" />
-              <span>Record personnel !</span>
             </div>
           </div>
 
@@ -297,7 +279,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div
             id="stat-card-workouts"
             onClick={() => setEditingStatType('workouts')}
-            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
+            className="col-span-2 p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
             <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-[#EC4899] font-bold">
               <Edit3 className="w-2.5 h-2.5" />
@@ -308,14 +290,14 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               Workouts
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white tracking-tight group-hover:text-[#EC4899] transition-colors">
+              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-[#EC4899] transition-colors">
                 {userStats.totalWorkouts}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">VALIDÉS</span>
             </div>
             <div className="flex items-center gap-1 text-[10px] font-bold text-[#EC4899] pt-1">
               <Zap className="w-3 h-3 fill-[#EC4899] shrink-0" />
-              <span>4 ce mois-ci</span>
+              <span>{sessionsThisMonth === 0 ? 'Aucune ce mois-ci' : `${sessionsThisMonth} ce mois-ci`}</span>
             </div>
           </div>
         </div>
@@ -328,11 +310,11 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         >
           <div>
             <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
-              <span>Énergie dépensée ce mois</span>
+              <span>Énergie dépensée au total</span>
               <Edit3 className="w-3 h-3 text-[#A7A7A7] group-hover:text-[#FF512F] transition-colors" />
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-3xl font-black text-white tracking-tight group-hover:text-gradient-energy transition-colors">
+              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-gradient-energy transition-colors">
                 {userStats.totalCaloriesBurned.toLocaleString('fr-FR')}
               </span>
               <span className="text-xs font-bold text-[#FF512F] uppercase">KCAL</span>
@@ -371,7 +353,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                           <span className="px-1.5 py-0.2 rounded bg-[#10B981]/20 uppercase">
                             {userStats.bodyComposition.chosenGoal.type === 'seche' ? 'Sèche' : userStats.bodyComposition.chosenGoal.type === 'prise_de_masse' ? 'Prise de Masse' : 'Recomposition'}
                           </span>
-                          <span>• Cible {userStats.bodyComposition.chosenGoal.targetWeightKg} kg ({userStats.bodyComposition.chosenGoal.targetFatPercent}% MG)</span>
+                          <span>• {hasTarget ? `Cible ${userStats.targetWeightKg} kg · ` : ''}{userStats.bodyComposition.chosenGoal.targetFatPercent}% MG</span>
                         </span>
                       )}
                     </div>
@@ -406,9 +388,11 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 {userStats.nextGoal.title}
               </h4>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10">
-              {goalProgress.percent}%
-            </span>
+            {goalProgress && (
+              <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10 tabular-nums">
+                {goalProgress.percent}%
+              </span>
+            )}
           </div>
 
           <p className="text-xs text-[#A7A7A7] leading-relaxed">
@@ -416,29 +400,29 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           </p>
 
           {/* Animated Progress Bar */}
-          <div className="space-y-1.5">
-            <div className="w-full h-2.5 rounded-full bg-[#121212] overflow-hidden p-0.5 border border-white/[0.06]">
-              <div 
-                className="h-full rounded-full bg-gradient-to-r from-[#7C3AED] via-[#EC4899] to-[#00C6FF] transition-all duration-1000 ease-out glow-main"
-                style={{ width: `${goalProgress.percent}%` }}
-              />
+          {goalProgress ? (
+            <div className="space-y-1.5">
+              <div className="w-full h-2.5 rounded-full bg-[#121212] overflow-hidden p-0.5 border border-white/[0.06]">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#7C3AED] via-[#EC4899] to-[#00C6FF] transition-all duration-1000 ease-out glow-main"
+                  style={{ width: `${goalProgress.percent}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#A7A7A7] tabular-nums">
+                <span>Départ : {goalProgress.start} kg</span>
+                <span className="text-[#00C6FF] font-semibold">
+                  {goalProgress.isPertePoids ? `Actuel : ${goalProgress.current} kg` : goalProgress.deltaText}
+                </span>
+                <span className="text-white">Cible : {goalProgress.target} kg</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between text-[11px] font-bold text-[#A7A7A7]">
-              <span>
-                {goalProgress.isPertePoids 
-                  ? `Départ : ${goalProgress.start} ${userStats.nextGoal.unit}` 
-                  : `${goalProgress.start} ${userStats.nextGoal.unit}`}
-              </span>
-              <span className="text-[#00C6FF] font-semibold">
-                {goalProgress.isPertePoids 
-                  ? `Actuel : ${goalProgress.current} ${userStats.nextGoal.unit}` 
-                  : goalProgress.deltaText}
-              </span>
-              <span className="text-white">
-                Cible : {userStats.nextGoal.target} {userStats.nextGoal.unit}
-              </span>
-            </div>
-          </div>
+          ) : (
+            <p className="text-[11px] font-bold text-[#A7A7A7]">
+              {!hasTarget
+                ? 'Aucun objectif de poids : touche pour en définir un.'
+                : 'Aucune pesée enregistrée : ajoute ton poids pour suivre ta progression.'}
+            </p>
+          )}
         </div>
       </section>
 
