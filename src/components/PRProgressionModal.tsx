@@ -79,20 +79,20 @@ const EntryEditor: React.FC<{
   };
 
   return (
-    <div className={`p-3 rounded-xl bg-[#1A1A1A] border space-y-2 ${isRecord ? 'border-[#EC4899]/40' : 'border-white/5'}`}>
+    <div className={`p-3 rounded-control bg-[#1A1A1A] border space-y-2 ${isRecord ? 'border-[#EC4899]/40' : 'border-white/5'}`}>
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Date</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Date</label>
           <input
             type="date"
             value={date}
             max={todayISO()}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2 py-1.5 text-[11px] text-white font-bold"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2 py-1.5 text-caption text-white font-bold"
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Charge (KG)</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Charge (KG)</label>
           <input
             type="number"
             inputMode="decimal"
@@ -100,11 +100,11 @@ const EntryEditor: React.FC<{
             min="0"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-black font-mono"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white font-black font-mono num"
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Reps</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Reps</label>
           <input
             type="number"
             inputMode="numeric"
@@ -112,7 +112,7 @@ const EntryEditor: React.FC<{
             value={reps}
             onChange={(e) => setReps(e.target.value)}
             placeholder="—"
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-black font-mono placeholder:text-[#666666]"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white font-black font-mono num placeholder:text-[#666666]"
           />
         </div>
       </div>
@@ -122,12 +122,12 @@ const EntryEditor: React.FC<{
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Note optionnelle"
         maxLength={120}
-        className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white placeholder:text-[#666666]"
+        className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white placeholder:text-[#666666]"
       />
-      {error && <p className="text-[11px] font-bold text-rose-400">{error}</p>}
+      {error && <p className="text-caption font-bold text-rose-400">{error}</p>}
       <div className="flex items-center justify-between">
         {isRecord ? (
-          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black uppercase flex items-center gap-1">
+          <span className="text-3xs px-1.5 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black uppercase flex items-center gap-1">
             <Trophy className="w-2.5 h-2.5" />
             <span>Record</span>
           </span>
@@ -140,7 +140,7 @@ const EntryEditor: React.FC<{
             onClick={() => {
               if (window.confirm(`Supprimer l'entrée du ${formatShortDate(entry.date)} (${entry.weightKg} kg) ?`)) onDelete();
             }}
-            className="p-1.5 text-[#A7A7A7] hover:text-rose-400 hover:bg-white/5 rounded-lg transition-colors"
+            className="p-1.5 text-[#A7A7A7] hover:text-rose-400 hover:bg-white/5 rounded-chip transition-colors"
             title="Supprimer cette entrée"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -149,7 +149,7 @@ const EntryEditor: React.FC<{
             type="button"
             disabled={!dirty}
             onClick={handleSave}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase flex items-center gap-1 bg-[#0088FF] hover:bg-[#0070DD] text-white disabled:opacity-40 transition-all cursor-pointer disabled:cursor-default"
+            className="px-2.5 py-1 rounded-chip text-caption font-black uppercase flex items-center gap-1 bg-[#0088FF] hover:bg-[#0070DD] text-white disabled:opacity-40 transition-all cursor-pointer disabled:cursor-default"
           >
             <Check className="w-3 h-3" />
             <span>{saved ? 'Enregistré' : 'Enregistrer'}</span>
@@ -187,7 +187,7 @@ const AddEntryForm: React.FC<{
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3.5 rounded-2xl bg-[#1A1A1A] border border-white/15 space-y-3">
+    <form onSubmit={handleSubmit} className="p-4 rounded-card bg-[#1A1A1A] border border-white/15 space-y-3">
       <div className="flex items-center justify-between text-xs font-bold text-white">
         <span>Nouveau palier pour {exerciseName}</span>
         <button type="button" onClick={onCancel} className="text-[#A7A7A7] hover:text-white">
@@ -197,17 +197,17 @@ const AddEntryForm: React.FC<{
 
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Date</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Date</label>
           <input
             type="date"
             value={date}
             max={todayISO()}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2 py-1.5 text-[11px] text-white font-bold"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2 py-1.5 text-caption text-white font-bold"
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Charge (KG)</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Charge (KG)</label>
           <input
             type="number"
             inputMode="decimal"
@@ -215,11 +215,11 @@ const AddEntryForm: React.FC<{
             min="0"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-black font-mono"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white font-black font-mono num"
           />
         </div>
         <div>
-          <label className="text-[10px] text-[#A7A7A7] block font-bold mb-1">Répétitions</label>
+          <label className="text-2xs text-[#A7A7A7] block font-bold mb-1">Répétitions</label>
           <input
             type="number"
             inputMode="numeric"
@@ -227,7 +227,7 @@ const AddEntryForm: React.FC<{
             value={reps}
             onChange={(e) => setReps(e.target.value)}
             placeholder="—"
-            className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-black font-mono placeholder:text-[#666666]"
+            className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white font-black font-mono num placeholder:text-[#666666]"
           />
         </div>
       </div>
@@ -238,19 +238,19 @@ const AddEntryForm: React.FC<{
         onChange={(e) => setNotes(e.target.value)}
         maxLength={120}
         placeholder="Note optionnelle (ex: Barre nette, spotter, RPE 9)"
-        className="w-full bg-[#121212] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white placeholder:text-[#666666]"
+        className="w-full bg-[#121212] border border-white/15 rounded-control px-2.5 py-1.5 text-xs text-white placeholder:text-[#666666]"
       />
 
       {existingDates.includes(date) && !error && (
-        <p className="text-[11px] text-amber-300">Une entrée existe déjà ce jour-là : elle sera remplacée.</p>
+        <p className="text-caption text-amber-300">Une entrée existe déjà ce jour-là : elle sera remplacée.</p>
       )}
-      {error && <p className="text-[11px] font-bold text-rose-400">{error}</p>}
+      {error && <p className="text-caption font-bold text-rose-400">{error}</p>}
 
       <div className="flex gap-2 pt-1">
-        <button type="submit" className="flex-1 py-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white text-xs font-black uppercase">
+        <button type="submit" className="flex-1 py-2 rounded-control bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white text-xs font-black uppercase">
           Enregistrer le palier
         </button>
-        <button type="button" onClick={onCancel} className="px-3 py-2 rounded-xl bg-[#252525] text-xs text-[#A7A7A7]">
+        <button type="button" onClick={onCancel} className="px-3 py-2 rounded-control bg-[#252525] text-xs text-[#A7A7A7]">
           Annuler
         </button>
       </div>
@@ -368,7 +368,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
   const activePoint = activePointIndex !== null ? coords[activePointIndex] : undefined;
 
   const tabBtn = (id: typeof activeTab) =>
-    `py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+    `py-2 rounded-control transition-all flex items-center justify-center gap-1.5 ${
       activeTab === id ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white shadow' : 'text-[#A7A7A7] hover:text-white'
     }`;
 
@@ -379,18 +379,18 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
       }`}
     >
       <div
-        className={`w-full max-w-lg rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl relative my-auto border transition-colors ${
+        className={`w-full max-w-lg rounded-sheet p-5 sm:p-6 space-y-5 shadow-2xl relative my-auto border transition-colors ${
           isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#141414] border-white/10 text-white'
         }`}
       >
         {/* Header */}
         <div className={`flex items-center justify-between pb-3 border-b ${isLight ? 'border-[#7d5a47]/15' : 'border-white/[0.08]'}`}>
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#7C3AED] via-[#EC4899] to-[#FF512F] flex items-center justify-center text-white shrink-0 shadow-lg glow-main">
+            <div className="w-9 h-9 rounded-control bg-gradient-to-tr from-[#7C3AED] via-[#EC4899] to-[#FF512F] flex items-center justify-center text-white shrink-0 shadow-lg glow-main">
               <Trophy className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899] block">ANALYSE DU RECORD PERSONNEL</span>
+              <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] block">ANALYSE DU RECORD PERSONNEL</span>
               <h3 className={`text-lg font-black uppercase tracking-tight truncate ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>{ex.name}</h3>
             </div>
           </div>
@@ -415,19 +415,19 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
                 key={e.id}
                 type="button"
                 onClick={() => setSelectedId(e.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-all shrink-0 flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-control text-xs font-bold uppercase transition-all shrink-0 flex items-center gap-1.5 ${
                   e.id === selectedId ? 'bg-[#EC4899] text-white shadow-md' : 'bg-[#1C1C1C] text-[#A7A7A7] hover:text-white border border-white/5'
                 }`}
               >
                 <span>{e.name}</span>
-                <span className="font-mono text-[11px] opacity-80">({fmtKg(currentPR(e) ?? startPR(e))}kg)</span>
+                <span className="font-mono num text-caption opacity-80">({fmtKg(currentPR(e) ?? startPR(e))}kg)</span>
               </button>
             ))}
           </div>
         )}
 
         {/* Tabs */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#1A1A1A] rounded-2xl border border-white/5 text-xs font-bold text-center">
+        <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#1A1A1A] rounded-card border border-white/5 text-xs font-bold text-center">
           <button type="button" onClick={() => setActiveTab('graph')} className={tabBtn('graph')}>
             <TrendingUp className="w-3.5 h-3.5" />
             <span>Progression</span>
@@ -438,7 +438,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
           </button>
           <button type="button" onClick={() => setActiveTab('history')} className={tabBtn('history')}>
             <Calendar className="w-3.5 h-3.5" />
-            <span>Séries ({history.length})</span>
+            <span className="num">Séries ({history.length})</span>
           </button>
         </div>
 
@@ -450,44 +450,44 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
         {activeTab === 'graph' && (
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 space-y-0.5">
-                <span className="text-[10px] font-bold text-[#A7A7A7] uppercase block">Départ</span>
-                <span className="text-base font-black text-white font-mono">{fmtKg(start)} KG</span>
-                <span className="text-[9px] text-[#737373] block">
+              <div className="p-3 rounded-card bg-[#1C1C1C] border border-white/5 space-y-0.5">
+                <span className="text-2xs font-bold text-[#A7A7A7] uppercase block">Départ</span>
+                <span className="text-base font-black text-white font-mono num">{fmtKg(start)} KG</span>
+                <span className="text-3xs text-[#737373] block">
                   {typeof ex.startKg === 'number' ? 'Saisi' : history[0] ? formatShortDate(history[0].date) : '—'}
                 </span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-[#1C1C1C] border border-[#EC4899]/30 space-y-0.5 relative overflow-hidden">
+              <div className="p-3 rounded-card bg-[#1C1C1C] border border-[#EC4899]/30 space-y-0.5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-10 h-10 bg-[#EC4899]/10 rounded-bl-full pointer-events-none" />
-                <span className="text-[10px] font-bold text-[#EC4899] uppercase block">Record Actuel</span>
-                <span className="text-base font-black text-white font-mono">{fmtKg(cur)} KG</span>
-                <span className="text-[9px] text-[#737373] block">{record ? formatShortDate(record.date) : 'Aucune entrée'}</span>
+                <span className="text-2xs font-bold text-[#EC4899] uppercase block">Record Actuel</span>
+                <span className="text-base font-black text-white font-mono num">{fmtKg(cur)} KG</span>
+                <span className="text-3xs text-[#737373] block num">{record ? formatShortDate(record.date) : 'Aucune entrée'}</span>
               </div>
 
-              <div className="p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 space-y-0.5">
-                <span className="text-[10px] font-bold text-[#00C6FF] uppercase block">Gain Total</span>
-                <span className={`text-base font-black font-mono ${gain !== null && gain < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              <div className="p-3 rounded-card bg-[#1C1C1C] border border-white/5 space-y-0.5">
+                <span className="text-2xs font-bold text-[#00C6FF] uppercase block">Gain Total</span>
+                <span className={`text-base font-black font-mono num ${gain !== null && gain < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                   {gain === null ? '—' : `${signed(gain)} KG`}
                 </span>
-                <span className="text-[9px] text-[#737373] block">{pct === null ? '—' : `${signed(pct)}%`}</span>
+                <span className="text-3xs text-[#737373] block num">{pct === null ? '—' : `${signed(pct)}%`}</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#101010] border border-white/[0.08] relative overflow-hidden">
-              <div className="flex items-center justify-between pb-2 text-[11px] font-bold text-[#A7A7A7]">
+            <div className="p-4 rounded-card bg-[#101010] border border-white/[0.08] relative overflow-hidden">
+              <div className="flex items-center justify-between pb-2 text-caption font-bold text-[#A7A7A7]">
                 <span className="uppercase flex items-center gap-1.5">
                   <TrendingUp className="w-3.5 h-3.5 text-[#EC4899]" />
                   Courbe des charges (kg)
                 </span>
-                <span className="text-xs text-white font-mono">{history.length} palier{history.length > 1 ? 's' : ''}</span>
+                <span className="text-xs text-white font-mono num">{history.length} palier{history.length > 1 ? 's' : ''}</span>
               </div>
 
               {history.length < 2 ? (
                 <div className="h-44 flex flex-col items-center justify-center text-center gap-2 px-4">
                   <TrendingUp className="w-6 h-6 text-[#555555]" />
                   <p className="text-xs font-bold text-white">Pas encore de courbe</p>
-                  <p className="text-[11px] text-[#A7A7A7]">
+                  <p className="text-caption text-[#A7A7A7]">
                     {history.length === 0
                       ? 'Aucune entrée datée pour cet exercice. Ajoute un premier palier.'
                       : 'Une seule entrée datée : ajoute au moins un 2e palier pour tracer la courbe.'}
@@ -553,14 +553,14 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
               )}
 
               {activePoint && (
-                <div className="mt-2 p-2.5 rounded-xl bg-[#1C1C1C] border border-white/10 flex items-center justify-between text-xs animate-in fade-in duration-150">
+                <div className="mt-2 p-3 rounded-control bg-[#1C1C1C] border border-white/10 flex items-center justify-between text-xs animate-in fade-in duration-150">
                   <div className="space-y-0.5">
-                    <span className="text-[10px] text-[#A7A7A7] uppercase">Palier du {formatShortDate(activePoint.pt.date)}</span>
+                    <span className="text-2xs text-[#A7A7A7] uppercase">Palier du {formatShortDate(activePoint.pt.date)}</span>
                     <p className="font-bold text-white">
-                      Charge : <span className="text-[#EC4899] font-black font-mono">{activePoint.pt.weightKg} kg</span>
+                      Charge : <span className="text-[#EC4899] font-black font-mono num">{activePoint.pt.weightKg} kg</span>
                       {activePoint.pt.reps ? ` • ${activePoint.pt.reps} reps` : ''}
                     </p>
-                    {activePoint.pt.notes && <p className="text-[10px] text-[#A7A7A7] italic">"{activePoint.pt.notes}"</p>}
+                    {activePoint.pt.notes && <p className="text-2xs text-[#A7A7A7] italic">"{activePoint.pt.notes}"</p>}
                   </div>
                   <button
                     type="button"
@@ -570,7 +570,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
                         setActivePointIndex(null);
                       }
                     }}
-                    className="p-1 text-rose-400 hover:bg-rose-500/20 rounded-lg transition-colors"
+                    className="p-1 text-rose-400 hover:bg-rose-500/20 rounded-chip transition-colors"
                     title="Supprimer ce point"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -583,7 +583,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
               <button
                 type="button"
                 onClick={() => setShowAddPointForm(true)}
-                className="w-full py-2.5 rounded-xl bg-[#1C1C1C] hover:bg-[#252525] border border-white/10 text-xs font-bold text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                className="w-full py-2.5 rounded-control bg-[#1C1C1C] hover:bg-[#252525] border border-white/10 text-xs font-bold text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-[#00C6FF]" />
                 <span>Ajouter un palier daté</span>
@@ -605,24 +605,24 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-black uppercase text-[#A7A7A7] tracking-wider">Nom de l'exercice</label>
+                <label className="text-caption font-black uppercase text-[#A7A7A7] tracking-wider">Nom de l'exercice</label>
                 <input
                   type="text"
                   value={name}
                   maxLength={60}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-[#1C1C1C] border border-white/15 rounded-xl px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-[#EC4899]"
+                  className="w-full bg-[#1C1C1C] border border-white/15 rounded-control px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-[#EC4899]"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-black uppercase text-[#A7A7A7] tracking-wider">Catégorie</label>
+                <label className="text-caption font-black uppercase text-[#A7A7A7] tracking-wider">Catégorie</label>
                 <input
                   type="text"
                   value={category}
                   maxLength={40}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="Ex: Poitrine, Jambes"
-                  className="w-full bg-[#1C1C1C] border border-white/15 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-white/30 placeholder:text-[#666666]"
+                  className="w-full bg-[#1C1C1C] border border-white/15 rounded-control px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-white/30 placeholder:text-[#666666]"
                 />
               </div>
             </div>
@@ -630,17 +630,17 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
               type="button"
               onClick={handleSaveInfo}
               disabled={name === ex.name && category === (ex.category ?? '')}
-              className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-40 transition-all cursor-pointer disabled:cursor-default"
+              className="w-full py-2 rounded-control bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-40 transition-all cursor-pointer disabled:cursor-default"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Enregistrer nom et catégorie</span>
             </button>
 
             {/* Starting load */}
-            <div className="p-3 rounded-2xl bg-[#1C1C1C] border border-white/5 space-y-2">
+            <div className="p-3 rounded-card bg-[#1C1C1C] border border-white/5 space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-black uppercase text-[#A7A7A7] tracking-wider">Poids de départ (KG)</label>
-                <span className="text-[10px] text-[#737373]">
+                <label className="text-caption font-black uppercase text-[#A7A7A7] tracking-wider">Poids de départ (KG)</label>
+                <span className="text-2xs text-[#737373]">
                   {typeof ex.startKg === 'number' ? 'Saisi à part' : history[0] ? `= 1re entrée (${history[0].weightKg} kg)` : 'Non défini'}
                 </span>
               </div>
@@ -653,12 +653,12 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
                   value={startInput}
                   onChange={(e) => setStartInput(e.target.value)}
                   placeholder={history[0] ? String(history[0].weightKg) : 'ex: 60'}
-                  className="flex-1 bg-[#121212] border border-white/15 rounded-xl px-3 py-2 text-base font-black text-white font-mono focus:outline-none focus:border-[#0088FF] placeholder:text-[#555555]"
+                  className="flex-1 bg-[#121212] border border-white/15 rounded-control px-3 py-2 text-base font-black text-white font-mono num focus:outline-none focus:border-[#0088FF] placeholder:text-[#555555]"
                 />
                 <button
                   type="button"
                   onClick={handleSaveStart}
-                  className="px-3 py-2 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-xs font-black uppercase cursor-pointer"
+                  className="px-3 py-2 rounded-control bg-[#0088FF] hover:bg-[#0070DD] text-white text-xs font-black uppercase cursor-pointer"
                 >
                   OK
                 </button>
@@ -666,7 +666,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
                   <button
                     type="button"
                     onClick={handleResetStart}
-                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-[#A7A7A7] hover:text-white cursor-pointer"
+                    className="p-2 rounded-control bg-white/5 hover:bg-white/10 text-[#A7A7A7] hover:text-white cursor-pointer"
                     title="Utiliser la première entrée comme départ"
                   >
                     <RotateCcw className="w-4 h-4" />
@@ -677,8 +677,8 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
 
             {/* History entries */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-[11px] font-black uppercase text-[#A7A7A7] tracking-wider">
-                <span>Paliers datés ({history.length})</span>
+              <div className="flex items-center justify-between text-caption font-black uppercase text-[#A7A7A7] tracking-wider">
+                <span className="num">Paliers datés ({history.length})</span>
                 {!showAddPointForm && (
                   <button
                     type="button"
@@ -714,7 +714,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+            <div className="p-3 rounded-control bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>Le record actuel est toujours la charge la plus lourde de l’historique. Chaque modification est enregistrée immédiatement.</span>
             </div>
@@ -726,23 +726,23 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
           <div className="space-y-3 max-h-64 overflow-y-auto pr-1 no-scrollbar">
             <div className="flex items-center justify-between text-xs text-[#A7A7A7]">
               <span>Historique chronologique des performances</span>
-              <span className="font-bold text-white">{history.length} entrées</span>
+              <span className="font-bold text-white num">{history.length} entrées</span>
             </div>
             {history.length === 0 && <p className="text-xs text-[#A7A7A7] text-center py-4">Aucune entrée datée.</p>}
             {[...history].reverse().map((pt) => (
-              <div key={pt.id} className="p-3 rounded-xl bg-[#1A1A1A] border border-white/5 flex items-center justify-between gap-3">
+              <div key={pt.id} className="p-3 rounded-control bg-[#1A1A1A] border border-white/5 flex items-center justify-between gap-3">
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-white font-mono">{pt.weightKg} KG</span>
-                    {pt.reps ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white font-bold">{pt.reps} reps</span> : null}
+                    <span className="text-xs font-black text-white font-mono num">{pt.weightKg} KG</span>
+                    {pt.reps ? <span className="text-2xs px-1.5 py-0.5 rounded bg-white/10 text-white font-bold num">{pt.reps} reps</span> : null}
                     {record?.id === pt.id && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black uppercase flex items-center gap-1">
+                      <span className="text-3xs px-1.5 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black uppercase flex items-center gap-1">
                         <Trophy className="w-2.5 h-2.5" />
                         <span>Record</span>
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-[#A7A7A7]">
+                  <p className="text-caption text-[#A7A7A7]">
                     {formatShortDate(pt.date)} {parseInt(pt.date, 10) !== new Date().getFullYear() ? pt.date.slice(0, 4) : ''}
                     {pt.notes ? ` • ${pt.notes}` : ''}
                   </p>
@@ -765,7 +765,7 @@ export const PRProgressionModal: React.FC<PRProgressionModalProps> = ({ exercise
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white font-black text-xs uppercase tracking-wider cursor-pointer"
+            className="px-4 py-2 rounded-control bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white font-black text-xs uppercase tracking-wider cursor-pointer"
           >
             Fermer
           </button>

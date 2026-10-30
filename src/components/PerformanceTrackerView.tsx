@@ -1,19 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Scale, ArrowLeft, Check, Star } from 'lucide-react';
-import { MeasurementEntry } from '../types';
 import { useVoltData } from '../data/VoltDataContext';
 import { sortedHistory as sortedExerciseHistory, weightSeries } from '../data/selectors';
 import { ISODate, LIMITS, parseISODate, todayISO } from '../data/model';
 
 interface PerformanceTrackerViewProps {
-  /** @deprecated Ignored: data now comes from useVoltData() (volt_data_v2) */
-  measurements?: MeasurementEntry[];
-  /** @deprecated Ignored */
-  onAddMeasurement?: (entry: Omit<MeasurementEntry, 'id'>) => void;
-  /** @deprecated Ignored */
-  onDeleteMeasurement?: (id: string) => void;
-  /** @deprecated Ignored: the current weight is derived from the weigh-ins */
-  currentWeightKg?: number;
   onClose?: () => void;
   theme?: 'dark' | 'warm-light';
 }

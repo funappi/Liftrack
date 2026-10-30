@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useState } from 'react';
 import { Trophy, Plus, Award, Activity, Lock, Edit3, Sparkles, Scale, TrendingUp, Target } from 'lucide-react';
-import { UserStats, AchievementBadge, PersonalRecord, MeasurementEntry } from '../types';
+import { UserStats, AchievementBadge } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
 import { EditStatModal, EditableStatType } from './EditStatModal';
@@ -38,18 +38,6 @@ interface ProgressionTabProps {
   onUnlockBadge?: (badgeId: string) => void;
   onOpenBodyComposition?: () => void;
   theme?: 'dark' | 'warm-light';
-  /** @deprecated records come from useVoltData(); still passed to PerformanceTrackerView until it migrates */
-  measurements?: MeasurementEntry[];
-  onAddMeasurement?: (entry: Omit<MeasurementEntry, 'id'>) => void;
-  onDeleteMeasurement?: (id: string) => void;
-  /** @deprecated unused: records come from useVoltData() */
-  personalRecords?: PersonalRecord[];
-  /** @deprecated unused */
-  onLogNewRecord?: (record: { exercise: string; weightKg: number }) => void;
-  /** @deprecated unused */
-  onUpdatePR?: (updated: PersonalRecord) => void;
-  /** @deprecated unused */
-  onDeletePR?: (id: string) => void;
 }
 
 const NEW_EXERCISE = '__new__';
@@ -72,12 +60,9 @@ const recordEntry = (ex: TrackedExercise): PREntry | null => {
 export const ProgressionTab: React.FC<ProgressionTabProps> = ({
   userStats,
   badges,
-  measurements = [],
   onUpdateUserStats,
   onUnlockBadge,
   onOpenBodyComposition,
-  onAddMeasurement = () => {},
-  onDeleteMeasurement = () => {},
   theme,
 }) => {
   const isLight = theme === 'warm-light';
@@ -250,12 +235,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
       </div>
 
       {/* Dynamic Visual Chart Card (Image 1 customized) */}
-      <div className={`p-5 rounded-2xl border space-y-4 shadow-xl transition-colors ${
+      <div className={`p-5 rounded-card border space-y-4 shadow-xl transition-colors ${
         isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#181818] border-white/[0.08] text-white'
       }`}>
         <div className="flex items-center justify-between">
           <div>
-            <span className={`text-[10px] font-black uppercase tracking-widest ${
+            <span className={`text-2xs font-black uppercase tracking-widest ${
               isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
             }`}>
               {activeMetric === 'force' && 'CHARGES MAXIMALES (1RM)'}
@@ -265,7 +250,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               {activeMetric === 'calories' && 'DÉPENSE PAR JOUR (7 J)'}
             </span>
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className={`text-2xl font-black ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+              <span className={`text-2xl font-black num ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                 {activeMetric === 'force' && (avgProgress === null ? '—' : `${signed(avgProgress)}%`)}
                 {activeMetric === 'poids' && `${userStats.currentWeightKg} KG`}
                 {activeMetric === 'composition' && (compWeight ? `${compWeight} KG TOTAL` : '—')}
@@ -289,7 +274,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 type="button"
                 id="btn-manage-1rm-exercises"
                 onClick={() => setShow1RmModal(true)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+                className={`px-3 py-1.5 rounded-control text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
                   isLight
                     ? 'bg-[#faebe0] hover:bg-[#f0ded0] text-[#b85d38] border border-[#b85d38]/25'
                     : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-[#EC4899]/50'
@@ -297,7 +282,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 title="Choisir et modifier les exercices affichés"
               >
                 <Edit3 className="w-3.5 h-3.5 text-[#EC4899]" />
-                <span className="text-[11px] font-black uppercase">Gérer ({maxCharges.length})</span>
+                <span className="text-caption font-black uppercase num">Gérer ({maxCharges.length})</span>
               </button>
             )}
             <Activity className="w-5 h-5 text-[#EC4899]" />
@@ -330,7 +315,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                         <span className="group-hover:text-[#EC4899] transition-colors">{item.label}</span>
                       </span>
-                      <span className={`font-mono ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+                      <span className={`font-mono num ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                         {cur === null ? '—' : `${cur} kg`}{' '}
                         <span className={`${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} font-normal`}>/ {target ? `${target} kg` : 'sans objectif'}</span>
                       </span>
@@ -367,13 +352,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
           {activeMetric === 'poids' && (
             <div className="space-y-4">
-              <PerformanceTrackerView
-                measurements={measurements}
-                onAddMeasurement={onAddMeasurement}
-                onDeleteMeasurement={onDeleteMeasurement}
-                currentWeightKg={userStats.currentWeightKg}
-                theme={theme}
-              />
+              <PerformanceTrackerView theme={theme} />
 
               {onOpenBodyComposition && (
                 <div className="pt-2 flex justify-end">
@@ -402,51 +381,51 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               {/* Mini cards (Grasse, Musculaire, Osseuse, Organes, Eau) from the latest dated measurement */}
               {composition && (
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
-                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#EC4899]/30">
-                  <span className="text-[10px] font-bold text-[#EC4899] uppercase block">Masse Grasse</span>
-                  <span className="text-base font-black text-white font-mono">
+                <div className="p-3 rounded-card bg-[#121212] border border-[#EC4899]/30 flex flex-col items-center">
+                  <span className="text-2xs font-bold text-[#EC4899] uppercase block line-clamp-1">Masse Grasse</span>
+                  <span className="text-base font-black text-white font-mono num">
                     {typeof composition.fatPercent === 'number' ? `${fmt1(composition.fatPercent)}%` : '—'}
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">
+                  <span className="text-3xs text-[#A7A7A7] block mt-0.5 line-clamp-1">
                     {compParts.find((p) => p.key === 'fat') ? `${fmt1(compParts.find((p) => p.key === 'fat')!.kg)} kg` : '—'}
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#00C6FF]/30">
-                  <span className="text-[10px] font-bold text-[#00C6FF] uppercase block">Masse Musculaire</span>
-                  <span className="text-base font-black text-white font-mono">{fmt1(composition.muscleMassKg)}</span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG contractile</span>
+                <div className="p-3 rounded-card bg-[#121212] border border-[#00C6FF]/30 flex flex-col items-center">
+                  <span className="text-2xs font-bold text-[#00C6FF] uppercase block line-clamp-1">Masse Musculaire</span>
+                  <span className="text-base font-black text-white font-mono num">{fmt1(composition.muscleMassKg)}</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-0.5 line-clamp-1">KG contractile</span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#F59E0B]/30">
-                  <span className="text-[10px] font-bold text-[#F59E0B] uppercase block">Masse Osseuse</span>
-                  <span className="text-base font-black text-white font-mono">{fmt1(composition.boneMassKg)}</span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG squelette</span>
+                <div className="p-3 rounded-card bg-[#121212] border border-[#F59E0B]/30 flex flex-col items-center">
+                  <span className="text-2xs font-bold text-[#F59E0B] uppercase block line-clamp-1">Masse Osseuse</span>
+                  <span className="text-base font-black text-white font-mono num">{fmt1(composition.boneMassKg)}</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-0.5 line-clamp-1">KG squelette</span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#3B82F6]/30">
-                  <span className="text-[10px] font-bold text-[#3B82F6] uppercase block">Organes & Fluides</span>
-                  <span className="text-base font-black text-white font-mono">{fmt1(composition.organMassKg)}</span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">KG vitaux</span>
+                <div className="p-3 rounded-card bg-[#121212] border border-[#3B82F6]/30 flex flex-col items-center">
+                  <span className="text-2xs font-bold text-[#3B82F6] uppercase block line-clamp-1">Organes & Fluides</span>
+                  <span className="text-base font-black text-white font-mono num">{fmt1(composition.organMassKg)}</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-0.5 line-clamp-1">KG vitaux</span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-[#121212] border border-[#0088FF]/30 col-span-2 sm:col-span-1">
-                  <span className="text-[10px] font-bold text-[#0088FF] uppercase block">Eau corporelle</span>
-                  <span className="text-base font-black text-white font-mono">{fmt1(composition.waterLiters)}</span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">Litres</span>
+                <div className="p-3 rounded-card bg-[#121212] border border-[#0088FF]/30 col-span-2 sm:col-span-1 flex flex-col items-center">
+                  <span className="text-2xs font-bold text-[#0088FF] uppercase block line-clamp-1">Eau corporelle</span>
+                  <span className="text-base font-black text-white font-mono num">{fmt1(composition.waterLiters)}</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-0.5 line-clamp-1">Litres</span>
                 </div>
               </div>
               )}
 
               {/* Cap Stratégique & Objectif Actif si défini */}
               {userStats.bodyComposition?.chosenGoal && (
-                <div className="p-3 rounded-xl bg-gradient-to-r from-[#181520] to-[#121212] border border-[#10B981]/30 flex items-center justify-between">
+                <div className="p-3 rounded-card bg-gradient-to-r from-[#181520] to-[#121212] border border-[#10B981]/30 flex items-center justify-between">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981]">
+                      <span className="text-3xs font-black uppercase px-2 py-0.5 rounded-full bg-[#10B981]/20 text-[#10B981]">
                         Cap : {userStats.bodyComposition.chosenGoal.type === 'seche' ? 'Sèche Ciblée' : userStats.bodyComposition.chosenGoal.type === 'prise_de_masse' ? 'Prise de Masse' : 'Recomposition'}
                       </span>
-                      <span className="text-[10px] text-[#A7A7A7] flex items-center gap-1">
+                      <span className="text-2xs text-[#A7A7A7] flex items-center gap-1">
                         {userStats.bodyComposition.chosenGoal.source === 'app_recommendation' ? (
                           <>
                             <Sparkles className="w-3 h-3 text-[#EC4899]" />
@@ -464,7 +443,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                       Cible : {userStats.bodyComposition.chosenGoal.targetWeightKg} kg • Visée {userStats.bodyComposition.chosenGoal.targetFatPercent}% MG
                     </p>
                   </div>
-                  <span className="text-xs font-black text-[#10B981] font-mono">
+                  <span className="text-xs font-black text-[#10B981] font-mono num">
                     {userStats.bodyComposition.chosenGoal.targetWeightKg - userStats.currentWeightKg > 0 ? `+${(userStats.bodyComposition.chosenGoal.targetWeightKg - userStats.currentWeightKg).toFixed(1)}` : (userStats.bodyComposition.chosenGoal.targetWeightKg - userStats.currentWeightKg).toFixed(1)} kg
                   </span>
                 </div>
@@ -479,7 +458,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                       return <div key={p.key} style={{ width: `${pct}%` }} className={p.cls} title={`${p.label} ${fmt1(p.kg)} kg (${Math.round(pct)}%)`} />;
                     })}
                   </div>
-                  <div className="flex justify-between flex-wrap gap-x-2 text-[10px] text-[#A7A7A7]">
+                  <div className="flex justify-between flex-wrap gap-x-2 text-2xs text-[#A7A7A7]">
                     {compParts.map((p) => (
                       <span key={p.key} className="flex items-center gap-1">
                         <span className={`w-2 h-2 rounded-full ${p.cls}`} /> {p.label} {Math.round((p.kg / compDenominator) * 100)}%
@@ -491,7 +470,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                       </span>
                     )}
                   </div>
-                  {!compWeight && <p className="text-[10px] text-[#737373]">Sans poids enregistré, les parts sont calculées sur la somme des masses.</p>}
+                  {!compWeight && <p className="text-2xs text-[#737373]">Sans poids enregistré, les parts sont calculées sur la somme des masses.</p>}
                 </div>
               )}
 
@@ -499,7 +478,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 <button
                   type="button"
                   onClick={onOpenBodyComposition}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase tracking-wider hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md"
+                  className="w-full py-2.5 rounded-control bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase tracking-wider hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 shadow-md"
                 >
                   <Scale className="w-3.5 h-3.5" />
                   <span>Ouvrir le Calculateur Multi-Formules</span>
@@ -518,12 +497,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <div className="h-28 flex items-end justify-between gap-3 pt-2">
                 {weeks.map((pt) => (
                   <div key={pt.from} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <span className="text-xs font-black text-white">{pt.count}</span>
+                    <span className="text-xs font-black text-white num">{pt.count}</span>
                     <div
                       className="w-full rounded-t-lg bg-gradient-to-t from-[#7C3AED] to-[#EC4899] transition-all duration-500 glow-main"
                       style={{ height: `${pt.count === 0 ? 2 : Math.max(6, (pt.count / maxWeekCount) * 100)}%` }}
                     />
-                    <span className="text-[11px] font-bold text-[#A7A7A7] whitespace-nowrap">{pt.label}</span>
+                    <span className="text-caption font-bold text-[#A7A7A7] whitespace-nowrap">{pt.label}</span>
                   </div>
                 ))}
               </div>
@@ -539,12 +518,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <div className="h-28 flex items-end justify-between gap-2 pt-2">
                 {days.map((pt) => (
                   <div key={pt.date} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <span className="text-[10px] font-bold text-[#FF512F]">{pt.kcal || ''}</span>
+                    <span className="text-2xs font-bold text-[#FF512F] num">{pt.kcal || ''}</span>
                     <div
                       className="w-full rounded-t-lg bg-gradient-to-t from-[#FF512F] to-[#DD2476] transition-all duration-500 glow-energy"
                       style={{ height: `${pt.kcal === 0 ? 2 : Math.max(6, (pt.kcal / maxDayKcal) * 100)}%` }}
                     />
-                    <span className="text-[11px] font-bold text-[#A7A7A7] capitalize">{pt.label}</span>
+                    <span className="text-caption font-bold text-[#A7A7A7] capitalize">{pt.label}</span>
                   </div>
                 ))}
               </div>
@@ -555,7 +534,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
       {/* Biometrics & Body Composition Card Banner */}
       {onOpenBodyComposition && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#181818] border border-white/[0.08] flex items-center justify-between shadow-xl">
+        <div className="p-4 sm:p-5 rounded-card bg-[#181818] border border-white/[0.08] flex items-center justify-between shadow-xl">
           <span className="text-sm font-black text-white uppercase tracking-tight">
             Composition Corporelle & Objectifs
           </span>
@@ -563,7 +542,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           <button
             type="button"
             onClick={onOpenBodyComposition}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase tracking-wide hover:brightness-110 active:scale-95 transition-all shadow-md shrink-0 ml-2 cursor-pointer"
+            className="px-4 py-2 rounded-control bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase tracking-wide hover:brightness-110 active:scale-95 transition-all shadow-md shrink-0 ml-2 cursor-pointer"
           >
             Calculer
           </button>
@@ -590,7 +569,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         </div>
 
         {recordExercises.length === 0 && (
-          <div className={`p-5 rounded-2xl border text-center space-y-1 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/[0.08]'}`}>
+          <div className={`p-5 rounded-card border text-center space-y-1 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/[0.08]'}`}>
             <p className={`text-sm font-black uppercase ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>Aucun record pour l’instant</p>
             <p className={`text-xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Enregistre ta première charge avec « Nouveau record ».</p>
           </div>
@@ -606,19 +585,19 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
             return (
               <div
                 key={ex.id}
-                className={`p-4 rounded-2xl border transition-all space-y-3 relative overflow-hidden group shadow-lg ${
+                className={`p-4 rounded-card border transition-all space-y-3 relative overflow-hidden group shadow-lg flex flex-col h-full ${
                   isLight
                     ? 'bg-[#fff7f0] border-[#7d5a47]/20 hover:border-[#EC4899]/50 hover:bg-[#faebe0] shadow-sm'
                     : 'bg-[#181818] border-white/[0.08] hover:border-[#EC4899]/40 hover:bg-[#202020]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`text-[10px] font-black uppercase tracking-wider truncate ${
+                  <span className={`text-2xs font-black uppercase tracking-wider truncate ${
                     isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                   }`}>
                     {ex.category || (lastRecord ? `Record du ${formatShortDate(lastRecord.date)}` : 'Sans entrée')}
                   </span>
-                  <span className={`text-[11px] font-bold font-mono shrink-0 ${gain !== null && gain < 0 ? 'text-rose-400' : 'text-emerald-500'}`}>
+                  <span className={`text-caption font-bold font-mono num shrink-0 ${gain !== null && gain < 0 ? 'text-rose-400' : 'text-emerald-500'}`}>
                     {gain === null ? '—' : `${signed(gain)} kg de progression`}
                   </span>
                 </div>
@@ -634,14 +613,14 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                   </h4>
 
                   <div className="flex items-baseline gap-2 pt-0.5 flex-wrap">
-                    <span className={`text-3xl font-black tracking-tight font-mono ${
+                    <span className={`text-3xl font-black tracking-tight font-mono num ${
                       isLight ? 'text-[#3d2317]' : 'text-white'
                     }`}>
                       {cur === null ? '—' : cur}
                     </span>
                     <span className="text-xs font-bold text-[#EC4899]">KG (RECORD ACTUEL)</span>
                   </div>
-                  <span className={`text-[10px] font-bold block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                  <span className={`text-2xs font-bold block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                     {lastRecord
                       ? `Le ${formatShortDate(lastRecord.date)}${lastRecord.reps ? ` • ${lastRecord.reps} reps` : ''}`
                       : 'Aucune entrée datée'}
@@ -649,16 +628,16 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 </div>
 
                 {/* Starting weight section with direct modifier button */}
-                <div className={`flex items-center justify-between pt-2 border-t text-xs ${
+                <div className={`mt-auto flex items-center justify-between pt-2 border-t text-xs ${
                   isLight ? 'border-[#7d5a47]/10' : 'border-white/5'
                 }`}>
                   <div className="space-y-0.5">
-                    <span className={`text-[10px] uppercase font-bold block ${
+                    <span className={`text-2xs uppercase font-bold block ${
                       isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                     }`}>
                       Poids de départ :
                     </span>
-                    <span className={`text-sm font-black font-mono ${
+                    <span className={`text-sm font-black font-mono num ${
                       isLight ? 'text-[#3d2317]' : 'text-white'
                     }`}>
                       {start === null ? '—' : `${start} kg`}
@@ -672,7 +651,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                         e.stopPropagation();
                         openStartEditor(ex);
                       }}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border flex items-center gap-1 transition-colors cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-chip text-caption font-bold border flex items-center gap-1 transition-colors cursor-pointer ${
                         isLight
                           ? 'bg-[#faebe0] hover:bg-[#f0ded0] text-[#0088FF] border-[#7d5a47]/20'
                           : 'bg-white/5 hover:bg-white/15 text-[#00C6FF] border-white/10'
@@ -686,7 +665,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedExerciseId(ex.id)}
-                      className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                      className={`p-1.5 rounded-chip transition-colors cursor-pointer ${
                         isLight
                           ? 'bg-[#faebe0] hover:bg-[#f0ded0] text-[#7d5a47] hover:text-[#3d2317]'
                           : 'bg-white/5 hover:bg-white/15 text-[#A7A7A7] hover:text-white'
@@ -713,7 +692,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               Badges & Succès
             </h3>
           </div>
-          <span className="text-xs font-bold text-[#A7A7A7]">
+          <span className="text-xs font-bold text-[#A7A7A7] num">
             {unlockedCount} / {badges.length} Débloqués
           </span>
         </div>
@@ -722,7 +701,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setBadgeFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${
+            className={`px-3 py-1.5 rounded-control text-xs font-black uppercase transition-all ${
               badgeFilter === 'all'
                 ? 'bg-white text-black'
                 : 'bg-[#181818] text-[#A7A7A7] hover:text-white'
@@ -732,7 +711,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           </button>
           <button
             onClick={() => setBadgeFilter('unlocked')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${
+            className={`px-3 py-1.5 rounded-control text-xs font-black uppercase transition-all ${
               badgeFilter === 'unlocked'
                 ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white shadow-md glow-main'
                 : 'bg-[#181818] text-[#A7A7A7] hover:text-white'
@@ -742,7 +721,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           </button>
           <button
             onClick={() => setBadgeFilter('locked')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-control text-xs font-black uppercase transition-all flex items-center gap-1.5 ${
               badgeFilter === 'locked'
                 ? 'bg-amber-500 text-black shadow-md'
                 : 'bg-[#181818] text-[#A7A7A7] hover:text-white'
@@ -765,7 +744,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <div
                 key={badge.id}
                 onClick={() => setSelectedBadgeForModal(badge)}
-                className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between h-full min-h-[14rem] relative overflow-hidden group select-none active:scale-95 ${
+                className={`p-4 rounded-card border transition-all duration-200 cursor-pointer flex flex-col justify-between h-full min-h-[14rem] relative overflow-hidden group select-none active:scale-95 ${
                   isLocked
                     ? isLight
                       ? 'bg-[#f0dfd0] border-[#7d5a47]/20 hover:border-[#7d5a47]/40 shadow-sm'
@@ -783,14 +762,14 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 <div className="flex items-center justify-between z-20 relative">
                   <div>
                     {badge.isNew && !isLocked && (
-                      <span className="px-1.5 py-0.5 rounded bg-[#EC4899] text-black font-black text-[9px] uppercase tracking-wider">
+                      <span className="px-1.5 py-0.5 rounded bg-[#EC4899] text-black font-black text-3xs uppercase tracking-wider">
                         NOUVEAU
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className={`text-[9px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                    <span className={`text-3xs font-bold num ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                       +{badge.rewardXp || 100} XP
                     </span>
                     {isLocked && (
@@ -804,7 +783,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 {/* 2. Middle Content: Badge Emoji & Texts */}
                 <div className="space-y-2 z-20 relative my-auto">
                   {/* Badge Emoji / Visual (Version précédente) */}
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl relative ${isLight ? 'bg-black/5 border border-black/5' : 'bg-white/5 border border-white/5'} transition-transform group-hover:scale-105 ${
+                  <div className={`w-12 h-12 rounded-control flex items-center justify-center text-2xl relative ${isLight ? 'bg-black/5 border border-black/5' : 'bg-white/5 border border-white/5'} transition-transform group-hover:scale-105 ${
                     isLocked ? 'grayscale opacity-60' : ''
                   }`}>
                     <span className="text-2xl filter drop-shadow select-none">{badge.emoji}</span>
@@ -820,12 +799,12 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     </h4>
                     {/* Humorous description ONLY when unlocked; How to unlock when locked */}
                     {isLocked ? (
-                      <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-3 mt-1 leading-snug`}>
+                      <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-3 mt-1 leading-snug`}>
                         <span className={`${isLight ? 'text-[#3d2317]' : 'text-white/90'} font-bold`}>Déblocage : </span>
                         {getBadgeUnlockRequirement(badge.id, badge.progressTarget, badge.progressUnit)}
                       </p>
                     ) : (
-                      <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-3 mt-1 leading-snug`}>
+                      <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-3 mt-1 leading-snug`}>
                         {badge.description}
                       </p>
                     )}
@@ -843,7 +822,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
 
                 {/* 4. Subtle gray veil overlay: 100% card coverage without bottom gap */}
                 {isLocked && (
-                  <div className={`absolute inset-0 z-10 m-0 w-full h-full ${isLight ? 'bg-[#3d2317]/15' : 'bg-neutral-900/40'} backdrop-blur-[0.5px] rounded-2xl pointer-events-none`} />
+                  <div className={`absolute inset-0 z-10 m-0 w-full h-full ${isLight ? 'bg-[#3d2317]/15' : 'bg-neutral-900/40'} backdrop-blur-[0.5px] rounded-card pointer-events-none`} />
                 )}
               </div>
             );
@@ -856,17 +835,17 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-150 ${
           isLight ? 'bg-[#3d2317]/65 backdrop-blur-xl' : 'bg-black/80 backdrop-blur-md'
         }`}>
-          <div className={`w-full max-w-sm rounded-2xl p-5 space-y-4 shadow-2xl border transition-colors ${
+          <div className={`w-full max-w-sm rounded-card p-5 space-y-4 shadow-2xl border transition-colors ${
             isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#181818] border-white/10 text-white'
           }`}>
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899]">
+              <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899]">
                 NOUVEAU PR PERSONNEL
               </span>
               <h3 className={`text-xl font-black uppercase tracking-tight ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                 Enregistrer un record
               </h3>
-              <p className={`text-[11px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+              <p className={`text-caption ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                 Entrée datée d’aujourd’hui (remplace celle du jour si elle existe déjà).
               </p>
             </div>
@@ -882,7 +861,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     setNewExerciseChoice(e.target.value);
                     setPrError(null);
                   }}
-                  className={`w-full rounded-xl px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
+                  className={`w-full rounded-control px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
                     isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                   }`}
                 >
@@ -904,7 +883,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     autoFocus
                     placeholder="Ex: Développé couché"
                     onChange={(e) => setNewExerciseName(e.target.value)}
-                    className={`mt-2 w-full rounded-xl px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
+                    className={`mt-2 w-full rounded-control px-3 py-2 text-sm border focus:outline-none focus:border-[#EC4899] ${
                       isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                     }`}
                   />
@@ -924,7 +903,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     value={newWeight}
                     placeholder="0"
                     onChange={(e) => setNewWeight(e.target.value)}
-                    className={`w-full rounded-xl px-3 py-2 text-xl font-black font-mono border focus:outline-none focus:border-[#EC4899] ${
+                    className={`w-full rounded-control px-3 py-2 text-xl font-black font-mono num border focus:outline-none focus:border-[#EC4899] ${
                       isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                     }`}
                   />
@@ -940,7 +919,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     value={newReps}
                     placeholder="—"
                     onChange={(e) => setNewReps(e.target.value)}
-                    className={`w-full rounded-xl px-3 py-2 text-xl font-black font-mono border focus:outline-none focus:border-[#EC4899] ${
+                    className={`w-full rounded-control px-3 py-2 text-xl font-black font-mono num border focus:outline-none focus:border-[#EC4899] ${
                       isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#121212] border-white/10 text-white'
                     }`}
                   />
@@ -953,7 +932,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddPrModal(false)}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold uppercase transition-colors border ${
+                  className={`flex-1 py-2.5 rounded-control text-xs font-bold uppercase transition-colors border ${
                     isLight
                       ? 'bg-[#f0ded0] text-[#7d5a47] hover:text-[#3d2317] hover:bg-[#fff3ea] border-[#7d5a47]/20'
                       : 'bg-[#202020] text-[#A7A7A7] hover:text-white border-transparent'
@@ -963,7 +942,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase glow-main"
+                  className="flex-1 py-2.5 rounded-control bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-xs font-black text-white uppercase glow-main"
                 >
                   Valider
                 </button>
@@ -1011,7 +990,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
           onClick={() => setEditingStartExerciseId(null)}
         >
           <div
-            className={`w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl border transition-colors ${
+            className={`w-full max-w-sm rounded-sheet p-5 space-y-4 shadow-2xl border transition-colors ${
               isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#161616] border-white/15 text-white'
             }`}
             onClick={(e) => e.stopPropagation()}
@@ -1020,7 +999,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               isLight ? 'border-[#7d5a47]/15' : 'border-white/10'
             }`}>
               <div>
-                <span className="text-[10px] font-black uppercase text-[#00C6FF] tracking-wider block">
+                <span className="text-2xs font-black uppercase text-[#00C6FF] tracking-wider block">
                   PROGRESSION
                 </span>
                 <h3 className={`text-sm font-black uppercase ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
@@ -1042,7 +1021,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
             </p>
 
             <div className="space-y-1.5 py-1">
-              <label className="text-[11px] font-bold text-[#A7A7A7] uppercase block">
+              <label className="text-caption font-bold text-[#A7A7A7] uppercase block">
                 Poids initial / de départ (KG)
               </label>
               <div className="relative">
@@ -1057,7 +1036,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     setInputStartWeight(e.target.value);
                     setStartError(null);
                   }}
-                  className="w-full bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl py-3 px-4 text-2xl font-black font-mono text-white text-center focus:outline-none"
+                  className="w-full bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-card py-3 px-4 text-2xl font-black font-mono num text-white text-center focus:outline-none"
                   autoFocus
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#0088FF]">
@@ -1067,14 +1046,14 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               {startError && <p className="text-xs font-bold text-rose-400">{startError}</p>}
             </div>
 
-            <div className="p-3 rounded-xl bg-[#202020] border border-white/5 space-y-1 text-xs">
+            <div className="p-3 rounded-control bg-[#202020] border border-white/5 space-y-1 text-xs">
               <div className="flex justify-between text-[#A7A7A7]">
                 <span>Record actuel :</span>
                 <span className="text-white font-bold">{startCur === null ? '—' : `${startCur} kg`}</span>
               </div>
               <div className="flex justify-between text-[#A7A7A7]">
                 <span>Gain de progression :</span>
-                <span className={`font-bold font-mono ${startPreviewGain !== null && startPreviewGain < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <span className={`font-bold font-mono num ${startPreviewGain !== null && startPreviewGain < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                   {startPreviewGain === null ? '—' : `${signed(startPreviewGain)} kg`}
                 </span>
               </div>
@@ -1088,7 +1067,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                     updateExercise(editingStartExercise.id, { startKg: undefined });
                     setEditingStartExerciseId(null);
                   }}
-                  className="px-3 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-[11px] font-bold text-[#A7A7A7] hover:text-white transition-colors"
+                  className="px-3 py-2.5 rounded-control bg-white/5 hover:bg-white/10 text-caption font-bold text-[#A7A7A7] hover:text-white transition-colors"
                   title="Revenir à la première entrée de l'historique"
                 >
                   1re entrée
@@ -1097,14 +1076,14 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
               <button
                 type="button"
                 onClick={() => setEditingStartExerciseId(null)}
-                className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-white transition-colors"
+                className="flex-1 py-2.5 rounded-control bg-white/5 hover:bg-white/10 text-xs font-bold text-white transition-colors"
               >
                 Annuler
               </button>
               <button
                 type="button"
                 onClick={handleSaveStart}
-                className="flex-1 py-2.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#0088FF]/30 transition-all cursor-pointer"
+                className="flex-1 py-2.5 rounded-control bg-[#0088FF] hover:bg-[#0070DD] text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-[#0088FF]/30 transition-all cursor-pointer"
               >
                 Enregistrer
               </button>

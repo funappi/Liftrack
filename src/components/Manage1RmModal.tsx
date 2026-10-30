@@ -196,7 +196,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
       onClick={onClose}
     >
       <div
-        className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl border transition-colors ${
+        className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-sheet p-5 sm:p-6 space-y-5 shadow-2xl border transition-colors ${
           isLight ? 'bg-[#faebe0] border-[#7d5a47]/25 text-[#3d2317]' : 'bg-[#181818] border-white/15 text-white'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -204,7 +204,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
         {/* Header */}
         <div className="flex items-center justify-between border-b pb-3 border-current/10">
           <div className="space-y-0.5">
-            <span className={`text-[10px] font-black uppercase tracking-wider block ${isLight ? 'text-[#b85d38]' : 'text-[#EC4899]'}`}>
+            <span className={`text-2xs font-black uppercase tracking-wider block ${isLight ? 'text-[#b85d38]' : 'text-[#EC4899]'}`}>
               PERSONNALISATION 1RM
             </span>
             <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight flex items-center gap-2">
@@ -230,8 +230,8 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
         {/* Exercises */}
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider opacity-80">
-            <span>Exercices ({rows.length})</span>
-            <span className="text-[10px]">{shownCount} affiché{shownCount > 1 ? 's' : ''}</span>
+            <span className="num">Exercices ({rows.length})</span>
+            <span className="text-2xs num">{shownCount} affiché{shownCount > 1 ? 's' : ''}</span>
           </div>
 
           {rows.length === 0 && (
@@ -247,7 +247,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
               return (
                 <div
                   key={item.id}
-                  className={`p-3.5 rounded-2xl border space-y-2.5 transition-all ${
+                  className={`p-4 rounded-card border space-y-2.5 transition-all ${
                     isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20 shadow-sm' : 'bg-[#141414] border-white/10'
                   } ${item.show ? '' : 'opacity-60'}`}
                 >
@@ -268,7 +268,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                     <button
                       type="button"
                       onClick={() => handleUpdateRow(item.id, { show: !item.show })}
-                      className={`p-1 rounded-lg transition-colors cursor-pointer ${item.show ? 'text-[#00C6FF]' : 'text-[#737373] hover:text-white'}`}
+                      className={`p-1 rounded-chip transition-colors cursor-pointer ${item.show ? 'text-[#00C6FF]' : 'text-[#737373] hover:text-white'}`}
                       title={item.show ? 'Masquer des charges maximales' : 'Afficher dans les charges maximales'}
                     >
                       {item.show ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -276,7 +276,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                     <button
                       type="button"
                       onClick={() => handleDeleteExercise(item)}
-                      className="p-1 text-[#737373] hover:text-rose-500 rounded-lg transition-colors cursor-pointer"
+                      className="p-1 text-[#737373] hover:text-rose-500 rounded-chip transition-colors cursor-pointer"
                       title="Supprimer l'exercice et son historique"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -285,16 +285,16 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
 
                   <div className="grid grid-cols-2 gap-3 pt-1 text-xs">
                     <div className="space-y-1">
-                      <span className={`text-[10px] font-bold uppercase block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                      <span className={`text-2xs font-bold uppercase block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                         Record actuel
                       </span>
-                      <span className={`block py-1 font-mono font-black ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+                      <span className={`block py-1 font-mono num font-black ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                         {cur === null ? 'Aucune entrée' : `${cur} kg`}
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <span className={`text-[10px] font-bold uppercase block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                      <span className={`text-2xs font-bold uppercase block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                         Objectif Cible (KG)
                       </span>
                       <input
@@ -305,7 +305,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                         value={item.target}
                         placeholder="—"
                         onChange={(e) => handleUpdateRow(item.id, { target: e.target.value })}
-                        className={`w-24 text-center py-1 font-mono font-black rounded-lg border focus:outline-none focus:border-[#EC4899] ${
+                        className={`w-24 text-center py-1 font-mono num font-black rounded-chip border focus:outline-none focus:border-[#EC4899] ${
                           isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#1C1C1C] border-white/10 text-white'
                         }`}
                       />
@@ -313,7 +313,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                   </div>
 
                   <div className="flex items-center gap-1.5 pt-1">
-                    <span className={`text-[9px] uppercase font-bold mr-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Couleur :</span>
+                    <span className={`text-3xs uppercase font-bold mr-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Couleur :</span>
                     {COLOR_PRESETS.map((c) => (
                       <button
                         key={c.hex}
@@ -344,7 +344,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                 key={preset.label}
                 type="button"
                 onClick={() => handleAddPreset(preset)}
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-xl border flex items-center gap-1 transition-all cursor-pointer ${
+                className={`text-caption font-bold px-2.5 py-1 rounded-control border flex items-center gap-1 transition-all cursor-pointer ${
                   isLight
                     ? 'bg-[#fff7f0] border-[#7d5a47]/20 hover:border-[#b85d38] text-[#3d2317]'
                     : 'bg-[#141414] border-white/10 hover:border-white/30 text-white'
@@ -367,7 +367,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
               setShowAddForm(true);
               setAddError(null);
             }}
-            className={`w-full py-2.5 rounded-2xl border border-dashed flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wide transition-all cursor-pointer ${
+            className={`w-full py-2.5 rounded-card border border-dashed flex items-center justify-center gap-2 text-xs font-black uppercase tracking-wide transition-all cursor-pointer ${
               isLight
                 ? 'border-[#7d5a47]/30 hover:border-[#b85d38] text-[#b85d38] hover:bg-[#fff7f0]'
                 : 'border-white/20 hover:border-white/40 text-white hover:bg-white/5'
@@ -379,7 +379,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
         ) : (
           <form
             onSubmit={handleAddExercise}
-            className={`p-4 rounded-2xl border space-y-3 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/25' : 'bg-[#141414] border-white/15'}`}
+            className={`p-4 rounded-card border space-y-3 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/25' : 'bg-[#141414] border-white/15'}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase">Nouvel Exercice 1RM</span>
@@ -389,7 +389,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
             </div>
 
             <div>
-              <label className={`text-[10px] font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+              <label className={`text-2xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                 Nom de l'exercice
               </label>
               <input
@@ -399,7 +399,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                 placeholder="Ex: FENTES MARCHÉES, HACK SQUAT, CURL PUPITRE..."
                 value={newLabel}
                 onChange={(e) => setNewLabel(e.target.value)}
-                className={`w-full rounded-xl px-3 py-2 text-xs border focus:outline-none focus:border-[#EC4899] ${
+                className={`w-full rounded-control px-3 py-2 text-xs border focus:outline-none focus:border-[#EC4899] ${
                   isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#1A1A1A] border-white/10 text-white'
                 }`}
               />
@@ -407,7 +407,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className={`text-[10px] font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                <label className={`text-2xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   Charge actuelle (KG, option.)
                 </label>
                 <input
@@ -418,13 +418,13 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                   value={newVal}
                   placeholder="—"
                   onChange={(e) => setNewVal(e.target.value)}
-                  className={`w-full rounded-xl px-3 py-1.5 text-xs font-mono font-bold border focus:outline-none focus:border-[#EC4899] ${
+                  className={`w-full rounded-control px-3 py-1.5 text-xs font-mono num font-bold border focus:outline-none focus:border-[#EC4899] ${
                     isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#1A1A1A] border-white/10 text-white'
                   }`}
                 />
               </div>
               <div>
-                <label className={`text-[10px] font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                <label className={`text-2xs font-bold uppercase block mb-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   Objectif Cible (KG, option.)
                 </label>
                 <input
@@ -435,13 +435,13 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
                   value={newTarget}
                   placeholder="—"
                   onChange={(e) => setNewTarget(e.target.value)}
-                  className={`w-full rounded-xl px-3 py-1.5 text-xs font-mono font-bold border focus:outline-none focus:border-[#EC4899] ${
+                  className={`w-full rounded-control px-3 py-1.5 text-xs font-mono num font-bold border focus:outline-none focus:border-[#EC4899] ${
                     isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-[#1A1A1A] border-white/10 text-white'
                   }`}
                 />
               </div>
             </div>
-            <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+            <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
               La charge actuelle saisie est enregistrée comme entrée datée d’aujourd’hui.
             </p>
 
@@ -462,7 +462,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
               </div>
               <button
                 type="submit"
-                className="px-3.5 py-1.5 rounded-xl bg-[#EC4899] hover:bg-[#d63384] text-black font-black text-xs uppercase cursor-pointer"
+                className="px-3.5 py-1.5 rounded-control bg-[#EC4899] hover:bg-[#d63384] text-black font-black text-xs uppercase cursor-pointer"
               >
                 Ajouter
               </button>
@@ -472,7 +472,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
 
         {error && <p className="text-xs font-bold text-rose-400">{error}</p>}
 
-        <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+        <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
           Les ajouts et suppressions sont immédiats ; noms, objectifs, couleurs et affichage sont appliqués avec « Enregistrer ».
         </p>
 
@@ -481,7 +481,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
           <button
             type="button"
             onClick={onClose}
-            className={`flex-1 py-3 rounded-2xl text-xs font-bold uppercase transition-colors cursor-pointer ${
+            className={`flex-1 py-3 rounded-card text-xs font-bold uppercase transition-colors cursor-pointer ${
               isLight ? 'bg-[#f0ded0] text-[#7d5a47]' : 'bg-white/5 text-[#A7A7A7] hover:text-white'
             }`}
           >
@@ -490,7 +490,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
           <button
             type="button"
             onClick={handleSaveAll}
-            className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-[#7C3AED] to-[#EC4899] hover:brightness-110 active:scale-[0.98] text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-[#EC4899]/25 flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 rounded-card bg-gradient-to-r from-[#7C3AED] to-[#EC4899] hover:brightness-110 active:scale-[0.98] text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-[#EC4899]/25 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Check className="w-4 h-4 stroke-[3]" />
             <span>Enregistrer mes 1RM</span>
