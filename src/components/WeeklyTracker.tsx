@@ -106,31 +106,33 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
     <>
       {renderHeader(handleOpenScheduleForSelected)}
 
+      {/* Week summary + checkable days (grouped like the Home sections) */}
+      <section className="space-y-3.5">
       {/* Weekly Stats Summary Bar */}
       <div className="p-4 rounded-2xl bg-[#121212] border border-white/[0.06] flex items-center justify-between">
         <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A7A7A7]">
+          <span className="text-2xs font-extrabold uppercase tracking-widest text-[#A7A7A7]">
             VOLUME HEBDOMADAIRE
           </span>
           <p className="text-sm font-black text-white uppercase">{totalCheckedCount} JOURS VALIDÉS / {weeklyGoal}</p>
-          <p className="text-[11px] font-bold text-[#A7A7A7] tabular-nums">
+          <p className="text-caption font-bold text-[#A7A7A7] num">
             {formatKg(volumeKg)} kg soulevés
             {weeklyVolumeTargetKg ? ` / ${formatKg(weeklyVolumeTargetKg)} kg` : ''}
           </p>
         </div>
         <div className="text-right">
-          <span className="text-base font-black text-gradient-main">
+          <span className="text-base font-black text-gradient-main num">
             {Math.min(100, Math.round((totalCheckedCount / Math.max(1, weeklyGoal)) * 100))}%
           </span>
-          <p className="text-[10px] text-[#A7A7A7]">Objectif de la semaine</p>
+          <p className="text-2xs text-[#A7A7A7]">Objectif de la semaine</p>
         </div>
       </div>
 
       {/* Checkable Days of the Week: No dates, perfectly aligned horizontal checkboxes */}
       <div className="p-3 rounded-2xl bg-[#181818] border border-white/[0.08] space-y-2.5">
-        <div className="flex items-center justify-between px-1 text-[11px] font-bold text-[#A7A7A7]">
+        <div className="flex items-center justify-between px-1 text-caption font-bold text-[#A7A7A7]">
           <span>JOURS DE LA SEMAINE</span>
-          <span className="text-[#00C6FF] font-mono">{totalCheckedCount}/7 cochés</span>
+          <span className="text-[#00C6FF] font-mono num">{totalCheckedCount}/7 cochés</span>
         </div>
 
         {/* 7 Columns: All with identical height, day on top, checkbox directly below */}
@@ -158,7 +160,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
               >
                 {/* 1. Day name on top (LUN, MAR, MER...) */}
                 <span
-                  className={`text-[11px] font-black uppercase tracking-wider ${
+                  className={`text-caption font-black uppercase tracking-wider ${
                     isSelected ? (isLight ? 'text-[#3d2317]' : 'text-white') : (isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]')
                   }`}
                 >
@@ -207,14 +209,18 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
         </div>
       </div>
 
+      </section>
+
+      {/* Selected day + its scheduled sessions */}
+      <section className="space-y-3.5">
       {/* Selected Day Header (Without date numbers, clean day name) */}
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-black uppercase text-white tracking-wide">
             {DAY_FULL_NAMES[selectedDay.dayKey] || selectedDay.dayKey}
           </span>
           {selectedDay.dayKey === currentParisDayKey && (
-            <span className="px-2 py-0.5 rounded-full bg-[#00C6FF]/20 text-[#00C6FF] text-[10px] font-black tracking-wider uppercase border border-[#00C6FF]/40">
+            <span className="px-2 py-0.5 rounded-full bg-[#00C6FF]/20 text-[#00C6FF] text-2xs font-black tracking-wider uppercase border border-[#00C6FF]/40">
               Aujourd'hui
             </span>
           )}
@@ -230,7 +236,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
           <button
             type="button"
             onClick={handleOpenScheduleForSelected}
-            className="text-[11px] font-bold text-[#0088FF] hover:underline flex items-center gap-1"
+            className="text-caption font-bold text-[#0088FF] hover:underline flex items-center gap-1"
           >
             <Plus className="w-3 h-3" />
             <span>Ajouter</span>
@@ -301,7 +307,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                           {session.type}
                         </span>
                         {isCompleted && (
-                          <span className="flex items-center gap-1 text-[10px] font-black text-emerald-400 uppercase">
+                          <span className="flex items-center gap-1 text-2xs font-black text-emerald-400 uppercase">
                             <CheckCircle className="w-3 h-3 fill-emerald-500/20" />
                             Validé
                           </span>
@@ -312,7 +318,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                         {sessionWorkout?.title ?? session.workoutTitle}
                       </h3>
 
-                      <div className="flex items-center gap-4 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider pt-1">
+                      <div className="flex items-center gap-4 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider pt-1 num">
                         <span className="flex items-center gap-1 text-white">
                           <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                           {sessionWorkout?.durationMin ?? session.durationMin} MIN
@@ -334,7 +340,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                             e.stopPropagation();
                             onRemoveScheduledWorkout(selectedDay.dayKey, session.id);
                           }}
-                          className="w-8 h-8 rounded-full bg-[#202020] hover:bg-rose-500/20 text-[#A7A7A7] hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
+                          className="w-control-sm h-control-sm rounded-full bg-[#202020] hover:bg-rose-500/20 text-[#A7A7A7] hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
                           title="Supprimer du planning"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -344,7 +350,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                       <button
                         type="button"
                         onClick={() => onStartScheduledWorkout(session.workoutId)}
-                        className="w-8 h-8 rounded-full bg-[#202020] hover:bg-[#0088FF] text-[#A7A7A7] hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                        className="w-control-sm h-control-sm rounded-full bg-[#202020] hover:bg-[#0088FF] text-[#A7A7A7] hover:text-white flex items-center justify-center transition-all cursor-pointer"
                         title="Démarrer la séance"
                       >
                         <ChevronRight className="w-4 h-4" />
@@ -367,6 +373,8 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
           </div>
         )}
       </div>
+
+      </section>
 
       {/* Schedule Workout Modal */}
       {showScheduleModal && (

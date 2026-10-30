@@ -79,13 +79,13 @@ export const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
 
         {/* Top close bar */}
         <div className="flex items-center justify-between relative z-10">
-          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ${getRarityBadge(badge.rarity)}`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-2xs font-black uppercase tracking-wider shadow-sm ${getRarityBadge(badge.rarity)}`}>
             {badge.rarity || 'TROPHÉE'}
           </span>
 
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border ${
+            className={`w-control-sm h-control-sm relative after:absolute after:-inset-1.5 rounded-full flex items-center justify-center transition-colors border ${
               isLight
                 ? 'bg-[#f3dfcb] hover:bg-[#fff3ea] text-[#7d5a47] hover:text-[#3d2317] border-[#7d5a47]/20'
                 : 'bg-[#202020] text-[#A7A7A7] hover:text-white border-white/10'
@@ -142,7 +142,7 @@ export const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
         }`}>
           {isLocked ? (
             <div className="space-y-1 text-center">
-              <span className="text-[10px] font-black uppercase text-[#EC4899] block tracking-wider">
+              <span className="text-2xs font-black uppercase text-[#EC4899] block tracking-wider">
                 Comment débloquer
               </span>
               <p className={`text-xs leading-relaxed font-medium ${isLight ? 'text-[#3d2317]' : 'text-[#f7eee4]'}`}>
@@ -158,9 +158,9 @@ export const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
           {/* Progress Bar if locked or target defined */}
           {isLocked && badge.progressTarget && (
             <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-[11px] font-bold">
+              <div className="flex items-center justify-between text-caption font-bold">
                 <span className={`uppercase ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Progression</span>
-                <span className={`font-mono ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+                <span className={`font-mono num ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                   {badge.progressCurrent} / {badge.progressTarget} {badge.progressUnit || ''} ({progressPercent}% )
                 </span>
               </div>
@@ -176,7 +176,7 @@ export const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
           )}
 
           {/* Reward info */}
-          <div className="flex items-center justify-between pt-1 border-t border-white/5 text-[11px] font-bold">
+          <div className="flex items-center justify-between pt-1 border-t border-white/5 text-caption font-bold">
             <span className={isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}>Récompense Volt</span>
             <span className="text-amber-500 font-black">+{badge.rewardXp || 100} XP</span>
           </div>

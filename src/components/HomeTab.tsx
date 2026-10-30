@@ -109,7 +109,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
       {/* 1. TOP HEADER: MOTIVATIONAL STATUS */}
       <div className="flex items-center justify-between">
         <div className="space-y-0.5">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899] block">
+          <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] block">
             TABLEAU DE BORD ATHLÈTE
           </span>
           <h2 className="text-2xl font-black text-white tracking-tight uppercase leading-tight">
@@ -167,14 +167,14 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             <Dumbbell className="w-5 h-5 text-white group-hover:rotate-12 transition-transform stroke-[2.5]" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-white/90 block flex items-center gap-1.5">
+            <span className="text-2xs font-black uppercase tracking-wider text-white/90 block flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-white" />
               SÉANCE DU JOUR EN DIRECT
             </span>
             <span className="text-sm sm:text-base font-black uppercase tracking-tight block">
               Démarrer l'entraînement (Exercice) →
             </span>
-            <span className="text-[11px] text-white/80 block">
+            <span className="text-caption text-white/80 block">
               Curl Biceps, chronomètre, séries, charges et volume
             </span>
           </div>
@@ -193,7 +193,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               <span>Ta progression</span>
               <span className="w-2 h-2 rounded-full bg-[#00C6FF] shadow-sm shadow-[#00C6FF]/50" />
             </h3>
-            <span className="text-[10px] text-[#A7A7A7] font-bold hidden sm:inline">
+            <span className="text-2xs text-[#A7A7A7] font-bold hidden sm:inline">
               (Toucher pour modifier)
             </span>
           </div>
@@ -213,25 +213,25 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div
             id="stat-card-poids-actuel"
             onClick={() => setEditingStatType('currentWeight')}
-            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
+            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
             {/* Subtle edit prompt indicator on hover */}
-            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-[#00C6FF] font-bold">
+            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-3xs text-[#00C6FF] font-bold">
               <Edit3 className="w-2.5 h-2.5" />
               <span>Éditer</span>
             </div>
 
-            <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider block">
+            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Poids actuel
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-[#00C6FF] transition-colors">
+              <span className="text-3xl font-black text-white tracking-tight num group-hover:text-[#00C6FF] transition-colors">
                 {hasWeight ? userStats.currentWeightKg : '—'}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">KG</span>
             </div>
-            <div className={`flex items-center gap-1 text-[10px] font-bold pt-1 ${monthWeightDelta === null ? 'text-[#A7A7A7]' : 'text-emerald-400'}`}>
-              <span>
+            <div className={`mt-auto flex items-center gap-1 text-2xs font-bold pt-1 min-w-0 ${monthWeightDelta === null ? 'text-[#A7A7A7]' : 'text-emerald-400'}`}>
+              <span className="truncate">
                 {!hasWeight
                   ? 'Ajoute ta première pesée'
                   : monthWeightDelta === null
@@ -245,23 +245,23 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div
             id="stat-card-objectif-poids"
             onClick={() => setEditingStatType('targetWeight')}
-            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
+            className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
-            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-[#00C6FF] font-bold">
+            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-3xs text-[#00C6FF] font-bold">
               <Edit3 className="w-2.5 h-2.5" />
               <span>Éditer</span>
             </div>
 
-            <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider block">
+            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Objectif
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-gradient-performance tracking-tight tabular-nums">
+              <span className="text-3xl font-black text-gradient-performance tracking-tight num">
                 {hasTarget ? userStats.targetWeightKg : '—'}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">KG</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-[#00C6FF] pt-1">
+            <div className="mt-auto flex items-center gap-1 text-2xs font-bold text-[#00C6FF] pt-1 min-w-0">
               <Target className="w-3 h-3 shrink-0" />
               <span className="truncate">
                 {!hasTarget
@@ -279,23 +279,23 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div
             id="stat-card-workouts"
             onClick={() => setEditingStatType('workouts')}
-            className="col-span-2 p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
+            className="col-span-2 p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#EC4899]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
-            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-[9px] text-[#EC4899] font-bold">
+            <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-3xs text-[#EC4899] font-bold">
               <Edit3 className="w-2.5 h-2.5" />
               <span>Éditer</span>
             </div>
 
-            <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider block">
+            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider block">
               Workouts
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-[#EC4899] transition-colors">
+              <span className="text-3xl font-black text-white tracking-tight num group-hover:text-[#EC4899] transition-colors">
                 {userStats.totalWorkouts}
               </span>
               <span className="text-xs font-bold text-[#A7A7A7]">VALIDÉS</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-[#EC4899] pt-1">
+            <div className="mt-auto flex items-center gap-1 text-2xs font-bold text-[#EC4899] pt-1 min-w-0">
               <Zap className="w-3 h-3 fill-[#EC4899] shrink-0" />
               <span>{sessionsThisMonth === 0 ? 'Aucune ce mois-ci' : `${sessionsThisMonth} ce mois-ci`}</span>
             </div>
@@ -309,12 +309,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#FF512F]/50 transition-all cursor-pointer flex items-center justify-between group shadow-xl active:scale-[0.99]"
         >
           <div>
-            <span className="text-[11px] font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-caption font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
               <span>Énergie dépensée au total</span>
               <Edit3 className="w-3 h-3 text-[#A7A7A7] group-hover:text-[#FF512F] transition-colors" />
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-3xl font-black text-white tracking-tight tabular-nums group-hover:text-gradient-energy transition-colors">
+              <span className="text-3xl font-black text-white tracking-tight num group-hover:text-gradient-energy transition-colors">
                 {userStats.totalCaloriesBurned.toLocaleString('fr-FR')}
               </span>
               <span className="text-xs font-bold text-[#FF512F] uppercase">KCAL</span>
@@ -336,9 +336,9 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 <Scale className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-2xs font-bold text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
                   <span>Composition Corporelle</span>
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#EC4899]/20 text-[#EC4899] font-black">
+                  <span className="text-3xs px-1.5 py-0.2 rounded bg-[#EC4899]/20 text-[#EC4899] font-black">
                     ESTIMATION
                   </span>
                 </span>
@@ -349,7 +349,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                         Gras: <span className="text-[#EC4899]">{userStats.bodyComposition.fatPercent}%</span> • Muscle: <span className="text-[#00C6FF]">{userStats.bodyComposition.muscleMassKg}kg</span> • Os: <span className="text-[#F59E0B]">{userStats.bodyComposition.boneMassKg}kg</span>
                       </span>
                       {userStats.bodyComposition.chosenGoal && (
-                        <span className="text-[10px] font-bold text-[#10B981] flex items-center gap-1">
+                        <span className="text-2xs font-bold text-[#10B981] flex items-center gap-1">
                           <span className="px-1.5 py-0.2 rounded bg-[#10B981]/20 uppercase">
                             {userStats.bodyComposition.chosenGoal.type === 'seche' ? 'Sèche' : userStats.bodyComposition.chosenGoal.type === 'prise_de_masse' ? 'Prise de Masse' : 'Recomposition'}
                           </span>
@@ -380,7 +380,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         >
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1">
+              <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1">
                 <span>CHALLENGE EN COURS</span>
                 <Edit3 className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </span>
@@ -389,7 +389,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               </h4>
             </div>
             {goalProgress && (
-              <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10 tabular-nums">
+              <span className="px-2.5 py-1 rounded-full bg-[#202020] text-xs font-extrabold text-[#00C6FF] border border-white/10 num">
                 {goalProgress.percent}%
               </span>
             )}
@@ -408,7 +408,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                   style={{ width: `${goalProgress.percent}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between text-[11px] font-bold text-[#A7A7A7] tabular-nums">
+              <div className="flex items-center justify-between text-caption font-bold text-[#A7A7A7] num">
                 <span>Départ : {goalProgress.start} kg</span>
                 <span className="text-[#00C6FF] font-semibold">
                   {goalProgress.isPertePoids ? `Actuel : ${goalProgress.current} kg` : goalProgress.deltaText}
@@ -417,7 +417,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               </div>
             </div>
           ) : (
-            <p className="text-[11px] font-bold text-[#A7A7A7]">
+            <p className="text-caption font-bold text-[#A7A7A7]">
               {!hasTarget
                 ? 'Aucun objectif de poids : touche pour en définir un.'
                 : 'Aucune pesée enregistrée : ajoute ton poids pour suivre ta progression.'}
@@ -457,7 +457,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 key={badge.id}
                 id={`badge-card-${badge.id}`}
                 onClick={() => setSelectedBadge(badge)}
-                className={`shrink-0 w-48 p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between h-44 relative overflow-hidden group select-none active:scale-95 ${
+                className={`shrink-0 w-48 p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between min-h-44 relative overflow-hidden group select-none active:scale-95 ${
                   isLocked
                     ? isLight
                       ? 'bg-[#f0dfd0] border-[#7d5a47]/20 hover:border-[#7d5a47]/40 shadow-sm'
@@ -471,7 +471,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                 <div className="flex items-center justify-between z-20 relative">
                   <div />
                   <div className="flex items-center gap-1.5">
-                    <span className={`text-[9px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                    <span className={`text-3xs font-bold num ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                       +{badge.rewardXp || 100} XP
                     </span>
                     {isLocked && (
@@ -500,12 +500,12 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                     </h5>
                     {/* Humorous description ONLY when unlocked; How to unlock when locked */}
                     {isLocked ? (
-                      <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-2 leading-snug`}>
+                      <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-2 leading-snug`}>
                         <span className={`${isLight ? 'text-[#3d2317]' : 'text-white/90'} font-bold`}>Déblocage : </span>
                         {getBadgeUnlockRequirement(badge.id, badge.progressTarget, badge.progressUnit)}
                       </p>
                     ) : (
-                      <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-2 leading-snug`}>
+                      <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'} line-clamp-2 leading-snug`}>
                         {badge.description}
                       </p>
                     )}
@@ -561,10 +561,10 @@ export const HomeTab: React.FC<HomeTabProps> = ({
 
           {/* Top Tag Badges */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-black tracking-widest text-white uppercase">
+            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-caption font-black tracking-widest text-white uppercase">
               SESSION RECOMMANDÉE{recommendation ? ` · ${recommendation.reason}` : ''}
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-[#EC4899] text-black font-black text-[10px] tracking-wider uppercase">
+            <span className="px-2.5 py-1 rounded-full bg-[#EC4899] text-black font-black text-2xs tracking-wider uppercase">
               {heroWorkout.difficulty}
             </span>
           </div>
@@ -572,7 +572,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           {/* Bottom Content */}
           <div className="absolute bottom-4 left-4 right-4 space-y-3">
             <div className="space-y-1">
-              <div className="flex items-center gap-3 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider">
+              <div className="flex items-center gap-3 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider num">
                 <span className="flex items-center gap-1 text-white">
                   <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                   {heroWorkout.durationMin} MIN
@@ -675,19 +675,19 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-90"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-transparent" />
-                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-[9px] font-black tracking-wider text-white uppercase">
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-3xs font-black tracking-wider text-white uppercase num">
                     {w.durationMin} MIN
                   </span>
                 </div>
 
                 <div className="p-3 space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#EC4899]">
+                  <span className="text-2xs font-extrabold uppercase tracking-widest text-[#EC4899]">
                     {w.category}
                   </span>
                   <h5 className="text-xs font-black text-white uppercase tracking-tight truncate">
                     {w.title}
                   </h5>
-                  <div className="flex items-center justify-between text-[10px] text-[#A7A7A7] font-semibold pt-1">
+                  <div className="flex items-center justify-between text-2xs text-[#A7A7A7] font-semibold pt-1">
                     <span>{w.exerciseCount} exercices</span>
                     <span className="text-[#FF512F] font-bold">{w.estimatedCalories} kcal</span>
                   </div>

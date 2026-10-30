@@ -73,7 +73,7 @@ export const ScheduleWorkoutModal: React.FC<ScheduleWorkoutModalProps> = ({
               type="button"
               onClick={() => setSelectedDay(d.key)}
               title={d.label}
-              className={`py-2 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer ${
+              className={`py-2 rounded-xl text-caption font-black uppercase transition-all cursor-pointer ${
                 selectedDay === d.key
                   ? 'bg-gradient-to-b from-[#7C3AED] to-[#EC4899] text-white shadow-md'
                   : 'bg-[#222222] text-[#A7A7A7] hover:text-white'
@@ -111,15 +111,15 @@ export const ScheduleWorkoutModal: React.FC<ScheduleWorkoutModalProps> = ({
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
               <Clock className="w-3.5 h-3.5 text-[#EC4899] mx-auto" />
-              <span className="text-xs font-mono font-bold text-white block mt-1">{selectedWorkout.durationMin} min</span>
+              <span className="text-xs font-mono num font-bold text-white block mt-1">{selectedWorkout.durationMin} min</span>
             </div>
             <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
               <Flame className="w-3.5 h-3.5 text-[#FF512F] mx-auto" />
-              <span className="text-xs font-mono font-bold text-white block mt-1">{selectedWorkout.estimatedCalories} kcal</span>
+              <span className="text-xs font-mono num font-bold text-white block mt-1">{selectedWorkout.estimatedCalories} kcal</span>
             </div>
             <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
               <ListChecks className="w-3.5 h-3.5 text-[#00C6FF] mx-auto" />
-              <span className="text-xs font-mono font-bold text-white block mt-1">{selectedWorkout.exercises.length} exos</span>
+              <span className="text-xs font-mono num font-bold text-white block mt-1">{selectedWorkout.exercises.length} exos</span>
             </div>
           </div>
         )}

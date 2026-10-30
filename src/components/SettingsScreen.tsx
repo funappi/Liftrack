@@ -58,7 +58,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Retour"
-            className={`w-9 h-9 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${
+            className={`w-9 h-9 relative after:absolute after:-inset-1 rounded-full flex items-center justify-center border transition-colors cursor-pointer ${
               isLight ? 'bg-[#faebe0] border-[#7d5a47]/20 text-[#3d2317]' : 'bg-white/10 border-transparent text-white hover:bg-white/20'
             }`}
           >

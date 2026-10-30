@@ -397,7 +397,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
             title="Quitter la séance et retourner à l'accueil"
           >
             <ChevronDown className="w-5 h-5 text-white" />
-            <span className="text-[11px] font-bold text-[#A7A7A7] hidden sm:inline">Quitter</span>
+            <span className="text-caption font-bold text-[#A7A7A7] hidden sm:inline">Quitter</span>
           </button>
 
           <button
@@ -471,24 +471,24 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
       <div className="px-5 py-3 bg-[#0D0D0D] border-b border-white/5 flex items-center justify-between shrink-0">
         {/* Durée */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-[#A7A7A7] block font-medium">Durée</span>
-          <span className="text-base font-black text-[#0088FF] font-mono">
+          <span className="text-caption text-[#A7A7A7] block font-medium">Durée</span>
+          <span className="text-base font-black text-[#0088FF] font-mono num">
             {formatDuration(elapsedSeconds)}
           </span>
         </div>
 
         {/* Volume */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-[#A7A7A7] block font-medium">Volume</span>
-          <span className="text-base font-bold text-white font-mono">
+          <span className="text-caption text-[#A7A7A7] block font-medium">Volume</span>
+          <span className="text-base font-bold text-white font-mono num">
             {totalVolumeKg} kg
           </span>
         </div>
 
         {/* Séries */}
         <div className="space-y-0.5">
-          <span className="text-[11px] text-[#A7A7A7] block font-medium">Séries</span>
-          <span className="text-base font-bold text-white font-mono">
+          <span className="text-caption text-[#A7A7A7] block font-medium">Séries</span>
+          <span className="text-base font-bold text-white font-mono num">
             {totalCompletedSets}
           </span>
         </div>
@@ -586,7 +586,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                 <span>
                   Repos: {exercise.restSeconds ? `${Math.floor(exercise.restSeconds / 60)}m ${exercise.restSeconds % 60}s` : 'DÉSACTIVÉ'}
                 </span>
-                <span className="text-[10px] text-[#A7A7A7] bg-white/5 px-2 py-0.5 rounded-md border border-white/5 font-normal">
+                <span className="text-2xs text-[#A7A7A7] bg-white/5 px-2 py-0.5 rounded-md border border-white/5 font-normal">
                   Modifier ⌨️
                 </span>
               </button>
@@ -598,7 +598,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   exerciseId: exercise.id,
                   exerciseName: exercise.name,
                 })}
-                className="text-[11px] font-bold text-[#A7A7A7] hover:text-white px-2 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                className="text-caption font-bold text-[#A7A7A7] hover:text-white px-2 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
               >
                 Démarrer chrono ▶
               </button>
@@ -607,7 +607,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
             {/* Sets Table: All defaults 0 */}
             <div className="space-y-1.5">
               {/* Table Header */}
-              <div className="grid grid-cols-12 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#A7A7A7] px-1 pb-1">
+              <div className="grid grid-cols-12 text-2xs sm:text-caption font-bold uppercase tracking-wider text-[#A7A7A7] px-1 pb-1">
                 <span className="col-span-2 text-left">SÉRIE</span>
                 <span className="col-span-3 text-center">PRÉCÉDENT</span>
                 <span className="col-span-3 text-center flex items-center justify-center gap-1">
@@ -630,7 +630,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                 >
                   {/* SÉRIE Badge & Delete Action */}
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-7 h-7 rounded-xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                    <span className="w-7 h-7 rounded-xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-xs font-bold text-white shrink-0 num">
                       {set.setNumber}
                     </span>
                     {exercise.sets.length > 1 && (
@@ -646,7 +646,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   </div>
 
                   {/* PRÉCÉDENT */}
-                  <div className="col-span-3 text-center text-xs text-[#737373] font-mono">
+                  <div className="col-span-3 text-center text-xs text-[#737373] font-mono num">
                     {set.previous}
                   </div>
 
@@ -663,7 +663,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                           parseFloat(e.target.value) || 0
                         )
                       }
-                      className="w-full bg-[#121212] border border-white/15 rounded-xl py-1.5 text-center text-xs sm:text-sm font-black text-white font-mono focus:outline-none focus:border-[#0088FF]"
+                      className="w-full bg-[#121212] border border-white/15 rounded-xl py-1.5 text-center text-xs sm:text-sm font-black text-white font-mono num focus:outline-none focus:border-[#0088FF]"
                     />
                   </div>
 
@@ -680,7 +680,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                           parseInt(e.target.value, 10) || 0
                         )
                       }
-                      className="w-full bg-[#121212] border border-white/15 rounded-xl py-1.5 text-center text-xs sm:text-sm font-black text-white font-mono focus:outline-none focus:border-[#0088FF]"
+                      className="w-full bg-[#121212] border border-white/15 rounded-xl py-1.5 text-center text-xs sm:text-sm font-black text-white font-mono num focus:outline-none focus:border-[#0088FF]"
                     />
                   </div>
 
@@ -689,7 +689,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleToggleSetComplete(exercise.id, sIdx)}
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                      className={`w-control-sm h-control-sm rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                         set.completed
                           ? 'bg-[#0088FF] text-white shadow-md shadow-[#0088FF]/30'
                           : 'bg-[#1A1A1A] border border-white/15 text-[#525252] hover:text-white hover:border-white/30'
@@ -722,7 +722,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   title="Supprimer la dernière série de cet exercice"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span className="text-[11px] hidden sm:inline">Supprimer série</span>
+                  <span className="text-caption hidden sm:inline">Supprimer série</span>
                 </button>
               )}
             </div>
@@ -733,13 +733,13 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
       {/* ⏱ 4. RUNNING CHRONO DOCK (User requested: "trouve un endroit ou mettre le chrono qui defile...") */}
       {activeRestTimer && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-lg px-3 z-40">
-          <div className="p-3.5 rounded-2xl bg-[#121212]/95 backdrop-blur-xl border border-[#0088FF]/50 shadow-2xl shadow-black/80 space-y-2.5">
+          <div className="p-4 rounded-2xl bg-[#121212]/95 backdrop-blur-xl border border-[#0088FF]/50 shadow-2xl shadow-black/80 space-y-2.5">
             {/* Header info */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#0088FF]" />
                 <div className="min-w-0">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0088FF] block truncate">
+                  <span className="text-2xs font-black uppercase tracking-wider text-[#0088FF] block truncate">
                     TEMPS DE REPOS EN COURS
                   </span>
                   {activeRestTimer.exerciseName && (
@@ -752,7 +752,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
 
               {/* Big Digital Countdown */}
               <div className="flex items-baseline gap-1 text-right">
-                <span className="text-2xl font-black font-mono text-white tracking-tight">
+                <span className="text-2xl font-black font-mono num text-white tracking-tight">
                   {formatTimerDigital(activeRestTimer.remainingSeconds)}
                 </span>
               </div>
@@ -821,7 +821,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleAdjustRestTimer(30)}
-                className="px-2 py-2 rounded-xl bg-white/5 hover:bg-white/15 text-[11px] font-mono font-bold text-white border border-white/10"
+                className="px-2 py-2 rounded-xl bg-white/5 hover:bg-white/15 text-caption font-mono num font-bold text-white border border-white/10"
                 title="Ajouter 30 secondes"
               >
                 +30s
@@ -904,7 +904,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   max="59"
                   value={keyboardRestMinutes}
                   onChange={(e) => setKeyboardRestMinutes(Math.max(0, parseInt(e.target.value, 10) || 0))}
-                  className="w-20 h-16 bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl text-center text-3xl font-black font-mono text-white focus:outline-none"
+                  className="w-20 h-16 bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl text-center text-3xl font-black font-mono num text-white focus:outline-none"
                   autoFocus
                 />
                 <span className="text-xs font-bold text-[#A7A7A7] mt-1 uppercase">Minutes</span>
@@ -921,7 +921,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   step="5"
                   value={keyboardRestSeconds}
                   onChange={(e) => setKeyboardRestSeconds(Math.max(0, Math.min(59, parseInt(e.target.value, 10) || 0)))}
-                  className="w-20 h-16 bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl text-center text-3xl font-black font-mono text-white focus:outline-none"
+                  className="w-20 h-16 bg-[#0D0D0D] border-2 border-white/20 focus:border-[#0088FF] rounded-2xl text-center text-3xl font-black font-mono num text-white focus:outline-none"
                 />
                 <span className="text-xs font-bold text-[#A7A7A7] mt-1 uppercase">Secondes</span>
               </div>
@@ -929,7 +929,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
 
             {/* Quick Presets */}
             <div className="space-y-1.5">
-              <span className="text-[10px] font-bold text-[#A7A7A7] uppercase block">
+              <span className="text-2xs font-bold text-[#A7A7A7] uppercase block">
                 Raccourcis rapides :
               </span>
               <div className="grid grid-cols-4 gap-1.5">
@@ -950,7 +950,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                       setKeyboardRestMinutes(item.m);
                       setKeyboardRestSeconds(item.s);
                     }}
-                    className="py-1.5 rounded-lg bg-[#202020] hover:bg-[#282828] text-center text-xs font-mono font-bold text-white border border-white/5"
+                    className="py-1.5 rounded-lg bg-[#202020] hover:bg-[#282828] text-center text-xs font-mono num font-bold text-white border border-white/5"
                   >
                     {item.label}
                   </button>
@@ -1022,13 +1022,13 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                   key={idx}
                   type="button"
                   onClick={() => handleAddExerciseFromLibrary(item)}
-                  className="w-full p-2.5 rounded-xl bg-[#202020] hover:bg-[#282828] text-left transition-all flex items-center justify-between group"
+                  className="w-full p-3 rounded-xl bg-[#202020] hover:bg-[#282828] text-left transition-all flex items-center justify-between group"
                 >
                   <div>
                     <span className="text-xs font-bold text-white block group-hover:text-[#0088FF]">
                       {item.name}
                     </span>
-                    <span className="text-[10px] text-[#A7A7A7]">
+                    <span className="text-2xs text-[#A7A7A7]">
                       {item.targetMuscles.join(', ')}
                     </span>
                   </div>
@@ -1100,7 +1100,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                       setShowSettingsModal(false);
                       handleOpenKeyboardRestModal();
                     }}
-                    className="text-[#0088FF] text-[11px] font-bold hover:underline"
+                    className="text-[#0088FF] text-caption font-bold hover:underline"
                   >
                     Saisir au clavier ⌨️
                   </button>

@@ -57,21 +57,21 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
             <Clock className="w-3.5 h-3.5 text-[#EC4899] mx-auto" />
-            <span className="text-xs font-mono font-bold text-white block mt-1">{workout.durationMin} min</span>
+            <span className="text-xs font-mono num font-bold text-white block mt-1">{workout.durationMin} min</span>
           </div>
           <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
             <Flame className="w-3.5 h-3.5 text-[#FF512F] mx-auto" />
-            <span className="text-xs font-mono font-bold text-white block mt-1">{workout.estimatedCalories} kcal</span>
+            <span className="text-xs font-mono num font-bold text-white block mt-1">{workout.estimatedCalories} kcal</span>
           </div>
           <div className="rounded-xl bg-[#0A0A0A] border border-white/10 py-2">
             <Dumbbell className="w-3.5 h-3.5 text-[#00C6FF] mx-auto" />
-            <span className="text-xs font-mono font-bold text-white block mt-1">{exercises.length} exos</span>
+            <span className="text-xs font-mono num font-bold text-white block mt-1">{exercises.length} exos</span>
           </div>
         </div>
 
         {totalChecked > 0 && (
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-black uppercase">
+            <div className="flex items-center justify-between text-caption font-black uppercase">
               <span className="text-[#A7A7A7]">Pré-validation</span>
               <span className="text-emerald-500">{progressPercent}% validé</span>
             </div>
@@ -91,7 +91,7 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
             <Target className="w-3.5 h-3.5 text-[#EC4899]" />
             <span>Plan de la séance</span>
           </h3>
-          <p className="text-[10px] text-[#A7A7A7] mt-0.5">Ajuste tes charges de départ, coche pour valider.</p>
+          <p className="text-2xs text-[#A7A7A7] mt-0.5">Ajuste tes charges de départ, coche pour valider.</p>
         </div>
 
         {exercises.length === 0 ? (
@@ -116,7 +116,7 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
                   <button
                     type="button"
                     onClick={() => toggleCheck(exercise.id)}
-                    className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                    className={`w-control-sm h-control-sm rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
                       isChecked
                         ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
                         : 'border-white/20 bg-transparent hover:border-white/40'
@@ -146,7 +146,7 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
                     />
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-[10px] text-[#A7A7A7] mt-2">
+                <div className="flex items-center gap-1.5 text-2xs text-[#A7A7A7] mt-2">
                   <Clock className="w-3 h-3 text-[#0088FF]" />
                   <span>{exercise.restSeconds || 60}s de repos</span>
                   {exercise.notes && <span className="truncate">· {exercise.notes}</span>}

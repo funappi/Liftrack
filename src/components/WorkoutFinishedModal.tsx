@@ -103,7 +103,7 @@ export const WorkoutFinishedModal: React.FC<WorkoutFinishedModalProps> = ({
             </div>
             <div>
               <p className="text-xs font-black text-white uppercase">INDICE DE PUISSANCE</p>
-              <p className="text-[10px] text-[#A7A7A7]">Score mis à jour</p>
+              <p className="text-2xs text-[#A7A7A7]">Score mis à jour</p>
             </div>
           </div>
           <span className="text-sm font-black text-emerald-400">+15 VOLT PTS</span>
@@ -112,31 +112,31 @@ export const WorkoutFinishedModal: React.FC<WorkoutFinishedModalProps> = ({
         {/* Recap Metrics Grid */}
         <div className="grid grid-cols-2 gap-2.5 text-left">
           <div className="p-3 rounded-xl bg-[#181818] border border-white/[0.06] space-y-0.5">
-            <span className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+            <span className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
               <Clock className="w-3 h-3 text-[#EC4899]" /> Durée
             </span>
-            <p className="text-lg font-black text-white">{formatDuration(durationSeconds)}</p>
+            <p className="text-lg font-black text-white num">{formatDuration(durationSeconds)}</p>
           </div>
 
           <div className="p-3 rounded-xl bg-[#181818] border border-white/[0.06] space-y-0.5">
-            <span className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+            <span className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
               <Flame className="w-3 h-3 text-[#FF512F]" /> Calories
             </span>
-            <p className="text-lg font-black text-[#FF512F]">{workout.estimatedCalories} KCAL</p>
+            <p className="text-lg font-black text-[#FF512F] num">{workout.estimatedCalories} KCAL</p>
           </div>
 
           <div className="p-3 rounded-xl bg-[#181818] border border-white/[0.06] space-y-0.5">
-            <span className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+            <span className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
               <Dumbbell className="w-3 h-3 text-[#00C6FF]" /> Séries faites
             </span>
-            <p className="text-lg font-black text-white">{completedSetsCount} séries</p>
+            <p className="text-lg font-black text-white num">{completedSetsCount} séries</p>
           </div>
 
           <div className="p-3 rounded-xl bg-[#181818] border border-white/[0.06] space-y-0.5">
-            <span className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+            <span className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
               <Zap className="w-3 h-3 text-amber-400" /> Tonnage total
             </span>
-            <p className="text-lg font-black text-white">
+            <p className="text-lg font-black text-white num">
               {totalVolumeKg > 0 ? `${totalVolumeKg.toLocaleString()} KG` : 'Poids corps'}
             </p>
           </div>

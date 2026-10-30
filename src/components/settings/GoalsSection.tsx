@@ -90,7 +90,7 @@ function Stepper({
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className={`block text-[11px] font-black uppercase tracking-wider ${muted}`}>
+      <label htmlFor={id} className={`block text-caption font-black uppercase tracking-wider ${muted}`}>
         {label}
       </label>
       <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ function Stepper({
               commit(v);
               setDraft(show(v));
             }}
-            className={`w-full min-w-0 bg-transparent text-center text-base font-black font-mono outline-none placeholder:font-bold placeholder:text-xs ${
+            className={`w-full min-w-0 bg-transparent text-center text-base font-black font-mono num outline-none placeholder:font-bold placeholder:text-xs ${
               isLight ? 'text-[#3d2317] placeholder:text-[#7d5a47]/70' : 'text-white placeholder:text-[#A7A7A7]/70'
             }`}
           />
@@ -181,7 +181,7 @@ export function GoalsSection({ userStats, onUpdateUserStats, theme }: GoalsSecti
       <div className="mt-4 space-y-5">
         {/* Sessions per week: 1-7 as a segmented row */}
         <div className="space-y-1.5">
-          <span className={`block text-[11px] font-black uppercase tracking-wider ${muted}`}>
+          <span className={`block text-caption font-black uppercase tracking-wider ${muted}`}>
             Séances par semaine
           </span>
           <div className="flex items-center gap-2">
@@ -204,7 +204,7 @@ export function GoalsSection({ userStats, onUpdateUserStats, theme }: GoalsSecti
                   aria-pressed={n === sessions}
                   aria-label={`${n} séance${n > 1 ? 's' : ''}`}
                   onClick={() => onUpdateUserStats({ weeklyGoalWorkouts: n })}
-                  className={`h-11 rounded-lg text-sm font-black font-mono transition-colors ${
+                  className={`h-11 rounded-lg text-sm font-black font-mono num transition-colors ${
                     n <= sessions
                       ? 'bg-gradient-to-b from-[#7C3AED] to-[#EC4899] text-white'
                       : isLight
@@ -255,7 +255,7 @@ export function GoalsSection({ userStats, onUpdateUserStats, theme }: GoalsSecti
               <button
                 type="button"
                 onClick={() => onUpdateUserStats({ weeklyVolumeTargetKg: undefined })}
-                className={`shrink-0 h-8 px-2 rounded-lg flex items-center gap-1 text-[11px] font-black uppercase tracking-tight ${muted}`}
+                className={`shrink-0 h-8 px-2 rounded-lg flex items-center gap-1 text-caption font-black uppercase tracking-tight ${muted}`}
               >
                 <X className="w-3.5 h-3.5" /> Retirer
               </button>

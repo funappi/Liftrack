@@ -24,7 +24,7 @@ export function OtherSettingsSection({ theme }: OtherSettingsSectionProps) {
   const strong = isLight ? 'text-[#3d2317]' : 'text-white';
   const card = `rounded-2xl border p-4 sm:p-5 ${isLight ? 'bg-[#fff7f0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/[0.08]'}`;
   const title = `text-base font-black uppercase tracking-tight ${strong}`;
-  const label = `block text-[11px] font-black uppercase tracking-wider ${muted}`;
+  const label = `block text-caption font-black uppercase tracking-wider ${muted}`;
   const secondaryBtn = `h-11 px-3 rounded-xl border text-xs font-black uppercase tracking-tight flex items-center justify-center gap-1.5 ${
     isLight ? 'bg-white/60 border-[#7d5a47]/20 text-[#3d2317]' : 'bg-white/[0.04] border-white/[0.08] text-white'
   }`;
@@ -118,7 +118,7 @@ export function OtherSettingsSection({ theme }: OtherSettingsSectionProps) {
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <span className={label}>Repos par défaut</span>
-            <span className={`flex items-center gap-1 text-sm font-black font-mono ${strong}`}>
+            <span className={`flex items-center gap-1 text-sm font-black font-mono num ${strong}`}>
               <Timer className="w-4 h-4 text-[#EC4899]" /> {formatRest(restSeconds)}
             </span>
           </div>

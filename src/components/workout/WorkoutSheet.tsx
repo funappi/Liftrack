@@ -38,7 +38,7 @@ export const SheetShell: React.FC<SheetShellProps> = ({ isLight, icon, eyebrow, 
             {icon}
           </div>
           <div className="min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899] block">{eyebrow}</span>
+            <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] block">{eyebrow}</span>
             <h2 className="text-base font-black text-white uppercase tracking-tight truncate">{title}</h2>
           </div>
         </div>
@@ -47,7 +47,7 @@ export const SheetShell: React.FC<SheetShellProps> = ({ isLight, icon, eyebrow, 
           type="button"
           onClick={onClose}
           aria-label="Fermer"
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors border shrink-0 cursor-pointer ${
+          className={`w-control-sm h-control-sm relative after:absolute after:-inset-1.5 rounded-full flex items-center justify-center transition-colors border shrink-0 cursor-pointer ${
             isLight
               ? 'bg-[#f3dfcb] hover:bg-[#fff3ea] text-[#7d5a47] hover:text-[#3d2317] border-[#7d5a47]/20'
               : 'bg-white/10 hover:bg-white/20 text-[#A7A7A7] hover:text-white border-transparent'
@@ -88,7 +88,7 @@ export const SheetCard: React.FC<SheetCardProps> = ({ icon, title, subtitle, act
               <span>{title}</span>
             </h3>
           )}
-          {subtitle && <p className="text-[10px] text-[#A7A7A7] mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-2xs text-[#A7A7A7] mt-0.5">{subtitle}</p>}
         </div>
         {action}
       </div>
@@ -98,7 +98,7 @@ export const SheetCard: React.FC<SheetCardProps> = ({ icon, title, subtitle, act
 );
 
 export const SheetLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <label className="text-[11px] font-bold text-[#A7A7A7] uppercase block">{children}</label>
+  <label className="text-caption font-bold text-[#A7A7A7] uppercase block">{children}</label>
 );
 
 export const sheetInputClass =
@@ -136,23 +136,23 @@ interface StepperProps {
 // "- value +" control used for sets / reps / load
 export const Stepper: React.FC<StepperProps> = ({ label, value, onChange, min = 0, max = 999, step = 1, suffix }) => (
   <div className="space-y-1 min-w-0">
-    <span className="text-[10px] font-bold text-[#A7A7A7] uppercase block truncate">{label}</span>
+    <span className="text-2xs font-bold text-[#A7A7A7] uppercase block truncate">{label}</span>
     <div className="flex items-center gap-1.5">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - step))}
-        className="w-7 h-7 rounded-lg bg-[#202020] text-white font-bold flex items-center justify-center hover:bg-white/10 shrink-0 cursor-pointer"
+        className="w-control-sm h-control-sm rounded-lg bg-[#202020] text-white font-bold flex items-center justify-center hover:bg-white/10 shrink-0 cursor-pointer"
       >
         -
       </button>
-      <span className="font-mono font-bold text-white text-sm min-w-[2rem] text-center">
+      <span className="font-mono num font-bold text-white text-sm min-w-[2rem] text-center">
         {value}
-        {suffix && <span className="text-[9px] text-[#A7A7A7] ml-0.5">{suffix}</span>}
+        {suffix && <span className="text-3xs text-[#A7A7A7] ml-0.5">{suffix}</span>}
       </span>
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + step))}
-        className="w-7 h-7 rounded-lg bg-[#202020] text-white font-bold flex items-center justify-center hover:bg-white/10 shrink-0 cursor-pointer"
+        className="w-control-sm h-control-sm rounded-lg bg-[#202020] text-white font-bold flex items-center justify-center hover:bg-white/10 shrink-0 cursor-pointer"
       >
         +
       </button>
@@ -172,13 +172,13 @@ interface ExerciseCardProps {
 // Exercise card: number badge, name, targets, then parameters
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ index, name, targetMuscles, controls, children, highlighted }) => (
   <div
-    className={`p-3.5 rounded-2xl bg-[#161616] border space-y-3 relative transition-colors ${
+    className={`p-4 rounded-2xl bg-[#161616] border space-y-3 relative transition-colors ${
       highlighted ? 'border-emerald-500/50' : 'border-white/10'
     }`}
   >
     <div className="flex items-center justify-between gap-2">
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <span className="w-6 h-6 rounded-lg bg-black/60 border border-white/10 flex items-center justify-center text-xs font-black text-[#EC4899] shrink-0 font-mono">
+        <span className="w-6 h-6 rounded-lg bg-black/60 border border-white/10 flex items-center justify-center text-xs font-black text-[#EC4899] shrink-0 font-mono num">
           {index + 1}
         </span>
         <div className="min-w-0 flex-1">{name}</div>
@@ -187,7 +187,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ index, name, targetM
     </div>
 
     {targetMuscles.length > 0 && (
-      <div className="text-[10px] text-[#A7A7A7] flex items-center gap-1.5 flex-wrap">
+      <div className="text-2xs text-[#A7A7A7] flex items-center gap-1.5 flex-wrap">
         <span className="text-[#EC4899] font-bold">Cibles:</span>
         {targetMuscles.map((m, i) => (
           <span key={i} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5">
@@ -215,11 +215,11 @@ export const ExerciseSummary: React.FC<{ exercise: Exercise; index: number }> = 
         ['Repos', exercise.restSeconds ? `${exercise.restSeconds}s` : '—'],
       ].map(([label, value]) => (
         <div key={label as string} className="rounded-lg bg-[#0A0A0A] border border-white/10 py-1.5">
-          <span className="text-[9px] font-bold text-[#A7A7A7] uppercase block">{label}</span>
-          <span className="text-xs font-mono font-bold text-white">{value}</span>
+          <span className="text-3xs font-bold text-[#A7A7A7] uppercase block">{label}</span>
+          <span className="text-xs font-mono num font-bold text-white">{value}</span>
         </div>
       ))}
     </div>
-    {exercise.notes && <p className="text-[11px] text-[#A7A7A7] mt-2 italic">{exercise.notes}</p>}
+    {exercise.notes && <p className="text-caption text-[#A7A7A7] mt-2 italic">{exercise.notes}</p>}
   </ExerciseCard>
 );

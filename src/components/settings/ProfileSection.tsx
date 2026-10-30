@@ -67,7 +67,7 @@ function NumberField({
 
   return (
     <div className="space-y-1.5">
-      <span className={`block text-[11px] font-black uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+      <span className={`block text-caption font-black uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
         {label}
       </span>
       <div className="flex items-center gap-2">
@@ -96,11 +96,11 @@ function NumberField({
               if (Number.isNaN(n)) setDraft(String(value));
               else commit(n);
             }}
-            className={`w-full min-w-0 bg-transparent text-center text-sm font-black font-mono outline-none ${
+            className={`w-full min-w-0 bg-transparent text-center text-sm font-black font-mono num outline-none ${
               isLight ? 'text-[#3d2317]' : 'text-white'
             }`}
           />
-          <span className={`text-[11px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>{unit}</span>
+          <span className={`text-caption font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>{unit}</span>
         </div>
         <button type="button" aria-label={`Augmenter ${label}`} className={btn} onClick={() => commit(value + 1)}>
           <Plus className="w-4 h-4" />
@@ -207,7 +207,7 @@ function AvatarCropper({
             type="button"
             aria-label="Annuler"
             onClick={onCancel}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}
+            className={`w-9 h-9 relative after:absolute after:-inset-1 rounded-xl flex items-center justify-center ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -244,9 +244,9 @@ function AvatarCropper({
         )}
 
         <div className="space-y-1.5">
-          <div className={`flex justify-between text-[11px] font-black uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+          <div className={`flex justify-between text-caption font-black uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
             <span>Zoom</span>
-            <span className="font-mono">{zoom.toFixed(1)}×</span>
+            <span className="font-mono num">{zoom.toFixed(1)}×</span>
           </div>
           <input
             type="range"
@@ -259,7 +259,7 @@ function AvatarCropper({
             onChange={(e) => handleZoom(parseFloat(e.target.value))}
             className="w-full accent-[#EC4899]"
           />
-          <p className={`text-[11px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Fais glisser la photo pour la centrer.</p>
+          <p className={`text-caption ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>Fais glisser la photo pour la centrer.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -341,7 +341,7 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
   const title = `text-base font-black uppercase tracking-tight ${isLight ? 'text-[#3d2317]' : 'text-white'}`;
   const muted = isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]';
   const strong = isLight ? 'text-[#3d2317]' : 'text-white';
-  const label = `block text-[11px] font-black uppercase tracking-wider ${muted}`;
+  const label = `block text-caption font-black uppercase tracking-wider ${muted}`;
   const chip = (active: boolean) =>
     `min-h-9 px-3 py-2 rounded-xl border text-xs font-black uppercase tracking-tight transition-colors ${
       active
@@ -467,7 +467,7 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
             <span className={label}>Objectif</span>
             <div className="grid grid-cols-3 gap-2">
               {(Object.keys(GOAL_LABELS) as MetabolicGoal[]).map((g) => (
-                <button key={g} type="button" aria-pressed={profile.goal === g} className={`${chip(profile.goal === g)} !px-1.5 text-[11px]`} onClick={() => updateProfile({ goal: g })}>
+                <button key={g} type="button" aria-pressed={profile.goal === g} className={`${chip(profile.goal === g)} !px-1.5 text-caption`} onClick={() => updateProfile({ goal: g })}>
                   {GOAL_LABELS[g]}
                 </button>
               ))}
@@ -487,10 +487,10 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
           ].map((c) => (
             <div key={c.k} className={`rounded-xl border p-3 ${isLight ? 'bg-white/60 border-[#7d5a47]/15' : 'bg-white/[0.03] border-white/[0.06]'}`}>
               <span className={label}>{c.k}</span>
-              <p className={`mt-1 text-xl font-black font-mono ${strong}`}>
+              <p className={`mt-1 text-xl font-black font-mono num ${strong}`}>
                 {c.v} <span className={`text-xs font-bold ${muted}`}>{c.u}</span>
               </p>
-              <p className={`text-[10px] ${muted}`}>{c.sub}</p>
+              <p className={`text-2xs ${muted}`}>{c.sub}</p>
             </div>
           ))}
         </div>
@@ -498,7 +498,7 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
         <div className="mt-2 rounded-xl p-[1px] bg-gradient-to-r from-[#7C3AED] to-[#EC4899]">
           <div className={`rounded-[11px] p-3 ${isLight ? 'bg-[#fff7f0]' : 'bg-[#181818]'}`}>
             <span className={label}>Calories / jour · {GOAL_LABELS[profile.goal]}</span>
-            <p className={`mt-1 text-2xl font-black font-mono ${strong}`}>
+            <p className={`mt-1 text-2xl font-black font-mono num ${strong}`}>
               {range(result.calories)} <span className={`text-xs font-bold ${muted}`}>kcal</span>
             </p>
           </div>
@@ -510,16 +510,16 @@ export function ProfileSection({ userStats, onUpdateUserStats, theme }: ProfileS
             { k: 'Glucides', r: result.carbsG, c: '#00C6FF' },
             { k: 'Lipides', r: result.fatG, c: '#F59E0B' },
           ].map((m) => (
-            <div key={m.k} className={`rounded-xl border p-2.5 min-w-0 ${isLight ? 'bg-white/60 border-[#7d5a47]/15' : 'bg-white/[0.03] border-white/[0.06]'}`}>
+            <div key={m.k} className={`flex flex-col rounded-xl border p-3 min-w-0 ${isLight ? 'bg-white/60 border-[#7d5a47]/15' : 'bg-white/[0.03] border-white/[0.06]'}`}>
               <span className="block w-6 h-1 rounded-full mb-2" style={{ background: m.c }} />
-              <span className={`block text-[10px] font-black uppercase tracking-tight ${muted}`}>{m.k}</span>
-              <p className={`mt-0.5 text-sm font-black font-mono leading-tight break-words ${strong}`}>{range(m.r)}</p>
-              <span className={`text-[10px] font-bold ${muted}`}>g / jour</span>
+              <span className={`block text-2xs font-black uppercase tracking-tight ${muted}`}>{m.k}</span>
+              <p className={`mt-0.5 text-sm font-black font-mono num leading-tight break-words ${strong}`}>{range(m.r)}</p>
+              <span className={`mt-auto text-2xs font-bold ${muted}`}>g / jour</span>
             </div>
           ))}
         </div>
 
-        <ul className={`mt-4 space-y-1 text-[10px] leading-snug ${muted}`}>
+        <ul className={`mt-4 space-y-1 text-2xs leading-snug ${muted}`}>
           {result.bmrKatch !== null && (
             <li>BMR Mifflin-St Jeor : {fmt(result.bmrMifflin)} kcal · Katch-McArdle : {fmt(result.bmrKatch)} kcal (retenue)</li>
           )}

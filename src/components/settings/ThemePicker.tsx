@@ -108,12 +108,12 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({ currentThemeId, onAppl
               <ThemePreviewMock def={def} />
               <div className="mt-2 px-0.5 space-y-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className={`text-[11px] font-black uppercase tracking-wider truncate ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+                  <span className={`text-caption font-black uppercase tracking-wider truncate ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                     {def.label}
                   </span>
                   {isCurrent && (
                     <span
-                      className={`shrink-0 px-1.5 py-px rounded-full text-[8px] font-extrabold uppercase tracking-wider border ${
+                      className={`shrink-0 px-1.5 py-px rounded-full text-3xs font-extrabold uppercase tracking-wider border ${
                         isLight ? 'border-[#b85d38]/40 text-[#b85d38]' : 'border-[#EC4899]/40 text-[#EC4899]'
                       }`}
                     >
@@ -121,7 +121,7 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({ currentThemeId, onAppl
                     </span>
                   )}
                 </div>
-                <p className={`text-[10px] leading-snug line-clamp-2 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                <p className={`text-2xs leading-snug line-clamp-2 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   {def.description}
                 </p>
               </div>
@@ -141,12 +141,12 @@ export const ThemePicker: React.FC<ThemePickerProps> = ({ currentThemeId, onAppl
 
       {dirty && (
         <div
-          className={`sticky bottom-4 z-20 flex items-center gap-2 p-2.5 rounded-2xl border shadow-2xl ${
+          className={`sticky bottom-4 z-20 flex items-center gap-2 p-3 rounded-2xl border shadow-2xl ${
             isLight ? 'bg-[#faebe0] border-[#7d5a47]/20' : 'bg-[#181818] border-white/10'
           }`}
         >
           <div className="flex-1 min-w-0 px-1">
-            <p className={`text-[9px] font-extrabold uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+            <p className={`text-3xs font-extrabold uppercase tracking-wider ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
               Aperçu
             </p>
             <p className={`text-xs font-black uppercase truncate ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>

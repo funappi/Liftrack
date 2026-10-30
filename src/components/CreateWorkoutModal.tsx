@@ -198,9 +198,9 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                   max="180"
                   value={durationMin}
                   onChange={(e) => setDurationMin(parseInt(e.target.value, 10) || 45)}
-                  className={`${sheetInputClass} text-xs pl-3 pr-8 py-2 font-mono`}
+                  className={`${sheetInputClass} text-xs pl-3 pr-8 py-2 font-mono num`}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#A7A7A7]">min</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-2xs text-[#A7A7A7]">min</span>
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                 <Target className="w-3.5 h-3.5 text-[#EC4899]" />
                 <span>2. Exercices de la séance ({exercises.length})</span>
               </h3>
-              <p className="text-[10px] text-[#A7A7A7] mt-0.5">
+              <p className="text-2xs text-[#A7A7A7] mt-0.5">
                 Nomme tes exercices comme tu veux. Charges et répétitions se renseignent pendant la séance.
               </p>
             </div>
@@ -297,7 +297,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                     />
 
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+                      <label className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
                         <Clock className="w-3 h-3 text-[#0088FF]" />
                         <span>Repos (Min / Sec)</span>
                       </label>
@@ -312,9 +312,9 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                               const m = Math.max(0, parseInt(e.target.value, 10) || 0);
                               handleUpdateExercise(idx, 'restSeconds', m * 60 + ((ex.restSeconds || 0) % 60));
                             }}
-                            className="w-full bg-[#0A0A0A] border border-white/15 rounded-lg px-2 py-1 text-xs text-center text-white font-mono focus:outline-none focus:border-[#0088FF]"
+                            className="w-full bg-[#0A0A0A] border border-white/15 rounded-lg px-2 py-1 text-xs text-center text-white font-mono num focus:outline-none focus:border-[#0088FF]"
                           />
-                          <span className="text-[9px] text-[#A7A7A7] block text-center mt-0.5">min</span>
+                          <span className="text-3xs text-[#A7A7A7] block text-center mt-0.5">min</span>
                         </div>
                         <span className="text-white/40 font-bold">:</span>
                         <div className="relative flex-1">
@@ -328,9 +328,9 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                               const s = Math.max(0, Math.min(59, parseInt(e.target.value, 10) || 0));
                               handleUpdateExercise(idx, 'restSeconds', Math.floor((ex.restSeconds || 0) / 60) * 60 + s);
                             }}
-                            className="w-full bg-[#0A0A0A] border border-white/15 rounded-lg px-2 py-1 text-xs text-center text-white font-mono focus:outline-none focus:border-[#0088FF]"
+                            className="w-full bg-[#0A0A0A] border border-white/15 rounded-lg px-2 py-1 text-xs text-center text-white font-mono num focus:outline-none focus:border-[#0088FF]"
                           />
-                          <span className="text-[9px] text-[#A7A7A7] block text-center mt-0.5">sec</span>
+                          <span className="text-3xs text-[#A7A7A7] block text-center mt-0.5">sec</span>
                         </div>
                       </div>
                     </div>
@@ -415,11 +415,11 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                     key={item.name}
                     type="button"
                     onClick={() => handleAddPresetExercise(item)}
-                    className="w-full p-2.5 rounded-xl bg-[#202020] hover:bg-[#282828] text-left transition-all flex items-center justify-between group cursor-pointer"
+                    className="w-full p-3 rounded-xl bg-[#202020] hover:bg-[#282828] text-left transition-all flex items-center justify-between group cursor-pointer"
                   >
                     <div>
                       <span className="text-xs font-bold text-white block group-hover:text-[#EC4899]">{item.name}</span>
-                      <span className="text-[10px] text-[#A7A7A7]">
+                      <span className="text-2xs text-[#A7A7A7]">
                         {item.muscles.join(', ')} • {item.defaultRest}s repos
                       </span>
                     </div>

@@ -81,7 +81,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
   };
 
   return (
-    <div className="pb-36 pt-2 px-4 space-y-5 max-w-lg mx-auto">
+    <div className="pb-36 pt-2 px-4 space-y-7 max-w-lg mx-auto">
       {/* Weekly follow-up (shared with the Planning tab), title row on top */}
       <WeeklyTracker
         schedule={schedule}
@@ -120,7 +120,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
       />
 
       {/* 🛠 DEDICATED SECTION: CRÉER MA PROPRE SÉANCE DE A À Z */}
-      <div className={`p-4 sm:p-5 rounded-3xl transition-all space-y-3 relative overflow-hidden shadow-2xl border ${
+      <div className={`p-4 sm:p-5 rounded-2xl transition-all space-y-3 relative overflow-hidden shadow-2xl border ${
         isLight
           ? 'bg-gradient-to-br from-[#fff7f0] via-[#faebe0] to-[#f4dfce] border-[#c05a3e]/30 shadow-[#c05a3e]/10'
           : 'bg-gradient-to-br from-[#7C3AED]/20 via-[#181818] to-[#121212] border-[#EC4899]/40'
@@ -128,11 +128,11 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-[#c05a3e]' : 'bg-[#EC4899]'}`} />
-            <span className={`text-[11px] font-black uppercase tracking-wider ${isLight ? 'text-[#b85d38]' : 'text-[#EC4899]'}`}>
+            <span className={`text-caption font-black uppercase tracking-wider ${isLight ? 'text-[#b85d38]' : 'text-[#EC4899]'}`}>
               ENTRAÎNEMENT SUR-MESURE
             </span>
           </div>
-          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${
+          <span className={`px-2.5 py-0.5 rounded-full text-2xs font-extrabold border ${
             isLight
               ? 'bg-[#c05a3e]/10 border-[#c05a3e]/30 text-[#b85d38]'
               : 'bg-[#EC4899]/20 border-[#EC4899]/40 text-[#EC4899]'
@@ -181,7 +181,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                 <div onClick={() => onSelectWorkout(workout)} className="space-y-1.5 flex-1 min-w-0 cursor-pointer">
                   <div className="flex items-center gap-2">
                     {time && (
-                      <span className="px-2 py-0.5 rounded-md bg-[#202020] text-[10px] font-black uppercase tracking-wider text-white">
+                      <span className="px-2 py-0.5 rounded-md bg-[#202020] text-2xs font-black uppercase tracking-wider text-white">
                         {time}
                       </span>
                     )}
@@ -194,7 +194,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     {workout.title}
                   </h3>
 
-                  <div className="flex items-center gap-4 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider pt-1">
+                  <div className="flex items-center gap-4 text-xs font-bold text-[#A7A7A7] uppercase tracking-wider pt-1 num">
                     <span className="flex items-center gap-1 text-white">
                       <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                       {workout.durationMin} MIN
@@ -212,7 +212,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     <button
                       type="button"
                       onClick={() => setConfirmDeleteId(workout.id)}
-                      className="w-8 h-8 rounded-full bg-[#202020] hover:bg-rose-500/20 text-[#A7A7A7] hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
+                      className="w-control-sm h-control-sm rounded-full bg-[#202020] hover:bg-rose-500/20 text-[#A7A7A7] hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
                       title="Supprimer cette séance"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -221,7 +221,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectWorkout(workout)}
-                    className="w-8 h-8 rounded-full bg-[#202020] hover:bg-[#0088FF] text-[#A7A7A7] hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                    className="w-control-sm h-control-sm rounded-full bg-[#202020] hover:bg-[#0088FF] text-[#A7A7A7] hover:text-white flex items-center justify-center transition-all cursor-pointer"
                     title="Voir le détail"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -236,7 +236,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     <button
                       type="button"
                       onClick={() => setConfirmDeleteId(null)}
-                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[11px] font-black uppercase text-white cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-caption font-black uppercase text-white cursor-pointer"
                     >
                       Non
                     </button>
@@ -246,7 +246,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                         onDeleteWorkout?.(workout.id);
                         setConfirmDeleteId(null);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-[11px] font-black uppercase text-white cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-600 text-caption font-black uppercase text-white cursor-pointer"
                     >
                       Supprimer
                     </button>
@@ -258,7 +258,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                     <button
                       type="button"
                       onClick={() => setSchedulingWorkoutId(workout.id)}
-                      className="py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-dashed border-white/15 text-[11px] font-black uppercase text-[#A7A7A7] hover:text-white flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-dashed border-white/15 text-caption font-black uppercase text-[#A7A7A7] hover:text-white flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Programmer</span>
@@ -267,7 +267,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                   <button
                     type="button"
                     onClick={() => onStartWorkout(workout)}
-                    className={`py-2 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-[11px] font-black uppercase flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#0088FF]/20 cursor-pointer ${
+                    className={`py-2 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-caption font-black uppercase flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#0088FF]/20 cursor-pointer ${
                       onScheduleWorkout ? '' : 'col-span-2'
                     }`}
                   >

@@ -145,7 +145,7 @@ export default function NotificationSettings({ theme, getContext }: Notification
       <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="flex items-center gap-2">
           <Clock className={`w-4 h-4 ${accentText}`} />
-          <span className={`text-[11px] font-black uppercase tracking-wider ${mutedText}`}>Heure</span>
+          <span className={`text-caption font-black uppercase tracking-wider ${mutedText}`}>Heure</span>
           <input
             type="time"
             value={settings.time}
@@ -159,7 +159,7 @@ export default function NotificationSettings({ theme, getContext }: Notification
             }`}
           />
         </label>
-        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border ${permissionChip}`}>
+        <span className={`px-2.5 py-0.5 rounded-full text-2xs font-extrabold uppercase border ${permissionChip}`}>
           {PERMISSION_LABEL[permission]}
         </span>
       </div>
@@ -180,7 +180,7 @@ export default function NotificationSettings({ theme, getContext }: Notification
         <span>Tester la notification</span>
       </button>
 
-      <p className={`text-[11px] leading-snug ${mutedText}`}>
+      <p className={`text-caption leading-snug ${mutedText}`}>
         Envoyé une fois par jour à l'heure choisie quand VOLT est ouvert ou à sa réouverture. Appli installée sur
         Android : Chrome peut aussi l'envoyer appli fermée, à un moment qu'il choisit.
       </p>

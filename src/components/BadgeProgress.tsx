@@ -27,7 +27,7 @@ export const BadgeProgress: React.FC<BadgeProgressProps> = ({
             style={{ width: `${progressPercent}%` }}
           />
         </div>
-        <div className={`flex items-center justify-between text-[9px] font-bold ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+        <div className={`flex items-center justify-between text-3xs font-bold num ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
           <span>Objectif</span>
           <span className={isLight ? 'text-[#3d2317]' : 'text-white'}>
             {badge.progressCurrent}/{badge.progressTarget} {badge.progressUnit || ''}
