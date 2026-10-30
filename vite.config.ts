@@ -5,8 +5,8 @@ import {defineConfig} from 'vite';
 import {VitePWA} from 'vite-plugin-pwa';
 
 export default defineConfig({
-  // Relative base so the app works from any sub-path (GitHub Pages, local preview…)
-  base: './',
+  // Served from https://funappi.github.io/Liftrack/ (GitHub Pages project site)
+  base: '/Liftrack/',
   plugins: [
     react(),
     tailwindcss(),
@@ -22,8 +22,8 @@ export default defineConfig({
         orientation: 'portrait',
         theme_color: '#090909',
         background_color: '#090909',
-        start_url: './',
-        scope: './',
+        start_url: '/Liftrack/',
+        scope: '/Liftrack/',
         icons: [
           {src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png'},
           {src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png'},
