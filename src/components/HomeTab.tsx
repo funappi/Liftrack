@@ -146,7 +146,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             estimatedCalories: 350,
             intensity: "ÉLEVÉE",
             gradientType: "main",
-            imageUrl: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=80",
+            imageUrl: `${import.meta.env.BASE_URL}img/photo-1581009146145-b5ef050c2e1e-1200.jpg`,
             description: "Séance en direct avec suivi des séries, charges et répétitions.",
             targetAreas: ["Biceps", "Avant-bras"],
             exercises: [

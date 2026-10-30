@@ -4,7 +4,7 @@ export const initialUserStats: UserStats = {
   name: "Alexandre",
   role: "ATHLÈTE ÉLITE",
   email: "alexandre@volt.gym",
-  avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+  avatarUrl: `${import.meta.env.BASE_URL}img/photo-1534528741775-53994a69daeb-300.jpg`,
   currentWeightKg: 82,
   targetWeightKg: 85,
   streakDays: 12,
@@ -41,7 +41,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 580,
     intensity: "ÉLEVÉE",
     gradientType: "main",
-    imageUrl: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1581009146145-b5ef050c2e1e-1200.jpg`,
     description: "Concentration maximale sur les fibres pectorales et la chaîne de poussée tricipitale pour stimuler une hypertrophie dense.",
     targetAreas: ["Pectoraux", "Triceps", "Deltoïdes antérieurs"],
     exercises: [
@@ -118,7 +118,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 620,
     intensity: "ÉLEVÉE",
     gradientType: "energy",
-    imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1534438327276-14e5300c3a48-1200.jpg`,
     description: "Séance totale haut voltage sollicitant tous les groupes musculaires majeurs avec une dépense métabolique extrême.",
     targetAreas: ["Quadriceps", "Pectoraux", "Dorsaux", "Sangle abdominale"],
     exercises: [
@@ -171,7 +171,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 690,
     intensity: "MAXIMALE",
     gradientType: "premium",
-    imageUrl: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1574680096145-d05b474e2155-1200.jpg`,
     description: "Développe une force brute du bas du corps. Session axée sur le Back Squat lourd et le soulevé roumain.",
     targetAreas: ["Quadriceps", "Fessiers", "Ischio-jambiers", "Mollets"],
     exercises: [
@@ -224,7 +224,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 510,
     intensity: "ÉLEVÉE",
     gradientType: "performance",
-    imageUrl: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1605296867304-46d5465a13f1-1200.jpg`,
     description: "Construction d'un dos en V ultra dense et travail isolé des fléchisseurs de l'avant-bras et biceps.",
     targetAreas: ["Grand dorsal", "Trapèzes", "Rhomboïdes", "Biceps"],
     exercises: [
@@ -268,7 +268,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 540,
     intensity: "MAXIMALE",
     gradientType: "energy",
-    imageUrl: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1517838277536-f5f99be501cd-1200.jpg`,
     description: "Intervalles haute intensité avec rameur Concept2, Assault Bike et kettlebells pour pulvériser le cardio.",
     targetAreas: ["Cardio-respiratoire", "Full Body", "VMA"],
     exercises: [
@@ -303,7 +303,7 @@ export const sampleWorkouts: Workout[] = [
     estimatedCalories: 160,
     intensity: "MODÉRÉE",
     gradientType: "performance",
-    imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: `${import.meta.env.BASE_URL}img/photo-1518611012118-696072aa579a-1200.jpg`,
     description: "Décompression articulaire, étirements myofasciaux et ouverture des hanches pour accélérer la régénération.",
     targetAreas: ["Mobilité thoracique", "Hanches", "Chevilles"],
     exercises: [

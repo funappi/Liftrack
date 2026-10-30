@@ -143,7 +143,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({
       estimatedCalories: Math.round((Number(durationMin) || 45) * 8.5),
       intensity: difficulty === 'ÉLITE' || difficulty === 'AVANCÉ' ? 'ÉLEVÉE' : 'MODÉRÉE',
       gradientType: 'main',
-      imageUrl: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=80",
+      imageUrl: `${import.meta.env.BASE_URL}img/photo-1581009146145-b5ef050c2e1e-1200.jpg`,
       description: subtitle.trim() || `Programme personnalisé créé sur-mesure contenant ${exercises.length} exercice(s).`,
       exercises: exercises.map((e) => ({
         ...e,

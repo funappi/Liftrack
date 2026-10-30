@@ -39,7 +39,7 @@ body.theme-warm-light {
 
 @layer base {
   body {
-    font-family: 'Manrope', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Manrope Variable', 'Plus Jakarta Sans Variable', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-app);
     color: var(--text-primary);
     overflow-x: hidden;
