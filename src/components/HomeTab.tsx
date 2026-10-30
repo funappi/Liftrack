@@ -15,7 +15,7 @@ interface HomeTabProps {
   schedule: ScheduledDay[];
   onSelectWorkout: (workout: Workout) => void;
   onStartWorkout: (workout: Workout) => void;
-  onNavigateToTab: (tab: 'workouts' | 'progress' | 'planning') => void;
+  onNavigateToTab: (tab: 'workouts' | 'progress') => void;
   onUpdateUserStats: (updated: Partial<UserStats>) => void;
   onUnlockBadge?: (badgeId: string) => void;
   onOpenBodyComposition?: () => void;

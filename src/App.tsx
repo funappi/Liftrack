@@ -3,20 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, lazy, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { TabType, Workout, UserStats, PersonalRecord, AchievementBadge, ScheduledDay, MeasurementEntry } from './types';
 import { initialUserStats, sampleWorkouts, sampleWeekSchedule, samplePersonalRecords, sampleBadges, sampleMeasurements } from './data/mockData';
 import { Header } from './components/Header';
 import { Navbar } from './components/Navbar';
 import { HomeTab } from './components/HomeTab';
 import { WorkoutsTab } from './components/WorkoutsTab';
-import { PlanningTab } from './components/PlanningTab';
 import { ProgressionTab } from './components/ProgressionTab';
 import { WorkoutDetailModal } from './components/WorkoutDetailModal';
 import { LiveWorkoutView } from './components/LiveWorkoutView';
-import { QuickLaunchModal } from './components/QuickLaunchModal';
 import { loadJSON, saveJSON } from './utils/storage';
 import { CUSTOM_WORKOUT_PREFIX, isCustomWorkout } from './utils/workouts';
+import { DayKey } from './utils/dates';
+import { applyThemeToDocument, getThemeBase, loadThemeId, saveThemeId } from './themes';
+import { startNotificationScheduler } from './utils/notifications';
+import { SettingsScreen, SettingsSectionId } from './components/SettingsScreen';
 
 // Heavy modals only opened on demand: loaded in separate chunks
 const WorkoutFinishedModal = lazy(() =>
@@ -74,46 +76,22 @@ export default function App() {
     });
   };
 
-  const [theme, setTheme] = useState<'dark' | 'warm-light'>(() => {
-    try {
-      const saved = localStorage.getItem('volt_theme');
-      if (saved === 'warm-light' || saved === 'dark') return saved;
-    } catch {
-      // ignore
-    }
-    return 'dark';
-  });
+  const [themeId, setThemeId] = useState<string>(loadThemeId);
+  const theme = getThemeBase(themeId);
 
-  // Keep body class in sync with theme
-  React.useEffect(() => {
-    if (theme === 'warm-light') {
-      document.body.classList.add('theme-warm-light');
-      document.body.classList.remove('theme-velours-dark');
-    } else {
-      document.body.classList.remove('theme-warm-light');
-      document.body.classList.add('theme-velours-dark');
-    }
-  }, [theme]);
+  // Keep body classes in sync with the selected theme
+  useEffect(() => {
+    applyThemeToDocument(themeId);
+  }, [themeId]);
 
-  const handleToggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === 'dark' ? 'warm-light' : 'dark';
-      try {
-        localStorage.setItem('volt_theme', next);
-      } catch {
-        // ignore
-      }
-      return next;
-    });
+  const handleApplyTheme = (id: string) => {
+    saveThemeId(id);
+    setThemeId(id);
   };
 
   const [schedule, setSchedule] = useState<ScheduledDay[]>(() => loadJSON('volt_schedule', sampleWeekSchedule));
 
-  const handleScheduleWorkout = (
-    dayKey: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM',
-    workoutId: string,
-    time: string
-  ) => {
+  const handleScheduleWorkout = (dayKey: DayKey, workoutId: string) => {
     const targetWorkout = workouts.find((w) => w.id === workoutId);
     if (!targetWorkout) return;
 
@@ -122,7 +100,6 @@ export default function App() {
         if (day.dayKey !== dayKey) return day;
         const newSession = {
           id: `s-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-          time: time || '18:00',
           workoutId: targetWorkout.id,
           workoutTitle: targetWorkout.title,
           durationMin: targetWorkout.durationMin,
@@ -195,11 +172,18 @@ export default function App() {
     });
   };
 
+  // Latest data for the daily notification scheduler
+  const scheduleRef = useRef(schedule);
+  const workoutsRef = useRef(workouts);
+  scheduleRef.current = schedule;
+  workoutsRef.current = workouts;
+  useEffect(() => startNotificationScheduler(() => ({ schedule: scheduleRef.current, workouts: workoutsRef.current })), []);
+
   // Modal & Live workout states
   const [selectedWorkoutForModal, setSelectedWorkoutForModal] = useState<Workout | null>(null);
   const [activeLiveWorkout, setActiveLiveWorkout] = useState<Workout | null>(null);
   const [showBodyCompositionModal, setShowBodyCompositionModal] = useState(false);
-  const [showQuickLaunch, setShowQuickLaunch] = useState(false);
+  const [settingsSection, setSettingsSection] = useState<SettingsSectionId | null>(null);
   const [finishedSummary, setFinishedSummary] = useState<{
     workout: Workout;
     durationSeconds: number;
@@ -357,14 +341,6 @@ export default function App() {
     });
   };
 
-  // Launch scheduled workout from planning
-  const handleStartScheduledWorkout = (workoutId: string) => {
-    const target = workouts.find((w) => w.id === workoutId);
-    if (target) {
-      setSelectedWorkoutForModal(target);
-    }
-  };
-
   return (
     <div className={`min-h-screen ${theme === 'warm-light' ? 'theme-warm-light bg-[#f3dfcb] text-[#3d2317]' : 'bg-[#090909] text-white'} flex flex-col justify-between selection:bg-[#EC4899] selection:text-white relative font-sans transition-colors duration-300`}>
       {/* Dynamic Background Glow Ambient Elements */}
@@ -376,9 +352,9 @@ export default function App() {
         {!activeLiveWorkout && (
           <Header
             userStats={userStats}
-            onStartQuickWorkout={() => setShowQuickLaunch(true)}
+            onOpenSettings={() => setSettingsSection('themes')}
+            onOpenProfile={() => setSettingsSection('profile')}
             theme={theme}
-            onToggleTheme={handleToggleTheme}
           />
         )}
 
@@ -410,18 +386,7 @@ export default function App() {
               onDeleteWorkout={handleDeleteWorkout}
               onScheduleWorkout={handleScheduleWorkout}
               onRemoveScheduledWorkout={handleRemoveScheduledWorkout}
-              theme={theme}
-            />
-          )}
-
-          {activeTab === 'planning' && (
-            <PlanningTab
-              schedule={schedule}
-              workouts={workouts}
-              onStartScheduledWorkout={handleStartScheduledWorkout}
-              onOpenWorkouts={() => setActiveTab('workouts')}
-              onScheduleWorkout={handleScheduleWorkout}
-              onRemoveScheduledWorkout={handleRemoveScheduledWorkout}
+              weeklyGoal={userStats.weeklyGoalWorkouts}
               theme={theme}
             />
           )}
@@ -445,7 +410,7 @@ export default function App() {
           )}
         </main>
 
-        {/* Bottom Mobile Navigation (4 tabs) */}
+        {/* Bottom Mobile Navigation (3 tabs) */}
         {!activeLiveWorkout && (
           <Navbar activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} theme={theme} />
         )}
@@ -460,19 +425,16 @@ export default function App() {
           />
         )}
 
-        {/* Lancement rapide : mes séances créées + décompte */}
-        {showQuickLaunch && (
-          <QuickLaunchModal
-            workouts={workouts.filter(isCustomWorkout)}
-            onStart={(w) => {
-              setShowQuickLaunch(false);
-              handleStartWorkout(w);
-            }}
-            onClose={() => setShowQuickLaunch(false)}
-            onCreate={() => {
-              setShowQuickLaunch(false);
-              setActiveTab('workouts');
-            }}
+        {/* Settings (gear icon) */}
+        {settingsSection && !activeLiveWorkout && (
+          <SettingsScreen
+            initialSection={settingsSection}
+            userStats={userStats}
+            onUpdateUserStats={handleUpdateUserStats}
+            themeId={themeId}
+            onApplyTheme={handleApplyTheme}
+            getNotificationContext={() => ({ schedule: scheduleRef.current, workouts: workoutsRef.current })}
+            onClose={() => setSettingsSection(null)}
             theme={theme}
           />
         )}

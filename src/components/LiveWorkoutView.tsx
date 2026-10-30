@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Workout, WorkoutExerciseSession, WorkoutSetSession } from '../types';
 import { audioSynth } from '../utils/audioSynth';
+import { loadSoundEnabled } from '../utils/preferences';
 
 interface LiveWorkoutViewProps {
   workout: Workout;
@@ -104,7 +105,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
   const [exerciseSearch, setExerciseSearch] = useState('');
 
   // Settings
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(loadSoundEnabled);
   const [defaultRestPreset, setDefaultRestPreset] = useState<number>(60);
 
   // Chronometer Interval (workout elapsed time)

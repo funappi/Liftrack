@@ -11,6 +11,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      // Custom service worker (src/sw.ts): workbox precache + daily notifications
+      // (Periodic Background Sync, notification click)
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon.svg', 'img/*.jpg'],
       manifest: {
@@ -31,7 +36,7 @@ export default defineConfig({
           {src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable'},
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,woff2,png,jpg,svg,ico}'],
       },
     }),

@@ -1,4 +1,4 @@
-export type TabType = 'home' | 'workouts' | 'planning' | 'progress';
+export type TabType = 'home' | 'workouts' | 'progress';
 
 export type WorkoutCategory = 
   | 'all' 

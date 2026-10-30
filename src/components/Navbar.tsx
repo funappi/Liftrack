@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Dumbbell, Calendar, TrendingUp } from 'lucide-react';
+import { Home, Dumbbell, TrendingUp } from 'lucide-react';
 import { TabType } from '../types';
 
 interface NavbarProps {
@@ -11,10 +11,9 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, theme = 'dark' }) => {
   const isLight = theme === 'warm-light';
 
-  // Ordered: Exercice, Planning, Accueil (milieu), Progression
+  // Ordered: Exercice (gauche), Accueil (milieu), Progression (droite)
   const tabs: { id: TabType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { id: 'workouts', label: 'Exercice', icon: Dumbbell },
-    { id: 'planning', label: 'Planning', icon: Calendar },
     { id: 'home', label: 'Accueil', icon: Home },
     { id: 'progress', label: 'Progression', icon: TrendingUp },
   ];

@@ -4,7 +4,7 @@ import { ScheduledDay, Workout } from '../types';
 import { CreateWorkoutModal } from './CreateWorkoutModal';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
 import { WeeklyTracker, getGradientClass } from './WeeklyTracker';
-import { DAY_KEYS, getParisDayKey } from '../utils/dates';
+import { DAY_KEYS, DayKey, getParisDayKey } from '../utils/dates';
 
 interface WorkoutsTabProps {
   workouts: Workout[];
@@ -13,7 +13,8 @@ interface WorkoutsTabProps {
   onStartWorkout: (workout: Workout) => void;
   onSaveCustomWorkout?: (workout: Workout, launchImmediately?: boolean) => void;
   onDeleteWorkout?: (workoutId: string) => void;
-  onScheduleWorkout?: (dayKey: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM', workoutId: string, time: string) => void;
+  onScheduleWorkout?: (dayKey: DayKey, workoutId: string) => void;
+  weeklyGoal?: number;
   onRemoveScheduledWorkout?: (dayKey: string, sessionId: string) => void;
   theme?: 'dark' | 'warm-light';
 }
@@ -35,6 +36,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
   onSaveCustomWorkout,
   onDeleteWorkout,
   onScheduleWorkout,
+  weeklyGoal,
   onRemoveScheduledWorkout,
   theme,
 }) => {
@@ -43,24 +45,26 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [schedulingWorkoutId, setSchedulingWorkoutId] = useState<string | null>(null);
 
-  // Next upcoming session per workout (closest day from today, then earliest time) → listed first
+  // Next upcoming session per workout (closest day from today) → listed first, with that day shown
   const sortedWorkouts = useMemo(() => {
     const todayIdx = DAY_KEYS.indexOf(getParisDayKey());
-    const nextByWorkout = new Map<string, { rank: string; time: string }>();
+    const nextByWorkout = new Map<string, { delta: number; day: DayKey }>();
     schedule.forEach((day) => {
       const delta = (DAY_KEYS.indexOf(day.dayKey) - todayIdx + 7) % 7;
       day.sessions.forEach((s) => {
         if (s.status !== 'upcoming') return;
-        const rank = `${delta}-${s.time}`;
         const current = nextByWorkout.get(s.workoutId);
-        if (!current || rank < current.rank) nextByWorkout.set(s.workoutId, { rank, time: s.time });
+        if (!current || delta < current.delta) nextByWorkout.set(s.workoutId, { delta, day: day.dayKey });
       });
     });
     const scheduled = workouts
       .filter((w) => nextByWorkout.has(w.id))
-      .sort((a, b) => nextByWorkout.get(a.id)!.rank.localeCompare(nextByWorkout.get(b.id)!.rank));
+      .sort((a, b) => nextByWorkout.get(a.id)!.delta - nextByWorkout.get(b.id)!.delta);
     const others = workouts.filter((w) => !nextByWorkout.has(w.id));
-    return [...scheduled, ...others].map((w) => ({ workout: w, time: nextByWorkout.get(w.id)?.time }));
+    return [...scheduled, ...others].map((w) => {
+      const next = nextByWorkout.get(w.id);
+      return { workout: w, time: next ? (next.delta === 0 ? "AUJOURD'HUI" : next.day) : undefined };
+    });
   }, [workouts, schedule]);
 
   const handleSaveCreatedWorkout = (workout: Workout, launchImmediately = false) => {
@@ -85,6 +89,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
           if (target) onSelectWorkout(target);
         }}
         onScheduleWorkout={onScheduleWorkout}
+        weeklyGoal={weeklyGoal}
         onRemoveScheduledWorkout={onRemoveScheduledWorkout}
         theme={theme}
         renderHeader={() => (

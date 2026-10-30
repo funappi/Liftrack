@@ -180,10 +180,10 @@ export function BodyCompositionModal({
     };
   };
   // Inputs state
-  const [gender, setGender] = useState<'homme' | 'femme'>('homme');
+  const [gender, setGender] = useState<'homme' | 'femme'>(userStats.profile?.gender ?? 'homme');
   const [weightKg, setWeightKg] = useState<number>(userStats.currentWeightKg || 82);
-  const [heightCm, setHeightCm] = useState<number>(180);
-  const [age, setAge] = useState<number>(26);
+  const [heightCm, setHeightCm] = useState<number>(userStats.profile?.heightCm ?? 180);
+  const [age, setAge] = useState<number>(userStats.profile?.age ?? 26);
   const [waistCm, setWaistCm] = useState<number>(84);
   const [neckCm, setNeckCm] = useState<number>(39);
   const [hipCm, setHipCm] = useState<number>(98);
@@ -274,6 +274,14 @@ export function BodyCompositionModal({
     onSaveComposition({
       currentWeightKg: weightKg,
       targetWeightKg: chosenTargetWeight,
+      profile: {
+        activityLevel: 'modere',
+        goal: 'maintien',
+        ...userStats.profile,
+        gender,
+        age,
+        heightCm,
+      },
       nextGoal: {
         title: goalTitle,
         current: weightKg,

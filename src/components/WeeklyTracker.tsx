@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Calendar as Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, Trash2 } from 'lucide-react';
 import { ScheduledDay, Workout } from '../types';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
-import { getParisDayKey } from '../utils/dates';
+import { DayKey, getParisDayKey } from '../utils/dates';
 import { saveJSON } from '../utils/storage';
 
 interface WeeklyTrackerProps {
@@ -10,7 +10,9 @@ interface WeeklyTrackerProps {
   workouts: Workout[];
   onStartScheduledWorkout: (workoutId: string) => void;
   onOpenWorkouts?: () => void;
-  onScheduleWorkout?: (dayKey: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM', workoutId: string, time: string) => void;
+  onScheduleWorkout?: (dayKey: DayKey, workoutId: string) => void;
+  // Weekly goal (sessions per week) set in Settings; defaults to 7 days
+  weeklyGoal?: number;
   onRemoveScheduledWorkout?: (dayKey: string, sessionId: string) => void;
   // Screen title row; receives the opener of the schedule modal for its "Programmer" button
   renderHeader: (openSchedule: () => void) => React.ReactNode;
@@ -48,6 +50,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
   onStartScheduledWorkout,
   onOpenWorkouts,
   onScheduleWorkout,
+  weeklyGoal = 7,
   onRemoveScheduledWorkout,
   renderHeader,
   theme,
@@ -104,6 +107,22 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
   return (
     <>
       {renderHeader(handleOpenScheduleForSelected)}
+
+      {/* Weekly Stats Summary Bar */}
+      <div className="p-4 rounded-2xl bg-[#121212] border border-white/[0.06] flex items-center justify-between">
+        <div>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A7A7A7]">
+            VOLUME HEBDOMADAIRE
+          </span>
+          <p className="text-sm font-black text-white uppercase">{totalCheckedCount} JOURS VALIDÉS / {weeklyGoal}</p>
+        </div>
+        <div className="text-right">
+          <span className="text-base font-black text-gradient-main">
+            {Math.min(100, Math.round((totalCheckedCount / Math.max(1, weeklyGoal)) * 100))}%
+          </span>
+          <p className="text-[10px] text-[#A7A7A7]">Objectif de la semaine</p>
+        </div>
+      </div>
 
       {/* Checkable Days of the Week: No dates, perfectly aligned horizontal checkboxes */}
       <div className="p-3 rounded-2xl bg-[#181818] border border-white/[0.08] space-y-2.5">
@@ -269,9 +288,6 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                       className="space-y-1.5 flex-1 min-w-0 cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-md bg-[#202020] text-[10px] font-black uppercase tracking-wider text-white">
-                          {session.time}
-                        </span>
                         <span className="text-xs font-extrabold uppercase text-[#EC4899]">
                           {session.type}
                         </span>
@@ -343,32 +359,12 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
         )}
       </div>
 
-      {/* Weekly Stats Summary Bar */}
-      <div className="p-4 rounded-2xl bg-[#121212] border border-white/[0.06] flex items-center justify-between">
-        <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#A7A7A7]">
-            VOLUME HEBDOMADAIRE
-          </span>
-          <p className="text-sm font-black text-white uppercase">{totalCheckedCount} JOURS VALIDÉS / 7</p>
-        </div>
-        <div className="text-right">
-          <span className="text-base font-black text-gradient-main">
-            {Math.round((totalCheckedCount / 7) * 100)}%
-          </span>
-          <p className="text-[10px] text-[#A7A7A7]">Semaine en cours</p>
-        </div>
-      </div>
-
       {/* Schedule Workout Modal */}
       {showScheduleModal && (
         <ScheduleWorkoutModal
           workouts={workouts}
           initialDayKey={selectedDay.dayKey}
-          onSchedule={(dayKey, workoutId, time) => {
-            if (onScheduleWorkout) {
-               onScheduleWorkout(dayKey, workoutId, time);
-            }
-          }}
+          onSchedule={(dayKey, workoutId) => onScheduleWorkout?.(dayKey, workoutId)}
           onClose={() => setShowScheduleModal(false)}
           theme={theme}
         />

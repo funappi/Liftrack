@@ -1,0 +1,1794 @@
+/* FICHIER GÉNÉRÉ par scripts/gen-theme-css.mjs — ne pas éditer à la main (npm run gen:themes). */
+/* Actif uniquement quand <body> porte la classe theme-custom : Velours et Crème restent intacts. */
+
+/* ===== Variables des thèmes ===== */
+body.theme-noir-oled {
+  --t-app: #000000;
+  --t-card: #0B0B0B;
+  --t-elev: #171717;
+  --t-input: #111111;
+  --t-text: #FFFFFF;
+  --t-text2: #9A9A9A;
+  --t-border: rgba(255, 255, 255, 0.10);
+  --t-shade: #000000;
+  --t-accent1: #8B5CF6;
+  --t-accent2: #EC4899;
+  --t-accent3: #22D3EE;
+  --t-energy: #FF5A36;
+  --t-warn: #F59E0B;
+  --t-success: #10B981;
+  --t-on-accent: #FFFFFF;
+}
+
+body.theme-neon {
+  --t-app: #07040F;
+  --t-card: #140B28;
+  --t-elev: #1E1238;
+  --t-input: #180E30;
+  --t-text: #F3EEFF;
+  --t-text2: #A193CC;
+  --t-border: rgba(176, 140, 255, 0.18);
+  --t-shade: #030108;
+  --t-accent1: #B026FF;
+  --t-accent2: #FF2BD6;
+  --t-accent3: #00F0FF;
+  --t-energy: #FF3864;
+  --t-warn: #FFD300;
+  --t-success: #39FF88;
+  --t-on-accent: #FFFFFF;
+}
+
+body.theme-foret {
+  --t-app: #0B1410;
+  --t-card: #13221B;
+  --t-elev: #1B2E24;
+  --t-input: #16271F;
+  --t-text: #E8F1EA;
+  --t-text2: #93AA9B;
+  --t-border: rgba(160, 210, 175, 0.14);
+  --t-shade: #050A07;
+  --t-accent1: #2F9E68;
+  --t-accent2: #A3D65C;
+  --t-accent3: #4FB3A9;
+  --t-energy: #E07A3F;
+  --t-warn: #D9B44A;
+  --t-success: #5BD08A;
+  --t-on-accent: #FFFFFF;
+}
+
+body.theme-ocean {
+  --t-app: #06121F;
+  --t-card: #0D1D30;
+  --t-elev: #142A42;
+  --t-input: #102338;
+  --t-text: #E6F1FB;
+  --t-text2: #8BA6C1;
+  --t-border: rgba(140, 190, 240, 0.15);
+  --t-shade: #020A13;
+  --t-accent1: #2563EB;
+  --t-accent2: #06B6D4;
+  --t-accent3: #38BDF8;
+  --t-energy: #FF7A59;
+  --t-warn: #FBBF24;
+  --t-success: #2DD4BF;
+  --t-on-accent: #FFFFFF;
+}
+
+body.theme-coucher-soleil {
+  --t-app: #1A0E14;
+  --t-card: #27141E;
+  --t-elev: #331C29;
+  --t-input: #2C1823;
+  --t-text: #FFEDE4;
+  --t-text2: #C99C9C;
+  --t-border: rgba(255, 170, 150, 0.16);
+  --t-shade: #0E0609;
+  --t-accent1: #9B4DDB;
+  --t-accent2: #FF5E7E;
+  --t-accent3: #FF9F43;
+  --t-energy: #FF6B35;
+  --t-warn: #FFC145;
+  --t-success: #4ADE80;
+  --t-on-accent: #FFFFFF;
+}
+
+body.theme-clair-minimal {
+  --t-app: #F4F4F5;
+  --t-card: #FFFFFF;
+  --t-elev: #ECECEF;
+  --t-input: #FAFAFA;
+  --t-text: #18181B;
+  --t-text2: #5F5F68;
+  --t-border: rgba(24, 24, 27, 0.12);
+  --t-shade: #18181B;
+  --t-accent1: #1D4ED8;
+  --t-accent2: #3B82F6;
+  --t-accent3: #0284C7;
+  --t-energy: #EA580C;
+  --t-warn: #B45309;
+  --t-success: #059669;
+  --t-on-accent: #FFFFFF;
+}
+
+/* ===== Base ===== */
+body.theme-custom,
+body.theme-custom .theme-warm-light,
+body.theme-custom .theme-velours-dark {
+  --bg-app: var(--t-app);
+  --bg-card: var(--t-card);
+  --bg-card-hover: var(--t-elev);
+  --bg-elevated: var(--t-elev);
+  --bg-input: var(--t-input);
+  --text-primary: var(--t-text);
+  --text-secondary: var(--t-text2);
+  --text-muted: var(--t-text2);
+  --border-subtle: var(--t-border);
+  --border-strong: color-mix(in oklab, var(--t-text) 22%, transparent);
+  --accent-cognac: var(--t-accent1);
+  --accent-amber: var(--t-accent2);
+  --accent-gradient: linear-gradient(135deg, var(--t-accent1) 0%, var(--t-accent2) 100%);
+  --modal-backdrop: color-mix(in oklab, var(--t-shade) 85%, transparent);
+}
+
+body.theme-custom {
+  background-color: var(--t-app) !important;
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .gradient-main,
+body.theme-custom .bg-gradient-to-r.from-\[\#7C3AED\].to-\[\#EC4899\] {
+  background: linear-gradient(135deg, var(--t-accent1) 0%, var(--t-accent2) 100%) !important;
+}
+body.theme-custom .gradient-energy {
+  background: linear-gradient(135deg, var(--t-energy) 0%, var(--t-accent2) 100%) !important;
+}
+body.theme-custom .gradient-performance {
+  background: linear-gradient(135deg, var(--t-accent3) 0%, color-mix(in oklab, var(--t-accent3) 70%, #000) 100%) !important;
+}
+body.theme-custom .text-gradient-main,
+body.theme-custom .text-gradient-energy,
+body.theme-custom .text-gradient-performance {
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+body.theme-custom .text-gradient-main { background-image: linear-gradient(135deg, var(--t-accent1) 0%, var(--t-accent2) 100%) !important; }
+body.theme-custom .text-gradient-energy { background-image: linear-gradient(135deg, var(--t-energy) 0%, var(--t-accent2) 100%) !important; }
+body.theme-custom .text-gradient-performance { background-image: linear-gradient(135deg, var(--t-accent3) 0%, color-mix(in oklab, var(--t-accent3) 70%, #000) 100%) !important; }
+body.theme-custom .glow-main { box-shadow: 0 8px 32px -4px color-mix(in oklab, var(--t-accent1) 35%, transparent) !important; }
+body.theme-custom .glow-energy { box-shadow: 0 8px 32px -4px color-mix(in oklab, var(--t-energy) 35%, transparent) !important; }
+
+/* ===== Classes de couleur des composants (331 règles) ===== */
+body.theme-custom .bg-\[\#000000\] {
+  background-color: var(--t-app) !important;
+}
+
+body.theme-custom .bg-\[\#0072FF\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#0088FF\] {
+  background-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .bg-\[\#0088FF\]\/10 {
+  background-color: color-mix(in oklab, var(--t-accent3) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#0088FF\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#00C6FF\] {
+  background-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .bg-\[\#00C6FF\]\/10 {
+  background-color: color-mix(in oklab, var(--t-accent3) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#00C6FF\]\/15 {
+  background-color: color-mix(in oklab, var(--t-accent3) 15%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#00C6FF\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#090909\] {
+  background-color: var(--t-app) !important;
+}
+
+body.theme-custom .bg-\[\#0A0A0A\] {
+  background-color: var(--t-app) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#0D0D0D\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#0D0D0D\]\/60 {
+  background-color: color-mix(in oklab, var(--t-card) 60%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#0E0E0E\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#101010\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#10B981\] {
+  background-color: var(--t-success) !important;
+}
+
+body.theme-custom .bg-\[\#10B981\]\/15 {
+  background-color: color-mix(in oklab, var(--t-success) 15%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#10B981\]\/20 {
+  background-color: color-mix(in oklab, var(--t-success) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#121212\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#121212\]\/95 {
+  background-color: color-mix(in oklab, var(--t-card) 95%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#141414\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#161208\] {
+  background-color: color-mix(in oklab, var(--t-card) 90%, var(--t-warn)) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#161311\]\/98 {
+  background-color: color-mix(in oklab, var(--t-app) 98%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#161616\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#181818\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#1A1A1A\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#1C1C1C\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#1E1E1E\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#1F1F1F\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#202020\] {
+  background-color: var(--t-elev) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#202020\]\/90 {
+  background-color: color-mix(in oklab, var(--t-elev) 90%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#211b17\] {
+  background-color: var(--t-card) !important;
+}
+
+body.theme-custom .bg-\[\#222\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#222222\] {
+  background-color: var(--t-card) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#242424\] {
+  background-color: var(--t-elev) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#252525\] {
+  background-color: var(--t-elev) !important;
+  color: var(--t-text) !important;
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .bg-\[\#2a2a2a\] {
+  background-color: var(--t-elev) !important;
+}
+
+body.theme-custom .bg-\[\#3B82F6\] {
+  background-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .bg-\[\#3B82F6\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#3B82F6\]\/60 {
+  background-color: color-mix(in oklab, var(--t-accent3) 60%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#3d2317\]\/15 {
+  background-color: color-mix(in oklab, var(--t-text) 15%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#3d2317\]\/65 {
+  background-color: color-mix(in oklab, var(--t-text) 65%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#6366F1\] {
+  background-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .bg-\[\#7C3AED\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent1) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#7d5a47\]\/15 {
+  background-color: color-mix(in oklab, var(--t-text2) 15%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#7d5a47\]\/30 {
+  background-color: color-mix(in oklab, var(--t-text2) 30%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#b85d38\] {
+  background-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .bg-\[\#c05a3e\] {
+  background-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .bg-\[\#c05a3e\]\/10 {
+  background-color: color-mix(in oklab, var(--t-accent1) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#e5d2c1\] {
+  background-color: var(--t-elev) !important;
+}
+
+body.theme-custom .bg-\[\#e8d5c4\] {
+  background-color: var(--t-elev) !important;
+}
+
+body.theme-custom .bg-\[\#EC4899\] {
+  background-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .bg-\[\#EC4899\]\/\[0\.06\] {
+  background-color: color-mix(in oklab, var(--t-accent2) 6%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#EC4899\]\/10 {
+  background-color: color-mix(in oklab, var(--t-accent2) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#EC4899\]\/15 {
+  background-color: color-mix(in oklab, var(--t-accent2) 15%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#EC4899\]\/20 {
+  background-color: color-mix(in oklab, var(--t-accent2) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#f0ded0\] {
+  background-color: var(--t-elev) !important;
+}
+
+body.theme-custom .bg-\[\#f0dfd0\] {
+  background-color: var(--t-elev) !important;
+}
+
+body.theme-custom .bg-\[\#f3dfcb\] {
+  background-color: var(--t-app) !important;
+}
+
+body.theme-custom .bg-\[\#f3dfcb\]\/98 {
+  background-color: color-mix(in oklab, var(--t-app) 98%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#F59E0B\] {
+  background-color: var(--t-warn) !important;
+}
+
+body.theme-custom .bg-\[\#F59E0B\]\/20 {
+  background-color: color-mix(in oklab, var(--t-warn) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#f5e3d4\] {
+  background-color: var(--t-card) !important;
+}
+
+body.theme-custom .bg-\[\#faebe0\] {
+  background-color: var(--t-card) !important;
+}
+
+body.theme-custom .bg-\[\#FF512F\]\/10 {
+  background-color: color-mix(in oklab, var(--t-energy) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#FF512F\]\/20 {
+  background-color: color-mix(in oklab, var(--t-energy) 20%, transparent) !important;
+}
+
+body.theme-custom .bg-\[\#fff7f0\] {
+  background-color: var(--t-input) !important;
+}
+
+body.theme-custom .bg-\[\#fffaf5\] {
+  background-color: var(--t-input) !important;
+}
+
+body.theme-custom .bg-black\/10 {
+  background-color: color-mix(in oklab, var(--t-shade) 10%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/30 {
+  background-color: color-mix(in oklab, var(--t-shade) 30%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/40 {
+  background-color: color-mix(in oklab, var(--t-shade) 40%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/5 {
+  background-color: color-mix(in oklab, var(--t-shade) 5%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/60 {
+  background-color: color-mix(in oklab, var(--t-shade) 60%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/70 {
+  background-color: color-mix(in oklab, var(--t-shade) 70%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/80 {
+  background-color: color-mix(in oklab, var(--t-shade) 80%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/85 {
+  background-color: color-mix(in oklab, var(--t-shade) 85%, transparent) !important;
+}
+
+body.theme-custom .bg-black\/90 {
+  background-color: color-mix(in oklab, var(--t-shade) 90%, transparent) !important;
+}
+
+body.theme-custom .bg-white\/\[0\.03\] {
+  background-color: color-mix(in oklab, var(--t-text) 3%, transparent) !important;
+}
+
+body.theme-custom .bg-white\/\[0\.04\] {
+  background-color: color-mix(in oklab, var(--t-text) 4%, transparent) !important;
+}
+
+body.theme-custom .bg-white\/\[0\.06\] {
+  background-color: color-mix(in oklab, var(--t-text) 6%, transparent) !important;
+}
+
+body.theme-custom .bg-white\/10 {
+  background-color: color-mix(in oklab, var(--t-text) 10%, transparent) !important;
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .bg-white\/20 {
+  background-color: color-mix(in oklab, var(--t-text) 20%, transparent) !important;
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .bg-white\/5 {
+  background-color: color-mix(in oklab, var(--t-text) 5%, transparent) !important;
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .bg-white\/60 {
+  background-color: color-mix(in oklab, var(--t-text) 60%, transparent) !important;
+}
+
+body.theme-custom .active\:bg-\[\#f4dfce\]:active {
+  background-color: var(--t-card) !important;
+}
+
+body.theme-custom .active\:bg-white\/\[0\.1\]:active {
+  background-color: color-mix(in oklab, var(--t-text) 10%, transparent) !important;
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#0070DD\]:hover {
+  background-color: var(--t-accent3) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#0088FF\]:hover {
+  background-color: var(--t-accent3) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#0088FF\]\/30:hover {
+  background-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#00C6FF\]\/30:hover {
+  background-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#202020\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#222222\]:hover {
+  background-color: var(--t-card) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#252525\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#262626\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#282828\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#3B82F6\]\/30:hover {
+  background-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#4F46E5\]:hover {
+  background-color: var(--t-accent1) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#d63384\]:hover {
+  background-color: var(--t-accent2) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#EC4899\]\/30:hover {
+  background-color: color-mix(in oklab, var(--t-accent2) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#f0ded0\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#F59E0B\]\/30:hover {
+  background-color: color-mix(in oklab, var(--t-warn) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#faebe0\]:hover {
+  background-color: var(--t-card) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#fff3ea\]:hover {
+  background-color: var(--t-elev) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-\[\#fff7f0\]:hover {
+  background-color: var(--t-input) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-black\/10:hover {
+  background-color: color-mix(in oklab, var(--t-shade) 10%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-black\/15:hover {
+  background-color: color-mix(in oklab, var(--t-shade) 15%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-black\/5:hover {
+  background-color: color-mix(in oklab, var(--t-shade) 5%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-white\/\[0\.02\]:hover {
+  background-color: color-mix(in oklab, var(--t-text) 2%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-white\/10:hover {
+  background-color: color-mix(in oklab, var(--t-text) 10%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-white\/15:hover {
+  background-color: color-mix(in oklab, var(--t-text) 15%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-white\/20:hover {
+  background-color: color-mix(in oklab, var(--t-text) 20%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:bg-white\/5:hover {
+  background-color: color-mix(in oklab, var(--t-text) 5%, transparent) !important;
+}
+}
+
+body.theme-custom .selection\:bg-\[\#EC4899\] ::selection,
+body.theme-custom .selection\:bg-\[\#EC4899\]::selection {
+  background-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .border-\[\#0088FF\] {
+  border-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .border-\[\#0088FF\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#0088FF\]\/40 {
+  border-color: color-mix(in oklab, var(--t-accent3) 40%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#0088FF\]\/50 {
+  border-color: color-mix(in oklab, var(--t-accent3) 50%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#00C6FF\] {
+  border-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .border-\[\#00C6FF\]\/20 {
+  border-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#00C6FF\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#00C6FF\]\/40 {
+  border-color: color-mix(in oklab, var(--t-accent3) 40%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#10B981\] {
+  border-color: var(--t-success) !important;
+}
+
+body.theme-custom .border-\[\#10B981\]\/20 {
+  border-color: color-mix(in oklab, var(--t-success) 20%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#10B981\]\/30 {
+  border-color: color-mix(in oklab, var(--t-success) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#3B82F6\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#3d2317\]\/80 {
+  border-color: color-mix(in oklab, var(--t-text) 80%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#3e342b\]\/80 {
+  border-color: color-mix(in oklab, var(--t-border) 80%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7C3AED\]\/40 {
+  border-color: color-mix(in oklab, var(--t-accent1) 40%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7d5a47\]\/10 {
+  border-color: color-mix(in oklab, var(--t-text2) 10%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7d5a47\]\/15 {
+  border-color: color-mix(in oklab, var(--t-text2) 15%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7d5a47\]\/20 {
+  border-color: color-mix(in oklab, var(--t-text2) 20%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7d5a47\]\/25 {
+  border-color: color-mix(in oklab, var(--t-text2) 25%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#7d5a47\]\/30 {
+  border-color: color-mix(in oklab, var(--t-text2) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#b85d38\] {
+  border-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .border-\[\#b85d38\]\/25 {
+  border-color: color-mix(in oklab, var(--t-accent1) 25%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#b85d38\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent1) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#b85d38\]\/40 {
+  border-color: color-mix(in oklab, var(--t-accent1) 40%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#c05a3e\]\/20 {
+  border-color: color-mix(in oklab, var(--t-accent1) 20%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#c05a3e\]\/25 {
+  border-color: color-mix(in oklab, var(--t-accent1) 25%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#c05a3e\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent1) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#EC4899\] {
+  border-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .border-\[\#EC4899\]\/30 {
+  border-color: color-mix(in oklab, var(--t-accent2) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#EC4899\]\/40 {
+  border-color: color-mix(in oklab, var(--t-accent2) 40%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#EC4899\]\/50 {
+  border-color: color-mix(in oklab, var(--t-accent2) 50%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#EC4899\]\/60 {
+  border-color: color-mix(in oklab, var(--t-accent2) 60%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#F59E0B\]\/25 {
+  border-color: color-mix(in oklab, var(--t-warn) 25%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#F59E0B\]\/30 {
+  border-color: color-mix(in oklab, var(--t-warn) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#F97316\] {
+  border-color: var(--t-energy) !important;
+}
+
+body.theme-custom .border-\[\#F97316\]\/30 {
+  border-color: color-mix(in oklab, var(--t-energy) 30%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#F97316\]\/50 {
+  border-color: color-mix(in oklab, var(--t-energy) 50%, transparent) !important;
+}
+
+body.theme-custom .border-\[\#FF512F\] {
+  border-color: var(--t-energy) !important;
+}
+
+body.theme-custom .border-\[\#FF512F\]\/30 {
+  border-color: color-mix(in oklab, var(--t-energy) 30%, transparent) !important;
+}
+
+body.theme-custom .border-black\/5 {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/\[0\.06\] {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/\[0\.08\] {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/\[0\.12\] {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/10 {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/15 {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/20 {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/30 {
+  border-color: color-mix(in oklab, var(--t-text) 30%, transparent) !important;
+}
+
+body.theme-custom .border-white\/5 {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .border-white\/90 {
+  border-color: color-mix(in oklab, var(--t-text) 90%, transparent) !important;
+}
+
+body.theme-custom .focus\:border-\[\#0088FF\]:focus {
+  border-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .focus\:border-\[\#00C6FF\]:focus {
+  border-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .focus\:border-\[\#6366F1\]:focus {
+  border-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .focus\:border-\[\#c05a3e\]:focus {
+  border-color: var(--t-accent1) !important;
+}
+
+body.theme-custom .focus\:border-\[\#EC4899\]:focus {
+  border-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .focus\:border-\[\#F97316\]:focus {
+  border-color: var(--t-energy) !important;
+}
+
+body.theme-custom .focus\:border-white:focus {
+  border-color: var(--t-text) !important;
+}
+
+body.theme-custom .focus\:border-white\/20:focus {
+  border-color: var(--t-border) !important;
+}
+
+body.theme-custom .focus\:border-white\/30:focus {
+  border-color: color-mix(in oklab, var(--t-text) 30%, transparent) !important;
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#00C6FF\]\/60:hover {
+  border-color: color-mix(in oklab, var(--t-accent3) 60%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#7d5a47\]:hover {
+  border-color: var(--t-text2) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#7d5a47\]\/30:hover {
+  border-color: color-mix(in oklab, var(--t-text2) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#7d5a47\]\/35:hover {
+  border-color: color-mix(in oklab, var(--t-text2) 35%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#7d5a47\]\/40:hover {
+  border-color: color-mix(in oklab, var(--t-text2) 40%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#b85d38\]:hover {
+  border-color: var(--t-accent1) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#b85d38\]\/40:hover {
+  border-color: color-mix(in oklab, var(--t-accent1) 40%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#d97706\]\/60:hover {
+  border-color: color-mix(in oklab, var(--t-accent2) 60%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#EC4899\]:hover {
+  border-color: var(--t-accent2) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#EC4899\]\/40:hover {
+  border-color: color-mix(in oklab, var(--t-accent2) 40%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#EC4899\]\/50:hover {
+  border-color: color-mix(in oklab, var(--t-accent2) 50%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#EC4899\]\/60:hover {
+  border-color: color-mix(in oklab, var(--t-accent2) 60%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#FF512F\]\/50:hover {
+  border-color: color-mix(in oklab, var(--t-energy) 50%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-\[\#FF512F\]\/60:hover {
+  border-color: color-mix(in oklab, var(--t-energy) 60%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-white\/15:hover {
+  border-color: var(--t-border) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-white\/20:hover {
+  border-color: var(--t-border) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-white\/30:hover {
+  border-color: color-mix(in oklab, var(--t-text) 30%, transparent) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:border-white\/40:hover {
+  border-color: color-mix(in oklab, var(--t-text) 40%, transparent) !important;
+}
+}
+
+body.theme-custom .from-\[\#0088FF\] {
+  --tw-gradient-from: var(--t-accent3) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#00C6FF\] {
+  --tw-gradient-from: var(--t-accent3) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#090909\] {
+  --tw-gradient-from: var(--t-app) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#0E0E0E\] {
+  --tw-gradient-from: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#101420\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent1)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#101824\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent3)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#131B26\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent3)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#132219\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-success)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#181520\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent1)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#181818\] {
+  --tw-gradient-from: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#1C1318\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent2)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#1C1810\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-warn)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#1C1824\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent1)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#221620\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-accent2)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#241416\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-card) 90%, var(--t-energy)) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#7C3AED\] {
+  --tw-gradient-from: var(--t-accent1) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#7C3AED\]\/10 {
+  --tw-gradient-from: color-mix(in oklab, var(--t-accent1) 10%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#7C3AED\]\/20 {
+  --tw-gradient-from: color-mix(in oklab, var(--t-accent1) 20%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#7C3AED\]\/30 {
+  --tw-gradient-from: color-mix(in oklab, var(--t-accent1) 30%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#7C3AED\]\/35 {
+  --tw-gradient-from: color-mix(in oklab, var(--t-accent1) 35%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#8E2DE2\] {
+  --tw-gradient-from: var(--t-accent1) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#b85d38\] {
+  --tw-gradient-from: var(--t-accent1) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#c05a3e\] {
+  --tw-gradient-from: var(--t-accent1) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#c05a3e\]\/10 {
+  --tw-gradient-from: color-mix(in oklab, var(--t-accent1) 10%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#EC4899\] {
+  --tw-gradient-from: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#F59E0B\] {
+  --tw-gradient-from: var(--t-warn) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#FF512F\] {
+  --tw-gradient-from: var(--t-energy) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-\[\#fff7f0\] {
+  --tw-gradient-from: var(--t-input) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .from-white\/\[0\.08\] {
+  --tw-gradient-from: color-mix(in oklab, var(--t-text) 8%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .via-\[\#0070DD\] {
+  --tw-gradient-via: var(--t-accent3) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#090909\]\/70 {
+  --tw-gradient-via: color-mix(in oklab, var(--t-app) 70%, transparent) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#0E0E0E\]\/95 {
+  --tw-gradient-via: color-mix(in oklab, var(--t-card) 95%, transparent) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#181818\] {
+  --tw-gradient-via: var(--t-card) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#e0ab6e\]\/10 {
+  --tw-gradient-via: color-mix(in oklab, var(--t-accent2) 10%, transparent) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#EC4899\] {
+  --tw-gradient-via: var(--t-accent2) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#EC4899\]\/15 {
+  --tw-gradient-via: color-mix(in oklab, var(--t-accent2) 15%, transparent) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#EC4899\]\/5 {
+  --tw-gradient-via: color-mix(in oklab, var(--t-accent2) 5%, transparent) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .via-\[\#faebe0\] {
+  --tw-gradient-via: var(--t-card) !important;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops) !important;
+}
+
+body.theme-custom .to-\[\#0055CC\] {
+  --tw-gradient-to: var(--t-accent3) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#0072FF\] {
+  --tw-gradient-to: var(--t-accent3) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#00C6FF\] {
+  --tw-gradient-to: var(--t-accent3) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#121212\] {
+  --tw-gradient-to: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#141414\] {
+  --tw-gradient-to: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#161616\] {
+  --tw-gradient-to: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#4A00E0\] {
+  --tw-gradient-to: var(--t-accent1) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#d97706\] {
+  --tw-gradient-to: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#D97706\] {
+  --tw-gradient-to: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#DD2476\] {
+  --tw-gradient-to: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#DD2476\]\/20 {
+  --tw-gradient-to: color-mix(in oklab, var(--t-accent2) 20%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#df9b58\] {
+  --tw-gradient-to: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#EC4899\] {
+  --tw-gradient-to: var(--t-accent2) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#EC4899\]\/30 {
+  --tw-gradient-to: color-mix(in oklab, var(--t-accent2) 30%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#EC4899\]\/35 {
+  --tw-gradient-to: color-mix(in oklab, var(--t-accent2) 35%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#f4dfce\] {
+  --tw-gradient-to: var(--t-card) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#F97316\] {
+  --tw-gradient-to: var(--t-energy) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-\[\#FF512F\] {
+  --tw-gradient-to: var(--t-energy) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .to-white\/\[0\.03\] {
+  --tw-gradient-to: color-mix(in oklab, var(--t-text) 3%, transparent) !important;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position)) !important;
+}
+
+body.theme-custom .accent-\[\#0088FF\] {
+  accent-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .accent-\[\#00C6FF\] {
+  accent-color: var(--t-accent3) !important;
+}
+
+body.theme-custom .accent-\[\#DD2476\] {
+  accent-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .accent-\[\#EC4899\] {
+  accent-color: var(--t-accent2) !important;
+}
+
+body.theme-custom .accent-\[\#F59E0B\] {
+  accent-color: var(--t-warn) !important;
+}
+
+body.theme-custom .fill-\[\#0088FF\] {
+  fill: var(--t-accent3) !important;
+}
+
+body.theme-custom .fill-\[\#3d2317\] {
+  fill: var(--t-text) !important;
+}
+
+body.theme-custom .fill-\[\#525252\] {
+  fill: var(--t-text2) !important;
+}
+
+body.theme-custom .fill-\[\#737373\] {
+  fill: var(--t-text2) !important;
+}
+
+body.theme-custom .fill-\[\#7d5a47\] {
+  fill: var(--t-text2) !important;
+}
+
+body.theme-custom .fill-\[\#a3826e\] {
+  fill: var(--t-text2) !important;
+}
+
+body.theme-custom .fill-\[\#A7A7A7\] {
+  fill: var(--t-text2) !important;
+}
+
+body.theme-custom .fill-\[\#E5E5E5\] {
+  fill: var(--t-text) !important;
+}
+
+body.theme-custom .fill-\[\#EC4899\] {
+  fill: var(--t-accent2) !important;
+}
+
+body.theme-custom .fill-\[\#FF512F\] {
+  fill: var(--t-energy) !important;
+}
+
+body.theme-custom .ring-\[\#b85d38\]\/60 {
+  --tw-ring-color: color-mix(in oklab, var(--t-accent1) 60%, transparent) !important;
+}
+
+body.theme-custom .ring-\[\#c05a3e\]\/60 {
+  --tw-ring-color: color-mix(in oklab, var(--t-accent1) 60%, transparent) !important;
+}
+
+body.theme-custom .ring-\[\#EC4899\]\/70 {
+  --tw-ring-color: color-mix(in oklab, var(--t-accent2) 70%, transparent) !important;
+}
+
+body.theme-custom .ring-white\/80 {
+  --tw-ring-color: color-mix(in oklab, var(--t-text) 80%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#0088FF\]\/20 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent3) 20%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#0088FF\]\/30 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent3) 30%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#00C6FF\]\/10 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent3) 10%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#00C6FF\]\/50 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent3) 50%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#00C6FF\]\/60 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent3) 60%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#10B981\]\/10 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-success) 10%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#6366F1\]\/20 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent1) 20%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#c05a3e\]\/10 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent1) 10%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#c05a3e\]\/20 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent1) 20%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#c05a3e\]\/30 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent1) 30%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#c05a3e\]\/5 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent1) 5%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#EC4899\]\/10 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent2) 10%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#EC4899\]\/15 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent2) 15%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#EC4899\]\/20 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent2) 20%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#EC4899\]\/25 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent2) 25%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#EC4899\]\/30 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-accent2) 30%, transparent) !important;
+}
+
+body.theme-custom .shadow-\[\#FF512F\]\/10 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-energy) 10%, transparent) !important;
+}
+
+body.theme-custom .shadow-black\/80 {
+  --tw-shadow-color: color-mix(in oklab, var(--t-shade) 80%, transparent) !important;
+}
+
+body.theme-custom .text-\[\#0088FF\] {
+  color: var(--t-accent3) !important;
+}
+
+body.theme-custom .text-\[\#00C6FF\] {
+  color: var(--t-accent3) !important;
+}
+
+body.theme-custom .text-\[\#10B981\] {
+  color: var(--t-success) !important;
+}
+
+body.theme-custom .text-\[\#2f7d4f\] {
+  color: var(--t-success) !important;
+}
+
+body.theme-custom .text-\[\#34D399\] {
+  color: var(--t-success) !important;
+}
+
+body.theme-custom .text-\[\#3B82F6\] {
+  color: var(--t-accent3) !important;
+}
+
+body.theme-custom .text-\[\#3d2317\] {
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .text-\[\#525252\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#555555\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#6366F1\] {
+  color: var(--t-accent1) !important;
+}
+
+body.theme-custom .text-\[\#737373\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#777\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#7d5a47\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#A7A7A7\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#ab9a8a\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#b8432b\] {
+  color: var(--t-energy) !important;
+}
+
+body.theme-custom .text-\[\#b85d38\] {
+  color: var(--t-accent1) !important;
+}
+
+body.theme-custom .text-\[\#c05a3e\] {
+  color: var(--t-accent1) !important;
+}
+
+body.theme-custom .text-\[\#D1D5DB\] {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .text-\[\#d97706\] {
+  color: var(--t-accent2) !important;
+}
+
+body.theme-custom .text-\[\#DD2476\] {
+  color: var(--t-accent2) !important;
+}
+
+body.theme-custom .text-\[\#E5E5E5\] {
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .text-\[\#EC4899\] {
+  color: var(--t-accent2) !important;
+}
+
+body.theme-custom .text-\[\#F59E0B\] {
+  color: var(--t-warn) !important;
+}
+
+body.theme-custom .text-\[\#f7eee4\] {
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .text-\[\#F87171\] {
+  color: var(--t-energy) !important;
+}
+
+body.theme-custom .text-\[\#F97316\] {
+  color: var(--t-energy) !important;
+}
+
+body.theme-custom .text-\[\#FF4D4D\] {
+  color: var(--t-energy) !important;
+}
+
+body.theme-custom .text-\[\#FF512F\] {
+  color: var(--t-energy) !important;
+}
+
+body.theme-custom .text-white {
+  color: var(--t-text) !important;
+}
+
+body.theme-custom .text-white\/40 {
+  color: color-mix(in oklab, var(--t-text) 40%, transparent) !important;
+}
+
+body.theme-custom .text-white\/80 {
+  color: color-mix(in oklab, var(--t-text) 80%, transparent) !important;
+}
+
+body.theme-custom .text-white\/90 {
+  color: color-mix(in oklab, var(--t-text) 90%, transparent) !important;
+}
+
+@media (hover: hover) {
+body.theme-custom .group:hover .group-hover\:text-\[\#0088FF\] {
+  color: var(--t-accent3) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .group:hover .group-hover\:text-\[\#00C6FF\] {
+  color: var(--t-accent3) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .group:hover .group-hover\:text-\[\#EC4899\] {
+  color: var(--t-accent2) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .group:hover .group-hover\:text-\[\#FF512F\] {
+  color: var(--t-energy) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:text-\[\#0088FF\]:hover {
+  color: var(--t-accent3) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:text-\[\#3d2317\]:hover {
+  color: var(--t-text) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:text-\[\#f7eee4\]:hover {
+  color: var(--t-text) !important;
+}
+}
+
+@media (hover: hover) {
+body.theme-custom .hover\:text-white:hover {
+  color: var(--t-text) !important;
+}
+}
+
+body.theme-custom .placeholder\:text-\[\#555\]::placeholder {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#666\]::placeholder {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#666666\]::placeholder {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#7d5a47\]\/70::placeholder {
+  color: color-mix(in oklab, var(--t-text2) 70%, transparent) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#a3826e\]::placeholder {
+  color: var(--t-text2) !important;
+}
+
+body.theme-custom .placeholder\:text-\[\#A7A7A7\]\/70::placeholder {
+  color: color-mix(in oklab, var(--t-text2) 70%, transparent) !important;
+}
+
+body.theme-custom .selection\:text-white ::selection,
+body.theme-custom .selection\:text-white::selection {
+  color: var(--t-text) !important;
+}
+
+/* Texte sur bouton plein d'accent : reste lisible quelle que soit la base */
+body.theme-custom .bg-\[\#0088FF\].text-white,
+body.theme-custom .bg-\[\#00C6FF\].text-white,
+body.theme-custom .bg-\[\#10B981\].text-white,
+body.theme-custom .bg-\[\#3B82F6\].text-white,
+body.theme-custom .bg-\[\#6366F1\].text-white,
+body.theme-custom .bg-\[\#b85d38\].text-white,
+body.theme-custom .bg-\[\#c05a3e\].text-white,
+body.theme-custom .bg-\[\#EC4899\].text-white,
+body.theme-custom .from-\[\#0088FF\].text-white,
+body.theme-custom .from-\[\#00C6FF\].text-white,
+body.theme-custom .from-\[\#7C3AED\].text-white,
+body.theme-custom .from-\[\#8E2DE2\].text-white,
+body.theme-custom .from-\[\#b85d38\].text-white,
+body.theme-custom .from-\[\#c05a3e\].text-white,
+body.theme-custom .from-\[\#EC4899\].text-white,
+body.theme-custom .from-\[\#FF512F\].text-white {
+  color: var(--t-on-accent) !important;
+}
+
+/* Thèmes custom à base claire : surpasse les règles Crème plus spécifiques d'index.css */
+body.theme-custom.theme-warm-light [id^="modal-"],
+body.theme-custom.theme-warm-light #badge-detail-modal,
+body.theme-custom.theme-warm-light .fixed.inset-0 > div[class*="rounded-"],
+body.theme-custom.theme-warm-light .fixed.inset-0 > div[class*="max-w-"] {
+  background-color: var(--t-card) !important;
+  border-color: var(--t-border) !important;
+  color: var(--t-text) !important;
+  box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--t-shade) 25%, transparent) !important;
+}
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#121212\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#141414\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#161616\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#181818\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#1A1A1A\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#0E0E0E\],
+body.theme-custom.theme-warm-light .fixed.inset-0 .bg-\[\#0D0D0D\] {
+  background-color: var(--t-input) !important;
+  border-color: var(--t-border) !important;
+  color: var(--t-text) !important;
+}
+body.theme-custom.theme-warm-light .fixed.inset-0 button:has(svg.lucide-x),
+body.theme-custom.theme-warm-light .fixed.inset-0 button[title*="Fermer"],
+body.theme-custom.theme-warm-light #btn-close-finished-workout,
+body.theme-custom.theme-warm-light #btn-close-detail {
+  background-color: var(--t-app) !important;
+  color: var(--t-text2) !important;
+  border-color: var(--t-border) !important;
+}
+body.theme-custom.theme-warm-light .fixed.inset-0 button:has(svg.lucide-x):hover,
+body.theme-custom.theme-warm-light .fixed.inset-0 button[title*="Fermer"]:hover,
+body.theme-custom.theme-warm-light #btn-close-finished-workout:hover,
+body.theme-custom.theme-warm-light #btn-close-detail:hover {
+  background-color: var(--t-elev) !important;
+  color: var(--t-text) !important;
+}
+body.theme-custom.theme-warm-light .fixed.inset-0 button.bg-\[\#202020\],
+body.theme-custom.theme-warm-light .bg-\[\#202020\] {
+  background-color: var(--t-elev) !important;
+  color: var(--t-text2) !important;
+  border-color: var(--t-border) !important;
+}
+body.theme-custom.theme-warm-light .relative.h-2\.5.bg-\[\#202020\],
+body.theme-custom.theme-warm-light .w-full.h-2\.5.bg-\[\#121212\],
+body.theme-custom.theme-warm-light .bg-\[\#202020\].rounded-full {
+  background-color: color-mix(in oklab, var(--t-text) 12%, var(--t-card)) !important;
+  border-color: var(--t-border) !important;
+}
+body.theme-custom.theme-warm-light .bg-\[\#0D0D0D\]\/60,
+body.theme-custom.theme-warm-light .bg-\[\#121212\]\/95,
+body.theme-custom.theme-warm-light .bg-\[\#181818\]\/95,
+body.theme-custom.theme-warm-light .bg-neutral-900\/40,
+body.theme-custom.theme-warm-light .bg-neutral-900\/50,
+body.theme-custom.theme-warm-light .bg-neutral-900\/30 {
+  background-color: color-mix(in oklab, var(--t-text) 8%, transparent) !important;
+}
+body.theme-custom.theme-warm-light svg text.fill-\[\#737373\],
+body.theme-custom.theme-warm-light svg text.fill-\[\#525252\] {
+  fill: var(--t-text2) !important;
+}
+body.theme-custom.theme-warm-light svg text.fill-\[\#E5E5E5\] {
+  fill: var(--t-text) !important;
+}
+body.theme-custom.theme-warm-light .gradient-main,
+body.theme-custom.theme-warm-light .bg-gradient-to-r.from-\[\#7C3AED\].to-\[\#EC4899\] {
+  background: linear-gradient(135deg, var(--t-accent1) 0%, var(--t-accent2) 100%) !important;
+}
+body.theme-custom.theme-warm-light input,
+body.theme-custom.theme-warm-light textarea,
+body.theme-custom.theme-warm-light select {
+  background-color: var(--t-input) !important;
+  color: var(--t-text) !important;
+  border-color: color-mix(in oklab, var(--t-text) 20%, transparent) !important;
+}
+body.theme-custom.theme-warm-light input::placeholder,
+body.theme-custom.theme-warm-light textarea::placeholder {
+  color: var(--t-text2) !important;
+}
