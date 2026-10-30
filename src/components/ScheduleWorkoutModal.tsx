@@ -4,6 +4,7 @@ import { Workout } from '../types';
 
 interface ScheduleWorkoutModalProps {
   workouts: Workout[];
+  initialWorkoutId?: string;
   initialDayKey?: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM';
   onSchedule: (dayKey: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM', workoutId: string, time: string) => void;
   onClose: () => void;
@@ -22,6 +23,7 @@ const DAYS_OF_WEEK: { key: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM'
 
 export const ScheduleWorkoutModal: React.FC<ScheduleWorkoutModalProps> = ({
   workouts,
+  initialWorkoutId,
   initialDayKey = 'LUN',
   onSchedule,
   onClose,
@@ -29,7 +31,7 @@ export const ScheduleWorkoutModal: React.FC<ScheduleWorkoutModalProps> = ({
 }) => {
   const isLight = theme === 'warm-light';
   const [selectedDay, setSelectedDay] = useState<'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN' | 'SAM' | 'DIM'>(initialDayKey);
-  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>(workouts[0]?.id || '');
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>(initialWorkoutId || workouts[0]?.id || '');
   const [time, setTime] = useState('18:00');
 
   const handleSubmit = (e: React.FormEvent) => {

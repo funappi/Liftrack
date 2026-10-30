@@ -33,18 +33,26 @@ export default function App() {
   });
 
   const [workouts, setWorkouts] = useState<Workout[]>(() => {
+    let deletedIds: string[] = [];
+    try {
+      const savedDeleted = JSON.parse(localStorage.getItem('volt_deleted_workout_ids') || '[]');
+      if (Array.isArray(savedDeleted)) deletedIds = savedDeleted;
+    } catch {
+      // ignore
+    }
+    const samples = sampleWorkouts.filter((w) => !deletedIds.includes(w.id));
     try {
       const saved = localStorage.getItem('volt_custom_workouts');
       if (saved) {
         const custom = JSON.parse(saved);
         if (Array.isArray(custom) && custom.length > 0) {
-          return [...custom, ...sampleWorkouts];
+          return [...custom, ...samples];
         }
       }
     } catch {
       // ignore
     }
-    return sampleWorkouts;
+    return samples;
   });
 
   const handleSaveCustomWorkout = (workout: Workout, launchImmediately = false) => {
@@ -65,18 +73,37 @@ export default function App() {
     }
   };
 
-  const handleDeleteCustomWorkout = (workoutId: string) => {
-    setWorkouts((prev) => {
-      const updated = prev.filter((w) => w.id !== workoutId);
+  // Single delete path for every workout: library, persistence and its planning slots
+  const handleDeleteWorkout = (workoutId: string) => {
+    setWorkouts((prev) => prev.filter((w) => w.id !== workoutId));
+    try {
+      if (workoutId.startsWith('custom-workout-')) {
+        const saved = JSON.parse(localStorage.getItem('volt_custom_workouts') || '[]');
+        const remaining = Array.isArray(saved) ? saved.filter((w: Workout) => w.id !== workoutId) : [];
+        localStorage.setItem('volt_custom_workouts', JSON.stringify(remaining));
+      } else {
+        const saved = JSON.parse(localStorage.getItem('volt_deleted_workout_ids') || '[]');
+        const ids: string[] = Array.isArray(saved) ? saved : [];
+        if (!ids.includes(workoutId)) ids.push(workoutId);
+        localStorage.setItem('volt_deleted_workout_ids', JSON.stringify(ids));
+      }
+    } catch {
+      // ignore
+    }
+    setSchedule((prev) => {
+      const updated = prev.map((day) => ({
+        ...day,
+        sessions: day.sessions.filter((sess) => sess.workoutId !== workoutId),
+      }));
       try {
-        const customOnly = updated.filter((w) => w.id.startsWith('custom-workout-'));
-        localStorage.setItem('volt_custom_workouts', JSON.stringify(customOnly));
+        localStorage.setItem('volt_schedule', JSON.stringify(updated));
       } catch {
         // ignore
       }
       return updated;
     });
   };
+
   const [theme, setTheme] = useState<'dark' | 'warm-light'>(() => {
     try {
       const saved = localStorage.getItem('volt_theme');
@@ -480,10 +507,13 @@ export default function App() {
           {activeTab === 'workouts' && (
             <WorkoutsTab
               workouts={workouts}
+              schedule={schedule}
               onSelectWorkout={(w) => setSelectedWorkoutForModal(w)}
               onStartWorkout={handleStartWorkout}
               onSaveCustomWorkout={handleSaveCustomWorkout}
-              onDeleteCustomWorkout={handleDeleteCustomWorkout}
+              onDeleteWorkout={handleDeleteWorkout}
+              onScheduleWorkout={handleScheduleWorkout}
+              onRemoveScheduledWorkout={handleRemoveScheduledWorkout}
               theme={theme}
             />
           )}
