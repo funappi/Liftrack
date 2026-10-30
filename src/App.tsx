@@ -466,6 +466,7 @@ export default function App() {
               userStats={userStats}
               workouts={workouts}
               badges={badges}
+              schedule={schedule}
               onSelectWorkout={(w) => setSelectedWorkoutForModal(w)}
               onStartWorkout={handleStartWorkout}
               onNavigateToTab={(tab) => setActiveTab(tab)}

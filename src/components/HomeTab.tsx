@@ -1,14 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Scale } from 'lucide-react';
-import { Workout, UserStats, AchievementBadge } from '../types';
+import { Workout, UserStats, AchievementBadge, ScheduledDay } from '../types';
 import { EditStatModal, EditableStatType } from './EditStatModal';
 import { BadgeDetailModal } from './BadgeDetailModal';
 import { getBadgeUnlockRequirement } from './BadgeIcon';
+import { RotationModal } from './RotationModal';
+import { getRotationOrder, loadRotation, recommendWorkout, saveRotation } from '../utils/recommendation';
 
 interface HomeTabProps {
   userStats: UserStats;
   workouts: Workout[];
   badges: AchievementBadge[];
+  schedule: ScheduledDay[];
   onSelectWorkout: (workout: Workout) => void;
   onStartWorkout: (workout: Workout) => void;
   onNavigateToTab: (tab: 'workouts' | 'progress' | 'planning') => void;
@@ -22,6 +25,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
   userStats,
   workouts,
   badges,
+  schedule,
   onSelectWorkout,
   onStartWorkout,
   onNavigateToTab,
@@ -35,8 +39,16 @@ export const HomeTab: React.FC<HomeTabProps> = ({
   const [editingStatType, setEditingStatType] = useState<EditableStatType | null>(null);
   const [selectedBadge, setSelectedBadge] = useState<AchievementBadge | null>(null);
 
-  // Find the featured workout
-  const heroWorkout = workouts.find((w) => w.id === 'full-body-beast') || workouts[0];
+  // Rotation order (saved separately) and recommendation based on yesterday's session
+  const [rotation, setRotation] = useState<string[]>(loadRotation);
+  const [showRotation, setShowRotation] = useState(false);
+  const recommendation = useMemo(
+    () => recommendWorkout(workouts, schedule, rotation),
+    [workouts, schedule, rotation]
+  );
+
+  // Featured workout: recommendation if any created workout exists, else the default one
+  const heroWorkout = recommendation?.workout || workouts.find((w) => w.id === 'full-body-beast') || workouts[0];
 
   // Calculate weight difference
   const weightDiff = Math.abs(Math.round((userStats.targetWeightKg - userStats.currentWeightKg) * 10) / 10);
@@ -578,7 +590,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           {/* Top Tag Badges */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
             <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-black tracking-widest text-white uppercase">
-              SESSION RECOMMANDÉE
+              SESSION RECOMMANDÉE{recommendation ? ` · ${recommendation.reason}` : ''}
             </span>
             <span className="px-2.5 py-1 rounded-full bg-[#EC4899] text-black font-black text-[10px] tracking-wider uppercase">
               {heroWorkout.difficulty}
@@ -637,6 +649,16 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             </div>
           </div>
         </div>
+
+        {recommendation && (
+          <button
+            type="button"
+            onClick={() => setShowRotation(true)}
+            className="w-full -mt-2 text-xs font-bold text-[#A7A7A7] hover:text-white transition-colors cursor-pointer"
+          >
+            Modifier l&apos;ordre de rotation
+          </button>
+        )}
 
         {/* Motivational Banner */}
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#181818] to-[#121212] border border-white/[0.08] relative overflow-hidden">
@@ -703,6 +725,18 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           </div>
         </div>
       </section>
+
+      {showRotation && (
+        <RotationModal
+          workouts={getRotationOrder(workouts, rotation)}
+          onSave={(order) => {
+            saveRotation(order);
+            setRotation(order);
+          }}
+          onClose={() => setShowRotation(false)}
+          theme={theme}
+        />
+      )}
 
       {/* Modal to edit user stats */}
       {editingStatType && (
