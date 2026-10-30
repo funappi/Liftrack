@@ -84,6 +84,8 @@ export interface UserStats {
   weeklyHours: number;
   voltScore: number;
   weeklyGoalWorkouts: number;
+  // Weekly training volume goal (kg lifted), set in Settings
+  weeklyVolumeTargetKg?: number;
   weeklyCompletedWorkouts: number;
   nextGoal: {
     title: string;
@@ -99,6 +101,14 @@ export interface UserStats {
     tier: string;
     validUntil: string;
     qrCodeId: string;
+  };
+  // Personal data used by the metabolism calculator and the body composition modal
+  profile?: {
+    gender: 'homme' | 'femme';
+    age: number;
+    heightCm: number;
+    activityLevel: 'sedentaire' | 'leger' | 'modere' | 'actif' | 'tres_actif';
+    goal: 'seche' | 'maintien' | 'prise_de_masse';
   };
   bodyComposition?: {
     fatPercent: number;
@@ -138,7 +148,8 @@ export interface ScheduledDay {
   isToday: boolean;
   sessions: {
     id: string;
-    time: string;
+    // Legacy: older saved sessions carry a time; new ones are scheduled by day only
+    time?: string;
     workoutId: string;
     workoutTitle: string;
     durationMin: number;
