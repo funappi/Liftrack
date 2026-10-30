@@ -19,15 +19,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, theme = 
   ];
 
   return (
-    <nav 
-      style={{ zIndex: 40 }}
+    <nav
       className={`fixed bottom-0 left-0 right-0 z-40 backdrop-blur-md border-t px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] max-w-lg mx-auto transition-colors duration-200 shadow-2xl ${
         isLight
           ? 'bg-white border-[#7d5a47]/15'
           : 'bg-[#161311]/98 border-[#3e342b]/80'
       }`}
     >
-      <div className="flex items-center justify-around">
+      <div className="grid grid-cols-3 items-stretch">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -37,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange, theme = 
               key={tab.id}
               id={`tab-btn-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-200 relative cursor-pointer ${
+              className={`w-full min-h-11 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-200 relative cursor-pointer ${
                 isActive 
                   ? isLight ? 'text-[#3d2317]' : 'text-[#f7eee4]' 
                   : isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#ab9a8a] hover:text-[#f7eee4]'
