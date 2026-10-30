@@ -49,6 +49,8 @@ export interface VoltDataApi {
   /** Adds or merges the body metrics of `date` (today by default) */
   logBodyMetrics: (patch: Partial<Omit<BodyMetricEntry, 'id' | 'date'>>, date?: ISODate) => boolean;
   deleteBodyMetric: (id: string) => void;
+  /** Removes only the weigh-in of an entry (the entry disappears if nothing else is left) */
+  clearBodyWeight: (id: string) => void;
   // Sessions
   addSession: (s: Omit<CompletedSession, 'id'>) => void;
   deleteSession: (id: string) => void;
@@ -200,6 +202,18 @@ export const VoltDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const deleteBodyMetric = useCallback((id: string) => setData((d) => ({ ...d, bodyMetrics: d.bodyMetrics.filter((m) => m.id !== id) })), []);
 
+  const clearBodyWeight = useCallback((id: string) => {
+    setData((d) => ({
+      ...d,
+      bodyMetrics: d.bodyMetrics.flatMap((m) => {
+        if (m.id !== id) return [m];
+        const { weightKg: _w, ...rest } = m;
+        const hasOther = Object.entries(rest).some(([k, v]) => !['id', 'date', 'formula'].includes(k) && typeof v === 'number');
+        return hasOther ? [rest] : [];
+      }),
+    }));
+  }, []);
+
   const addSession = useCallback((s: Omit<CompletedSession, 'id'>) => {
     const session: CompletedSession = {
       ...s,
@@ -254,12 +268,13 @@ export const VoltDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       deleteRecordEntry,
       logBodyMetrics,
       deleteBodyMetric,
+      clearBodyWeight,
       addSession,
       deleteSession,
       setDayChecked,
       setBaseline,
     }),
-    [data, addExercise, updateExercise, deleteExercise, logRecord, updateRecordEntry, deleteRecordEntry, logBodyMetrics, deleteBodyMetric, addSession, deleteSession, setDayChecked, setBaseline]
+    [data, addExercise, updateExercise, deleteExercise, logRecord, updateRecordEntry, deleteRecordEntry, logBodyMetrics, deleteBodyMetric, clearBodyWeight, addSession, deleteSession, setDayChecked, setBaseline]
   );
 
   return <VoltDataContext.Provider value={api}>{children}</VoltDataContext.Provider>;

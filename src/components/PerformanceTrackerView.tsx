@@ -1,68 +1,51 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Clock, Scale, ArrowLeft, Check, Star } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Scale, ArrowLeft, Check, Star } from 'lucide-react';
 import { MeasurementEntry } from '../types';
-import { saveJSON } from '../utils/storage';
+import { useVoltData } from '../data/VoltDataContext';
+import { sortedHistory as sortedExerciseHistory, weightSeries } from '../data/selectors';
+import { ISODate, LIMITS, parseISODate, todayISO } from '../data/model';
 
 interface PerformanceTrackerViewProps {
-  measurements: MeasurementEntry[];
-  onAddMeasurement: (entry: Omit<MeasurementEntry, 'id'>) => void;
-  onDeleteMeasurement: (id: string) => void;
-  currentWeightKg: number;
+  /** @deprecated Ignored: data now comes from useVoltData() (volt_data_v2) */
+  measurements?: MeasurementEntry[];
+  /** @deprecated Ignored */
+  onAddMeasurement?: (entry: Omit<MeasurementEntry, 'id'>) => void;
+  /** @deprecated Ignored */
+  onDeleteMeasurement?: (id: string) => void;
+  /** @deprecated Ignored: the current weight is derived from the weigh-ins */
+  currentWeightKg?: number;
   onClose?: () => void;
   theme?: 'dark' | 'warm-light';
 }
 
-interface TrackedMetric {
+const WEIGHT_METRIC = 'poids';
+
+/** One point of the selected metric, whatever its source (weigh-in or record entry) */
+interface MetricPoint {
   id: string;
-  title: string;
-  category?: string;
-  isCustom?: boolean;
+  date: ISODate;
+  value: number;
+  reps?: number;
+  notes?: string;
 }
 
-const DEFAULT_METRICS: TrackedMetric[] = [
-  { id: 'poids', title: 'Poids de corps' },
-  { id: 'bench', title: '1RM Développé Couché' },
-  { id: 'squat', title: '1RM Squat' },
-  { id: 'deadlift', title: '1RM Deadlift' },
-  { id: 'volume', title: 'Volume d\'entraînement' },
-];
+const formatLongDate = (iso: ISODate) =>
+  parseISODate(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+const isValidISODate = (iso: string) => /^\d{4}-\d{2}-\d{2}$/.test(iso) && !Number.isNaN(parseISODate(iso).getTime());
 
 export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
-  measurements,
-  onAddMeasurement,
-  onDeleteMeasurement,
-  currentWeightKg,
   onClose,
   theme,
 }) => {
   const isLight = theme === 'warm-light';
+  const { data, logBodyMetrics, deleteBodyMetric, logRecord, deleteRecordEntry, addExercise, deleteExercise } = useVoltData();
 
-  // Custom favorite exercises persisted in localStorage
-  const [favoriteExercises, setFavoriteExercises] = useState<TrackedMetric[]>(() => {
-    try {
-      const saved = localStorage.getItem('volt_favorite_exercises');
-      if (saved) {
-        const parsed: TrackedMetric[] = JSON.parse(saved);
-        // Combine with default metrics, avoiding duplicates
-        const combined = [...DEFAULT_METRICS];
-        parsed.forEach((custom) => {
-          if (!combined.some((m) => m.id === custom.id)) {
-            combined.push(custom);
-          }
-        });
-        return combined;
-      }
-    } catch {
-      // ignore
-    }
-    return DEFAULT_METRICS;
-  });
-
-  const [selectedMetric, setSelectedMetric] = useState<string>('poids');
-  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  const [selectedMetric, setSelectedMetric] = useState<string>(WEIGHT_METRIC);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddFavoriteModal, setShowAddFavoriteModal] = useState(false);
-  const [hoveredPoint, setHoveredPoint] = useState<MeasurementEntry | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<MetricPoint | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Form states for adding a favorite exercise
   const [newFavoriteTitle, setNewFavoriteTitle] = useState('');
@@ -70,54 +53,43 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
   const [newFavoriteCategory, setNewFavoriteCategory] = useState('Force');
 
   // Form states for adding a measurement
-  const [newVal, setNewVal] = useState<number>(currentWeightKg || 85.1);
-  const [newDate, setNewDate] = useState<string>(() => {
-    const now = new Date();
-    return now.toISOString().slice(0, 10);
-  });
-  const [newTime, setNewTime] = useState<string>('20:00');
+  const [newVal, setNewVal] = useState<number>(0);
+  const [newDate, setNewDate] = useState<string>(todayISO);
   const [newNotes, setNewNotes] = useState<string>('');
 
-  // Active metric item info
-  const activeMetricObj = favoriteExercises.find((m) => m.id === selectedMetric) || {
-    id: selectedMetric,
-    title: selectedMetric.toUpperCase(),
-  };
+  const strengthExercises = data.exercises.filter((e) => e.showInMaxCharges);
+  const favoriteExercises = data.exercises.filter((e) => !e.showInMaxCharges);
+  const activeExercise = selectedMetric === WEIGHT_METRIC ? null : data.exercises.find((e) => e.id === selectedMetric) ?? null;
+  // A deleted exercise falls back to body weight
+  const isWeight = activeExercise === null;
+  const metricTitle = activeExercise ? activeExercise.name : 'Poids de corps';
 
-  // Filter measurements by metric
-  const filtered = measurements.filter((m) => m.metricType === selectedMetric);
+  // All points of the selected metric, oldest first
+  const points: MetricPoint[] = useMemo(() => {
+    if (!activeExercise) {
+      const ids = new Map(data.bodyMetrics.map((m) => [m.date, m.id]));
+      return weightSeries(data).map((p) => ({ id: ids.get(p.date) ?? p.date, date: p.date, value: p.weightKg }));
+    }
+    return sortedExerciseHistory(activeExercise).map((h) => ({ id: h.id, date: h.date, value: h.weightKg, reps: h.reps, notes: h.notes }));
+  }, [data, activeExercise]);
 
-  // Sort descending for history list
-  const sortedHistory = [...filtered].sort((a, b) => b.timestamp - a.timestamp);
+  const latestEntry = points.length ? points[points.length - 1] : null;
+  const historyDesc = [...points].reverse();
 
-  // Latest measure
-  const latestEntry = sortedHistory[0] || {
-    id: 'fallback',
-    metricType: selectedMetric,
-    value: selectedMetric === 'poids' ? currentWeightKg : 100,
-    unit: selectedMetric === 'volume' ? 'KG' : 'KG',
-    dateStr: '12-07-2026 20:00',
-    timestamp: Date.now(),
-    monthIndex: 6,
-    year: selectedYear,
-  };
+  // Year shown by the chart: the year of the latest point by default (real dates, no hard-coded year)
+  const latestYear = latestEntry ? parseISODate(latestEntry.date).getFullYear() : new Date().getFullYear();
+  const [yearOverride, setYearOverride] = useState<{ metric: string; year: number } | null>(null);
+  const selectedYear = yearOverride && yearOverride.metric === selectedMetric ? yearOverride.year : latestYear;
+  const setSelectedYear = (fn: (y: number) => number) => setYearOverride({ metric: selectedMetric, year: fn(selectedYear) });
 
   // Month labels matching Image 2 ("j f m a m j j a s o n d")
   const monthLabels = ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'];
 
-  // Map 12 months data points for the selected year
-  const yearMeasurements = filtered.filter((m) => m.year === selectedYear);
+  const yearPoints = points.filter((p) => parseISODate(p.date).getFullYear() === selectedYear);
+  const monthsWithData = new Set(yearPoints.map((p) => parseISODate(p.date).getMonth()));
 
-  // Get average or latest per month for line graph
-  const monthlyData: (MeasurementEntry | null)[] = Array.from({ length: 12 }, (_, mIdx) => {
-    const forMonth = yearMeasurements.filter((m) => m.monthIndex === mIdx);
-    if (forMonth.length === 0) return null;
-    return forMonth.sort((a, b) => b.timestamp - a.timestamp)[0];
-  });
-
-  // Dynamic Chart scaling based on values
-  const validVals = filtered.map((m) => m.value);
-  const baseVals = validVals.length > 0 ? validVals : [latestEntry.value];
+  // Dynamic chart scaling based on the year's values
+  const baseVals = yearPoints.length > 0 ? yearPoints.map((p) => p.value) : latestEntry ? [latestEntry.value] : [isWeight ? 75 : 50];
   const dataMin = Math.min(...baseVals);
   const dataMax = Math.max(...baseVals);
 
@@ -145,94 +117,121 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
   const plotWidth = svgWidth - padLeft - padRight;
   const plotHeight = svgHeight - padTop - padBottom;
 
-  const validPoints: { x: number; y: number; entry: MeasurementEntry }[] = [];
+  // X position from the real day in the year (tick "j" = 1 Jan, tick "d" = 1 Dec)
+  const xOfDate = (iso: ISODate) => {
+    const d = parseISODate(iso);
+    const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    const monthPos = d.getMonth() + (d.getDate() - 1) / daysInMonth;
+    return padLeft + (Math.min(11, monthPos) / 11) * plotWidth;
+  };
 
-  monthlyData.forEach((entry, idx) => {
-    if (entry) {
-      const x = padLeft + (idx / 11) * plotWidth;
-      const clampedVal = Math.max(minY, Math.min(maxY, entry.value));
-      const y = padTop + plotHeight - ((clampedVal - minY) / (maxY - minY)) * plotHeight;
-      validPoints.push({ x, y, entry });
-    }
+  const validPoints = yearPoints.map((entry) => {
+    const clampedVal = Math.max(minY, Math.min(maxY, entry.value));
+    return {
+      x: xOfDate(entry.date),
+      y: padTop + plotHeight - ((clampedVal - minY) / (maxY - minY)) * plotHeight,
+      entry,
+    };
   });
 
   // Build SVG polyline path
   const polylinePoints = validPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
+  const selectMetric = (id: string) => {
+    setSelectedMetric(id);
+    setHoveredPoint(null);
+  };
+
+  const openAddModal = () => {
+    const fallback = isWeight ? 75 : activeExercise?.startKg ?? 20;
+    setNewVal(latestEntry ? latestEntry.value : fallback);
+    setNewDate(todayISO());
+    setNewNotes('');
+    setFormError(null);
+    setShowAddModal(true);
+  };
+
+  const openFavoriteModal = () => {
+    setFormError(null);
+    setShowAddFavoriteModal(true);
+  };
+
   const handleSaveMeasurement = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newVal || newVal <= 0) return;
+    if (!isValidISODate(newDate)) {
+      setFormError('Date invalide.');
+      return;
+    }
+    if (newDate > todayISO()) {
+      setFormError('La date ne peut pas être dans le futur.');
+      return;
+    }
 
-    const [yearStr, monthStr, dayStr] = newDate.split('-');
-    const year = parseInt(yearStr, 10) || selectedYear;
-    const monthIndex = (parseInt(monthStr, 10) || 1) - 1;
-    const dateStr = `${dayStr}-${monthStr}-${yearStr} ${newTime}`;
-    const timestamp = new Date(`${newDate}T${newTime}`).getTime() || Date.now();
+    let ok: boolean;
+    if (!activeExercise) {
+      ok = Number.isFinite(newVal) && logBodyMetrics({ weightKg: newVal }, newDate);
+      if (!ok) setFormError(`Poids invalide : entre ${LIMITS.bodyWeightKg[0]} et ${LIMITS.bodyWeightKg[1]} kg.`);
+    } else {
+      ok = Number.isFinite(newVal) && logRecord(activeExercise.id, { weightKg: newVal, date: newDate, notes: newNotes.trim() || undefined });
+      if (!ok) setFormError(`Charge invalide : plus de 0 et au maximum ${LIMITS.loadKg[1]} kg.`);
+    }
+    if (!ok) return;
 
-    onAddMeasurement({
-      metricType: selectedMetric,
-      value: parseFloat(newVal.toFixed(1)),
-      unit: 'KG',
-      dateStr,
-      timestamp,
-      monthIndex,
-      year,
-      notes: newNotes.trim() || undefined,
-      exerciseName: activeMetricObj.title,
-    });
-
+    setYearOverride({ metric: selectedMetric, year: parseISODate(newDate).getFullYear() });
     setShowAddModal(false);
     setNewNotes('');
+    setFormError(null);
   };
 
   const handleCreateFavoriteExercise = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFavoriteTitle.trim()) return;
+    const title = newFavoriteTitle.trim();
+    if (!title) {
+      setFormError("Donne un nom à l'exercice.");
+      return;
+    }
+    if (data.exercises.some((ex) => ex.name.trim().toLowerCase() === title.toLowerCase())) {
+      setFormError('Cet exercice est déjà suivi.');
+      return;
+    }
+    if (!Number.isFinite(newFavoriteStartingWeight) || newFavoriteStartingWeight <= 0 || newFavoriteStartingWeight > LIMITS.loadKg[1]) {
+      setFormError(`Charge de départ invalide : plus de 0 et au maximum ${LIMITS.loadKg[1]} kg.`);
+      return;
+    }
 
-    const customId = `custom-exo-${Date.now()}`;
-    const newExo: TrackedMetric = {
-      id: customId,
-      title: newFavoriteTitle.trim(),
-      category: newFavoriteCategory,
-      isCustom: true,
-    };
+    const id = addExercise(title, { category: newFavoriteCategory, startKg: newFavoriteStartingWeight, showInMaxCharges: false });
+    if (!id) {
+      setFormError("Impossible de créer l'exercice.");
+      return;
+    }
+    // First entry = starting load, dated today
+    logRecord(id, { weightKg: newFavoriteStartingWeight, notes: 'Charge de départ' });
 
-    const updated = [...favoriteExercises, newExo];
-    setFavoriteExercises(updated);
-    saveJSON('volt_favorite_exercises', updated.filter((e) => e.isCustom));
-
-    // Add initial measurement for this exercise
-    const now = new Date();
-    const year = now.getFullYear();
-    const monthIndex = now.getMonth();
-    const dayStr = String(now.getDate()).padStart(2, '0');
-    const monthStr = String(monthIndex + 1).padStart(2, '0');
-    const dateStr = `${dayStr}-${monthStr}-${year} 18:00`;
-
-    onAddMeasurement({
-      metricType: customId,
-      value: newFavoriteStartingWeight,
-      unit: 'KG',
-      dateStr,
-      timestamp: now.getTime(),
-      monthIndex,
-      year,
-      notes: 'Record initial enregistré',
-      exerciseName: newExo.title,
-    });
-
-    setSelectedMetric(customId);
-    setNewVal(newFavoriteStartingWeight);
+    selectMetric(id);
     setShowAddFavoriteModal(false);
     setNewFavoriteTitle('');
+    setFormError(null);
   };
 
   const handleDeleteFavoriteExercise = (idToDelete: string) => {
-    if (!window.confirm("Retirer cet exercice de tes favoris suivis ?")) return;
-    const updated = favoriteExercises.filter((m) => m.id !== idToDelete);
-    setFavoriteExercises(updated);
-    saveJSON('volt_favorite_exercises', updated.filter((e) => e.isCustom));
-    setSelectedMetric('poids');
+    if (!window.confirm('Retirer cet exercice de tes favoris suivis ? Tout son historique sera supprimé.')) return;
+    deleteExercise(idToDelete);
+    selectMetric(WEIGHT_METRIC);
+  };
+
+  const handleDeletePoint = (item: MetricPoint) => {
+    const label = `${item.value} KG du ${formatLongDate(item.date)}`;
+    if (!activeExercise) {
+      const entry = data.bodyMetrics.find((m) => m.id === item.id);
+      const hasComposition = Boolean(entry && typeof entry.fatPercent === 'number');
+      const msg = hasComposition
+        ? `Supprimer la pesée de ${label} ? La composition corporelle enregistrée ce jour-là sera aussi supprimée.`
+        : `Supprimer la pesée de ${label} ?`;
+      if (window.confirm(msg)) deleteBodyMetric(item.id);
+    } else if (window.confirm(`Supprimer la mesure de ${label} ?`)) {
+      deleteRecordEntry(activeExercise.id, item.id);
+    }
+    setHoveredPoint(null);
   };
 
   return (
@@ -260,7 +259,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             <h2 className={`text-xl sm:text-2xl font-black tracking-tight uppercase flex items-center gap-2 ${
               isLight ? 'text-[#3d2317]' : 'text-white'
             }`}>
-              {activeMetricObj.title}
+              {metricTitle}
             </h2>
           </div>
         </div>
@@ -268,12 +267,12 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
         {/* Quick Metric Switcher & + Ajouter un exercice favori */}
         <div className="flex items-center gap-2 flex-wrap">
           <select
-            value={selectedMetric}
+            value={activeExercise ? activeExercise.id : WEIGHT_METRIC}
             onChange={(e) => {
               if (e.target.value === '__add_favorite__') {
-                setShowAddFavoriteModal(true);
+                openFavoriteModal();
               } else {
-                setSelectedMetric(e.target.value);
+                selectMetric(e.target.value);
               }
             }}
             className={`text-xs font-bold px-3 py-2 rounded-xl border focus:outline-none focus:border-[#F97316] transition-colors cursor-pointer ${
@@ -283,17 +282,18 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             }`}
           >
             <optgroup label="Métriques Standard">
-              {DEFAULT_METRICS.map((m) => (
+              <option value={WEIGHT_METRIC}>Poids de corps</option>
+              {strengthExercises.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.title}
+                  1RM {m.name}
                 </option>
               ))}
             </optgroup>
-            {favoriteExercises.some((m) => m.isCustom) && (
+            {favoriteExercises.length > 0 && (
               <optgroup label="Mes Exercices Favoris">
-                {favoriteExercises.filter((m) => m.isCustom).map((m) => (
+                {favoriteExercises.map((m) => (
                   <option key={m.id} value={m.id}>
-                    ⭐ {m.title}
+                    ⭐ {m.name}
                   </option>
                 ))}
               </optgroup>
@@ -306,7 +306,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
           {/* Dedicated + Button to add favorite exercise */}
           <button
             type="button"
-            onClick={() => setShowAddFavoriteModal(true)}
+            onClick={openFavoriteModal}
             className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wide flex items-center gap-1.5 transition-all shadow-sm ${
               isLight
                 ? 'bg-[#faebe0] hover:bg-[#fff7f0] text-[#b85d38] border border-[#b85d38]/30'
@@ -396,7 +396,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             {/* X-axis Month Ticks (j f m a m j j a s o n d) */}
             {monthLabels.map((lbl, idx) => {
               const x = padLeft + (idx / 11) * plotWidth;
-              const hasData = !!monthlyData[idx];
+              const hasData = monthsWithData.has(idx);
               return (
                 <text
                   key={idx}
@@ -427,9 +427,9 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             )}
 
             {/* Orange Points with Inner Core */}
-            {validPoints.map((pt, idx) => (
+            {validPoints.map((pt) => (
               <g
-                key={idx}
+                key={pt.entry.id}
                 className="cursor-pointer group"
                 onClick={() => setHoveredPoint(pt.entry)}
                 onMouseEnter={() => setHoveredPoint(pt.entry)}
@@ -457,6 +457,21 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             ))}
           </svg>
 
+          {/* Empty state: a curve needs at least 2 dated points in the year */}
+          {yearPoints.length < 2 && (
+            <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
+              <p className={`text-center text-xs font-bold rounded-xl px-3 py-2 ${
+                isLight ? 'bg-[#fff7f0]/90 text-[#7d5a47]' : 'bg-[#141414]/90 text-[#A7A7A7]'
+              }`}>
+                {yearPoints.length === 0
+                  ? `Aucune mesure en ${selectedYear}.`
+                  : `Une seule mesure en ${selectedYear}.`}
+                <br />
+                Ajoute au moins 2 mesures datées pour voir la courbe.
+              </p>
+            </div>
+          )}
+
           {/* Interactive Tooltip on hover/click */}
           {hoveredPoint && (
             <div className={`absolute top-2 right-2 border rounded-xl px-2.5 py-1.5 shadow-xl text-xs flex items-center gap-2 animate-in fade-in duration-150 ${
@@ -466,10 +481,10 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             }`}>
               <div>
                 <span className={`text-[10px] block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                  {hoveredPoint.dateStr}
+                  {formatLongDate(hoveredPoint.date)}
                 </span>
                 <span className={`text-xs font-black font-mono ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
-                  {hoveredPoint.value} {hoveredPoint.unit}
+                  {hoveredPoint.value} KG{hoveredPoint.reps ? ` × ${hoveredPoint.reps}` : ''}
                 </span>
               </div>
               <button
@@ -487,14 +502,14 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
         <div className="space-y-4 pt-1">
           <div className="space-y-0.5">
             <span className={`text-xs block font-medium ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-              Dernière mesure : {latestEntry.dateStr}
+              {latestEntry ? `Dernière mesure : ${formatLongDate(latestEntry.date)}` : 'Aucune mesure enregistrée'}
             </span>
             <div className={`text-3xl sm:text-4xl font-black font-mono tracking-tight ${
               isLight ? 'text-[#3d2317]' : 'text-white'
             }`}>
-              {latestEntry.value}
+              {latestEntry ? latestEntry.value : '—'}
               <span className={`text-lg font-bold ml-1 ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                {latestEntry.unit}
+                KG
               </span>
             </div>
           </div>
@@ -502,14 +517,11 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
           {/* Primary Action Button (DÉFINIR / ENREGISTRER) */}
           <button
             type="button"
-            onClick={() => {
-              setNewVal(latestEntry.value);
-              setShowAddModal(true);
-            }}
+            onClick={openAddModal}
             className="w-full py-3.5 px-4 rounded-2xl bg-[#6366F1] hover:bg-[#4F46E5] active:scale-[0.99] text-white text-xs sm:text-sm font-black uppercase tracking-wider shadow-lg shadow-[#6366F1]/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <Scale className="w-4 h-4" />
-            <span>DÉFINIR MON {activeMetricObj.title.toUpperCase()} ACTUEL</span>
+            <span>DÉFINIR MON {metricTitle.toUpperCase()} ACTUEL</span>
           </button>
         </div>
       </div>
@@ -521,12 +533,12 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             <span className={`text-xs font-black uppercase tracking-wider ${
               isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
             }`}>
-              MON HISTORIQUE ({filtered.length})
+              MON HISTORIQUE ({points.length})
             </span>
-            {activeMetricObj.isCustom && (
+            {activeExercise && !activeExercise.showInMaxCharges && (
               <button
                 type="button"
-                onClick={() => handleDeleteFavoriteExercise(activeMetricObj.id)}
+                onClick={() => handleDeleteFavoriteExercise(activeExercise.id)}
                 className="text-[10px] text-rose-500 hover:underline font-bold"
               >
                 (Supprimer exo favori)
@@ -535,7 +547,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
           </div>
           <button
             type="button"
-            onClick={() => setShowAddModal(true)}
+            onClick={openAddModal}
             className="text-xs font-bold text-[#6366F1] hover:underline flex items-center gap-1 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -543,17 +555,17 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
           </button>
         </div>
 
-        {sortedHistory.length === 0 ? (
+        {historyDesc.length === 0 ? (
           <div className={`p-6 rounded-2xl border text-center space-y-2 transition-colors ${
             isLight
               ? 'bg-[#fff7f0] border-[#7d5a47]/15'
               : 'bg-[#141414] border-white/5'
           }`}>
             <p className={`text-xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-              Aucune mesure enregistrée pour cet exercice.
+              {isWeight ? 'Aucune pesée enregistrée.' : 'Aucune mesure enregistrée pour cet exercice.'}
             </p>
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={openAddModal}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                 isLight
                   ? 'bg-[#faebe0] hover:bg-[#f0ded0] text-[#3d2317]'
@@ -565,7 +577,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
           </div>
         ) : (
           <div className="space-y-2.5">
-            {sortedHistory.map((item) => (
+            {historyDesc.map((item) => (
               <div
                 key={item.id}
                 className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 group ${
@@ -576,12 +588,12 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
               >
                 <div className="space-y-0.5">
                   <span className={`text-xs block font-medium ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
-                    {item.dateStr}
+                    {formatLongDate(item.date)}
                   </span>
                   <div className={`text-base sm:text-lg font-black font-mono flex items-center gap-2 ${
                     isLight ? 'text-[#3d2317]' : 'text-white'
                   }`}>
-                    <span>{item.value} {item.unit}</span>
+                    <span>{item.value} KG{item.reps ? ` × ${item.reps}` : ''}</span>
                     {item.notes && (
                       <span className={`text-[10px] font-normal italic ${
                         isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
@@ -594,11 +606,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
 
                 <button
                   type="button"
-                  onClick={() => {
-                    if (window.confirm(`Supprimer la mesure de ${item.value} ${item.unit} du ${item.dateStr} ?`)) {
-                      onDeleteMeasurement(item.id);
-                    }
-                  }}
+                  onClick={() => handleDeletePoint(item)}
                   className="p-2 rounded-xl text-[#737373] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                   title="Supprimer cette mesure"
                 >
@@ -704,6 +712,10 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 </div>
               </div>
 
+              {formError && (
+                <p role="alert" className="text-xs font-bold text-rose-500">{formError}</p>
+              )}
+
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
@@ -744,7 +756,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             <div className="flex items-center justify-between border-b pb-3 border-current/10">
               <h3 className="text-sm font-black uppercase flex items-center gap-2">
                 <Scale className="w-4 h-4 text-[#6366F1]" />
-                <span>Enregistrer {activeMetricObj.title}</span>
+                <span>Enregistrer {metricTitle}</span>
               </h3>
               <button
                 type="button"
@@ -796,65 +808,56 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 </div>
               </div>
 
-              {/* Date and Time */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
-                    isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
-                  }`}>
-                    <Calendar className="w-3 h-3" />
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className={`w-full rounded-xl px-2.5 py-1.5 text-xs border focus:outline-none focus:border-[#6366F1] ${
-                      isLight
-                        ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]'
-                        : 'bg-[#121212] border-white/10 text-white'
-                    }`}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
-                    isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
-                  }`}>
-                    <Clock className="w-3 h-3" />
-                    Heure
-                  </label>
-                  <input
-                    type="time"
-                    value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
-                    className={`w-full rounded-xl px-2.5 py-1.5 text-xs border focus:outline-none focus:border-[#6366F1] ${
-                      isLight
-                        ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]'
-                        : 'bg-[#121212] border-white/10 text-white'
-                    }`}
-                  />
-                </div>
-              </div>
 
-              {/* Notes */}
+              {/* Date (one measure per day: a new entry replaces the one of the same day) */}
               <div className="space-y-1">
-                <label className={`text-[10px] font-bold uppercase ${
+                <label className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
                   isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                 }`}>
-                  Note ou contexte (optionnel)
+                  <Calendar className="w-3 h-3" />
+                  Date
                 </label>
                 <input
-                  type="text"
-                  placeholder="Ex: Forme olympique, séance lourde..."
-                  value={newNotes}
-                  onChange={(e) => setNewNotes(e.target.value)}
-                  className={`w-full rounded-xl px-3 py-2 text-xs border focus:outline-none focus:border-[#6366F1] ${
+                  type="date"
+                  value={newDate}
+                  max={todayISO()}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  className={`w-full rounded-xl px-2.5 py-1.5 text-xs border focus:outline-none focus:border-[#6366F1] ${
                     isLight
-                      ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317] placeholder:text-[#a3826e]'
-                      : 'bg-[#121212] border-white/10 text-white placeholder:text-[#555]'
+                      ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]'
+                      : 'bg-[#121212] border-white/10 text-white'
                   }`}
                 />
+                <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                  Une seule mesure par jour : elle remplace celle déjà saisie à cette date.
+                </p>
               </div>
+
+              {/* Notes (record entries only: weigh-ins have no note field) */}
+              {!isWeight && (
+                <div className="space-y-1">
+                  <label className={`text-[10px] font-bold uppercase ${
+                    isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
+                  }`}>
+                    Note ou contexte (optionnel)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Forme olympique, séance lourde..."
+                    value={newNotes}
+                    onChange={(e) => setNewNotes(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xs border focus:outline-none focus:border-[#6366F1] ${
+                      isLight
+                        ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317] placeholder:text-[#a3826e]'
+                        : 'bg-[#121212] border-white/10 text-white placeholder:text-[#555]'
+                    }`}
+                  />
+                </div>
+              )}
+
+              {formError && (
+                <p role="alert" className="text-xs font-bold text-rose-500">{formError}</p>
+              )}
 
               {/* Submit buttons */}
               <div className="flex gap-2 pt-2">

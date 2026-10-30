@@ -32,6 +32,7 @@ import {
   
 } from '../utils/bodyComposition';
 import { UserStats } from '../types';
+import { LIMITS } from '../data/model';
 
 interface GraduatedGaugeProps {
   currentVal: number;
@@ -204,6 +205,7 @@ export function BodyCompositionModal({
   const [selectedGoalChoice, setSelectedGoalChoice] = useState<'recommendation' | 'custom'>('recommendation');
 
   const [savedFeedback, setSavedFeedback] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Computed results based on inputs & formula
   const inputs: BodyCompositionInputs = useMemo(() => ({
@@ -256,6 +258,24 @@ export function BodyCompositionModal({
     const chosenTargetWeight = isAppRec ? recommendation.targetWeightKg : customGoalStats.targetWeightKg;
     const chosenTargetFat = isAppRec ? recommendation.targetFatPercent : customGoalStats.estimatedTargetFatPercent;
     const chosenType = isAppRec ? recommendation.type : customGoalType;
+
+    // Every value sent must be a finite number within the bounds of the data model
+    // (otherwise the dated body-metrics entry would be rejected)
+    const inRange = (v: number, [min, max]: readonly [number, number]) => Number.isFinite(v) && v >= min && v <= max;
+    const valid =
+      inRange(weightKg, LIMITS.bodyWeightKg) &&
+      inRange(age, [14, 95]) &&
+      inRange(heightCm, [120, 230]) &&
+      inRange(results.fatPercent, LIMITS.percent) &&
+      [results.fatKg, results.leanMassKg, results.boneMassKg, results.muscleMassKg, results.organMassKg].every((v) => inRange(v, LIMITS.massKg)) &&
+      inRange(results.waterLiters, LIMITS.waterL) &&
+      inRange(chosenTargetWeight, LIMITS.bodyWeightKg) &&
+      inRange(chosenTargetFat, LIMITS.percent);
+    if (!valid) {
+      setSaveError('Certaines valeurs sont invalides ou hors limites : vérifie le poids, la taille et les mensurations.');
+      return;
+    }
+    setSaveError(null);
 
     const goalTitle = chosenType === 'seche'
       ? `Objectif Sèche (${chosenTargetFat}% MG)`
@@ -1611,6 +1631,9 @@ export function BodyCompositionModal({
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            {saveError && (
+              <p role="alert" className="flex-1 min-w-0 text-[11px] font-bold text-rose-400">{saveError}</p>
+            )}
             <button
               type="button"
               onClick={onClose}

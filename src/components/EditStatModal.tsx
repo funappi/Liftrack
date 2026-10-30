@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { X, Check, Dumbbell, Target, Flame, Zap, Award, Sparkles, ChevronRight } from 'lucide-react';
 import { UserStats } from '../types';
+import { LIMITS } from '../data/model';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
 
-export type EditableStatType = 'currentWeight' | 'targetWeight' | 'streak' | 'workouts' | 'calories' | 'nextGoal';
+// The streak was removed from the app: it is no longer editable nor shown here
+export type EditableStatType = 'currentWeight' | 'targetWeight' | 'workouts' | 'calories' | 'nextGoal';
 
 interface EditStatModalProps {
   initialType: EditableStatType;
@@ -29,43 +31,67 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
   // Form values
   const [currentWeight, setCurrentWeight] = useState(userStats.currentWeightKg);
   const [targetWeight, setTargetWeight] = useState(userStats.targetWeightKg);
-  const [streakDays, setStreakDays] = useState(userStats.streakDays);
   const [totalWorkouts, setTotalWorkouts] = useState(userStats.totalWorkouts);
   const [totalCalories, setTotalCalories] = useState(userStats.totalCaloriesBurned);
   const [goalCurrent, setGoalCurrent] = useState(userStats.nextGoal.current);
   const [goalTarget, setGoalTarget] = useState(userStats.nextGoal.target);
   const [goalStart, setGoalStart] = useState(userStats.nextGoal.startValue ?? userStats.nextGoal.current);
   const [goalTitle, setGoalTitle] = useState(userStats.nextGoal.title);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const isIn = (v: number, [min, max]: readonly [number, number]) => Number.isFinite(v) && v >= min && v <= max;
+  const round1 = (v: number) => Math.round(v * 10) / 10;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    audioSynth.playCelebrationSound();
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#00C6FF', '#EC4899', '#7C3AED'],
-      });
-    } catch {
-      // ignore
+    // Validate every edited value (finite, positive, realistic bounds)
+    const weight = Number(currentWeight);
+    const target = Number(targetWeight);
+    const workouts = Number(totalWorkouts);
+    const kcal = Number(totalCalories);
+    const gStart = Number(goalStart);
+    const gCurrent = Number(goalCurrent);
+    const gTarget = Number(goalTarget);
+    const [wMin, wMax] = LIMITS.bodyWeightKg;
+
+    if (!isIn(weight, LIMITS.bodyWeightKg)) return setFormError(`Poids actuel invalide : entre ${wMin} et ${wMax} kg.`);
+    if (!isIn(target, LIMITS.bodyWeightKg)) return setFormError(`Poids cible invalide : entre ${wMin} et ${wMax} kg.`);
+    if (!isIn(workouts, LIMITS.baselineSessions) || !Number.isInteger(workouts))
+      return setFormError(`Nombre de séances invalide : entier entre 0 et ${LIMITS.baselineSessions[1].toLocaleString('fr-FR')}.`);
+    if (!isIn(kcal, LIMITS.baselineKcal) || !Number.isInteger(kcal))
+      return setFormError(`Kcal invalides : entier entre 0 et ${LIMITS.baselineKcal[1].toLocaleString('fr-FR')}.`);
+    if (![gStart, gCurrent, gTarget].every((v) => isIn(v, [0, 100000])))
+      return setFormError('Valeurs du challenge invalides : nombres positifs uniquement.');
+    if (!goalTitle.trim()) return setFormError('Donne un intitulé au challenge.');
+    setFormError(null);
+
+    // Only send what changed: App turns the weight into a dated weigh-in and the totals into a baseline,
+    // so an untouched field must not create an entry
+    const patch: Partial<UserStats> = {};
+    if (round1(weight) !== round1(userStats.currentWeightKg)) patch.currentWeightKg = round1(weight);
+    if (round1(target) !== round1(userStats.targetWeightKg)) patch.targetWeightKg = round1(target);
+    if (workouts !== userStats.totalWorkouts) patch.totalWorkouts = workouts;
+    if (kcal !== userStats.totalCaloriesBurned) patch.totalCaloriesBurned = kcal;
+    const g = userStats.nextGoal;
+    if (goalTitle.trim() !== g.title || gStart !== (g.startValue ?? g.current) || gCurrent !== g.current || gTarget !== g.target) {
+      patch.nextGoal = { ...g, title: goalTitle.trim(), current: gCurrent, target: gTarget, startValue: gStart };
     }
 
-    onSave({
-      currentWeightKg: Number(currentWeight) || userStats.currentWeightKg,
-      targetWeightKg: Number(targetWeight) || userStats.targetWeightKg,
-      streakDays: Number(streakDays) || userStats.streakDays,
-      totalWorkouts: Number(totalWorkouts) || userStats.totalWorkouts,
-      totalCaloriesBurned: Number(totalCalories) || userStats.totalCaloriesBurned,
-      nextGoal: {
-        ...userStats.nextGoal,
-        title: goalTitle || userStats.nextGoal.title,
-        current: Number(goalCurrent) || userStats.nextGoal.current,
-        target: Number(goalTarget) || userStats.nextGoal.target,
-        startValue: Number(goalStart) || userStats.nextGoal.startValue || Number(goalCurrent),
-      },
-    });
+    if (Object.keys(patch).length > 0) {
+      audioSynth.playCelebrationSound();
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#00C6FF', '#EC4899', '#7C3AED'],
+        });
+      } catch {
+        // ignore
+      }
+      onSave(patch);
+    }
 
     onClose();
   };
@@ -73,7 +99,6 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
   const tabs: { id: EditableStatType; label: string; icon: React.ReactNode }[] = [
     { id: 'currentWeight', label: 'Poids Actuel', icon: <Dumbbell className="w-3.5 h-3.5" /> },
     { id: 'targetWeight', label: 'Objectif Poids', icon: <Target className="w-3.5 h-3.5" /> },
-    { id: 'streak', label: 'Série Active', icon: <Flame className="w-3.5 h-3.5" /> },
     { id: 'workouts', label: 'Workouts', icon: <Zap className="w-3.5 h-3.5" /> },
     { id: 'calories', label: 'Calories', icon: <Flame className="w-3.5 h-3.5" /> },
     { id: 'nextGoal', label: 'Challenge', icon: <Award className="w-3.5 h-3.5" /> },
@@ -306,54 +331,13 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
             </div>
           )}
 
-          {/* 3. SÉRIE ACTIVE */}
-          {activeType === 'streak' && (
-            <div className="p-4 rounded-2xl bg-[#121212] border border-white/[0.08] space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-black text-white uppercase">Série Active (Streak)</h4>
-                  <p className="text-xs text-[#A7A7A7]">Nombre de jours consécutifs d'entraînement</p>
-                </div>
-                <Flame className="w-5 h-5 text-[#FF512F]" />
-              </div>
-
-              <div className="flex items-center justify-center gap-4 py-2">
-                <button
-                  type="button"
-                  onClick={() => setStreakDays((prev) => Math.max(0, prev - 1))}
-                  className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
-                >
-                  -
-                </button>
-
-                <div className="flex items-baseline gap-1">
-                  <input
-                    type="number"
-                    value={streakDays}
-                    onChange={(e) => setStreakDays(parseInt(e.target.value) || 0)}
-                    className="w-32 bg-transparent text-center font-black text-4xl text-[#FF512F] font-mono focus:outline-none"
-                  />
-                  <span className="text-lg font-bold text-[#A7A7A7]">JOURS</span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setStreakDays((prev) => prev + 1)}
-                  className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* 4. WORKOUTS VALIDÉS */}
           {activeType === 'workouts' && (
             <div className="p-4 rounded-2xl bg-[#121212] border border-white/[0.08] space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-black text-white uppercase">Total Workouts Validés</h4>
-                  <p className="text-xs text-[#A7A7A7]">Cumul de toutes les séances enregistrées</p>
+                  <p className="text-xs text-[#A7A7A7]">Cumul de toutes tes séances (y compris avant l'appli)</p>
                 </div>
                 <Zap className="w-5 h-5 text-[#EC4899]" />
               </div>
@@ -394,7 +378,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-black text-white uppercase">Énergie Dépensée</h4>
-                  <p className="text-xs text-[#A7A7A7]">Total des kilocalories brûlées ce mois</p>
+                  <p className="text-xs text-[#A7A7A7]">Total cumulé des kilocalories brûlées</p>
                 </div>
                 <Flame className="w-5 h-5 text-[#FF512F]" />
               </div>
@@ -484,6 +468,10 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                 </div>
               </div>
             </div>
+          )}
+
+          {formError && (
+            <p role="alert" className="text-xs font-bold text-rose-400">{formError}</p>
           )}
 
           {/* Action buttons */}
