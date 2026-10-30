@@ -17,6 +17,11 @@ interface EditStatModalProps {
   theme?: 'dark' | 'warm-light';
 }
 
+// Weight bounds of the data model, shared by steppers, sliders and validation
+const [W_MIN, W_MAX] = LIMITS.bodyWeightKg;
+// Evenly spaced slider labels (justify-between): 25 / 133 / 242 / 350
+const WEIGHT_TICKS = [0, 1, 2, 3].map((i) => Math.round(W_MIN + ((W_MAX - W_MIN) * i) / 3));
+
 export const EditStatModal: React.FC<EditStatModalProps> = ({
   initialType,
   userStats,
@@ -105,7 +110,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
   ];
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 ${
+    <div className={`num fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 ${
       isLight ? 'bg-[#3d2317]/65 backdrop-blur-xl' : 'bg-black/85 backdrop-blur-md'
     }`}>
       <div 
@@ -117,7 +122,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
         {/* Header with close button */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1.5">
+            <span className="text-2xs font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1.5">
               <Sparkles className="w-3 h-3" />
               <span>MODIFIER MES STATS</span>
             </span>
@@ -172,7 +177,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               <div className="flex items-center justify-center gap-4 py-2">
                 <button
                   type="button"
-                  onClick={() => setCurrentWeight((prev) => Math.max(30, Math.round((prev - 0.5) * 10) / 10))}
+                  onClick={() => setCurrentWeight((prev) => Math.max(W_MIN, Math.round((prev - 0.5) * 10) / 10))}
                   className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
                 >
                   -
@@ -184,14 +189,14 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="0.1"
                     value={currentWeight}
                     onChange={(e) => setCurrentWeight(parseFloat(e.target.value) || 0)}
-                    className="w-28 bg-transparent text-center font-black text-4xl text-white font-mono focus:outline-none appearance-none"
+                    className="w-28 bg-transparent text-center font-black text-4xl text-white font-mono num focus:outline-none appearance-none"
                   />
                   <span className="text-lg font-bold text-[#A7A7A7]">KG</span>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setCurrentWeight((prev) => Math.round((prev + 0.5) * 10) / 10)}
+                  onClick={() => setCurrentWeight((prev) => Math.min(W_MAX, Math.round((prev + 0.5) * 10) / 10))}
                   className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
                 >
                   +
@@ -202,18 +207,17 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               <div className="px-1 space-y-1">
                 <input
                   type="range"
-                  min="40"
-                  max="150"
+                  min={W_MIN}
+                  max={W_MAX}
                   step="0.5"
                   value={currentWeight}
-                  onChange={(e) => setCurrentWeight(parseFloat(e.target.value) || 70)}
+                  onChange={(e) => setCurrentWeight(parseFloat(e.target.value))}
                   className="w-full accent-[#EC4899] bg-[#222222] h-2.5 rounded-lg cursor-pointer appearance-none"
                 />
-                <div className="flex justify-between text-[10px] font-semibold text-[#A7A7A7]">
-                  <span>40 kg</span>
-                  <span>75 kg</span>
-                  <span>110 kg</span>
-                  <span>150 kg</span>
+                <div className="flex justify-between text-2xs font-semibold text-[#A7A7A7]">
+                  {WEIGHT_TICKS.map((t) => (
+                    <span key={t} className="num">{t} kg</span>
+                  ))}
                 </div>
               </div>
 
@@ -223,8 +227,8 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                   <button
                     key={delta}
                     type="button"
-                    onClick={() => setCurrentWeight((prev) => Math.round((prev + delta) * 10) / 10)}
-                    className="px-2.5 py-1 rounded-lg bg-[#181818] border border-white/5 text-[11px] font-bold text-[#A7A7A7] hover:text-white hover:border-white/20"
+                    onClick={() => setCurrentWeight((prev) => Math.min(W_MAX, Math.max(W_MIN, Math.round((prev + delta) * 10) / 10)))}
+                    className="px-2.5 py-1 rounded-lg bg-[#181818] border border-white/5 text-caption font-bold text-[#A7A7A7] hover:text-white hover:border-white/20"
                   >
                     {delta > 0 ? `+${delta}` : delta} kg
                   </button>
@@ -250,7 +254,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                         <span className="text-xs font-black text-white block uppercase group-hover:text-[#EC4899] transition-colors">
                           Calculateur de composition corporelle
                         </span>
-                        <span className="text-[10px] text-[#A7A7A7] block">
+                        <span className="text-2xs text-[#A7A7A7] block">
                           Masse grasse, sèche & osseuse via formules US Navy / Boer
                         </span>
                       </div>
@@ -276,7 +280,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               <div className="flex items-center justify-center gap-4 py-2">
                 <button
                   type="button"
-                  onClick={() => setTargetWeight((prev) => Math.max(30, Math.round((prev - 0.5) * 10) / 10))}
+                  onClick={() => setTargetWeight((prev) => Math.max(W_MIN, Math.round((prev - 0.5) * 10) / 10))}
                   className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
                 >
                   -
@@ -288,14 +292,14 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="0.5"
                     value={targetWeight}
                     onChange={(e) => setTargetWeight(parseFloat(e.target.value) || 0)}
-                    className="w-28 bg-transparent text-center font-black text-4xl text-[#00C6FF] font-mono focus:outline-none appearance-none"
+                    className="w-28 bg-transparent text-center font-black text-4xl text-[#00C6FF] font-mono num focus:outline-none appearance-none"
                   />
                   <span className="text-lg font-bold text-[#A7A7A7]">KG</span>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => setTargetWeight((prev) => Math.round((prev + 0.5) * 10) / 10)}
+                  onClick={() => setTargetWeight((prev) => Math.min(W_MAX, Math.round((prev + 0.5) * 10) / 10))}
                   className="w-12 h-12 rounded-2xl bg-[#202020] border border-white/10 text-xl font-black text-white hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center"
                 >
                   +
@@ -306,18 +310,17 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               <div className="px-1 space-y-1">
                 <input
                   type="range"
-                  min="40"
-                  max="150"
+                  min={W_MIN}
+                  max={W_MAX}
                   step="0.5"
                   value={targetWeight}
-                  onChange={(e) => setTargetWeight(parseFloat(e.target.value) || 70)}
+                  onChange={(e) => setTargetWeight(parseFloat(e.target.value))}
                   className="w-full accent-[#00C6FF] bg-[#222222] h-2.5 rounded-lg cursor-pointer appearance-none"
                 />
-                <div className="flex justify-between text-[10px] font-semibold text-[#A7A7A7]">
-                  <span>40 kg</span>
-                  <span>75 kg</span>
-                  <span>110 kg</span>
-                  <span>150 kg</span>
+                <div className="flex justify-between text-2xs font-semibold text-[#A7A7A7]">
+                  {WEIGHT_TICKS.map((t) => (
+                    <span key={t} className="num">{t} kg</span>
+                  ))}
                 </div>
               </div>
 
@@ -356,7 +359,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     type="number"
                     value={totalWorkouts}
                     onChange={(e) => setTotalWorkouts(parseInt(e.target.value) || 0)}
-                    className="w-32 bg-transparent text-center font-black text-4xl text-white font-mono focus:outline-none"
+                    className="w-32 bg-transparent text-center font-black text-4xl text-white font-mono num focus:outline-none"
                   />
                   <span className="text-lg font-bold text-[#A7A7A7]">SÉANCES</span>
                 </div>
@@ -398,7 +401,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="50"
                     value={totalCalories}
                     onChange={(e) => setTotalCalories(parseInt(e.target.value) || 0)}
-                    className="w-36 bg-transparent text-center font-black text-4xl text-[#FF512F] font-mono focus:outline-none"
+                    className="w-36 bg-transparent text-center font-black text-4xl text-[#FF512F] font-mono num focus:outline-none"
                   />
                   <span className="text-lg font-bold text-[#A7A7A7]">KCAL</span>
                 </div>
@@ -429,7 +432,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
 
               <div className="grid grid-cols-3 gap-2.5">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A7A7A7] uppercase block">
+                  <label className="text-2xs font-bold text-[#A7A7A7] uppercase block">
                     Départ
                   </label>
                   <input
@@ -437,12 +440,12 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="0.5"
                     value={goalStart}
                     onChange={(e) => setGoalStart(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-[#A7A7A7] font-mono focus:outline-none focus:border-white"
+                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-[#A7A7A7] font-mono num focus:outline-none focus:border-white"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A7A7A7] uppercase block">
+                  <label className="text-2xs font-bold text-[#A7A7A7] uppercase block">
                     Actuel
                   </label>
                   <input
@@ -450,12 +453,12 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="0.5"
                     value={goalCurrent}
                     onChange={(e) => setGoalCurrent(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-white font-mono focus:outline-none focus:border-[#EC4899]"
+                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-white font-mono num focus:outline-none focus:border-[#EC4899]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#A7A7A7] uppercase block">
+                  <label className="text-2xs font-bold text-[#A7A7A7] uppercase block">
                     Cible
                   </label>
                   <input
@@ -463,7 +466,7 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
                     step="0.5"
                     value={goalTarget}
                     onChange={(e) => setGoalTarget(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-[#00C6FF] font-mono focus:outline-none focus:border-[#00C6FF]"
+                    className="w-full bg-[#181818] border border-white/10 rounded-xl px-2.5 py-2 text-base font-black text-[#00C6FF] font-mono num focus:outline-none focus:border-[#00C6FF]"
                   />
                 </div>
               </div>

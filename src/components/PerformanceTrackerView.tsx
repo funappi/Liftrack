@@ -39,7 +39,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
   theme,
 }) => {
   const isLight = theme === 'warm-light';
-  const { data, logBodyMetrics, deleteBodyMetric, logRecord, deleteRecordEntry, addExercise, deleteExercise } = useVoltData();
+  const { data, logBodyMetrics, clearBodyWeight, logRecord, deleteRecordEntry, addExercise, deleteExercise } = useVoltData();
 
   const [selectedMetric, setSelectedMetric] = useState<string>(WEIGHT_METRIC);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -225,9 +225,10 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
       const entry = data.bodyMetrics.find((m) => m.id === item.id);
       const hasComposition = Boolean(entry && typeof entry.fatPercent === 'number');
       const msg = hasComposition
-        ? `Supprimer la pesée de ${label} ? La composition corporelle enregistrée ce jour-là sera aussi supprimée.`
+        ? `Supprimer la pesée de ${label} ? La composition corporelle de ce jour-là est conservée.`
         : `Supprimer la pesée de ${label} ?`;
-      if (window.confirm(msg)) deleteBodyMetric(item.id);
+      // Removes only the weight; the entry disappears if nothing else was recorded that day
+      if (window.confirm(msg)) clearBodyWeight(item.id);
     } else if (window.confirm(`Supprimer la mesure de ${label} ?`)) {
       deleteRecordEntry(activeExercise.id, item.id);
     }
@@ -235,7 +236,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="num space-y-6">
       {/* Top Header: Back Button, Title, and Metric Picker */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -251,7 +252,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             </button>
           )}
           <div>
-            <span className={`text-[10px] font-black uppercase tracking-wider block ${
+            <span className={`text-2xs font-black uppercase tracking-wider block ${
               isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
             }`}>
               SUIVI DE PROGRESSION
@@ -374,7 +375,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                     x={padLeft - 6}
                     y={y + 3.5}
                     textAnchor="end"
-                    className={`text-[9px] font-mono font-medium ${
+                    className={`text-3xs font-mono num font-medium ${
                       isLight ? 'fill-[#7d5a47]' : 'fill-[#737373]'
                     }`}
                   >
@@ -403,7 +404,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                   x={x}
                   y={svgHeight - 6}
                   textAnchor="middle"
-                  className={`text-[9.5px] font-mono ${
+                  className={`text-2xs font-mono num ${
                     hasData
                       ? isLight ? 'fill-[#3d2317] font-black' : 'fill-[#E5E5E5] font-bold'
                       : isLight ? 'fill-[#a3826e]' : 'fill-[#525252]'
@@ -480,17 +481,17 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 : 'bg-[#1C1C1C] border-[#F97316]/50 text-white'
             }`}>
               <div>
-                <span className={`text-[10px] block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                <span className={`text-2xs block ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   {formatLongDate(hoveredPoint.date)}
                 </span>
-                <span className={`text-xs font-black font-mono ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
+                <span className={`text-xs font-black font-mono num ${isLight ? 'text-[#3d2317]' : 'text-white'}`}>
                   {hoveredPoint.value} KG{hoveredPoint.reps ? ` × ${hoveredPoint.reps}` : ''}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setHoveredPoint(null)}
-                className={`text-[10px] ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
+                className={`text-2xs ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
               >
                 ✕
               </button>
@@ -504,7 +505,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             <span className={`text-xs block font-medium ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
               {latestEntry ? `Dernière mesure : ${formatLongDate(latestEntry.date)}` : 'Aucune mesure enregistrée'}
             </span>
-            <div className={`text-3xl sm:text-4xl font-black font-mono tracking-tight ${
+            <div className={`text-3xl sm:text-4xl font-black font-mono num tracking-tight ${
               isLight ? 'text-[#3d2317]' : 'text-white'
             }`}>
               {latestEntry ? latestEntry.value : '—'}
@@ -539,7 +540,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleDeleteFavoriteExercise(activeExercise.id)}
-                className="text-[10px] text-rose-500 hover:underline font-bold"
+                className="text-2xs text-rose-500 hover:underline font-bold"
               >
                 (Supprimer exo favori)
               </button>
@@ -590,12 +591,12 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                   <span className={`text-xs block font-medium ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                     {formatLongDate(item.date)}
                   </span>
-                  <div className={`text-base sm:text-lg font-black font-mono flex items-center gap-2 ${
+                  <div className={`text-base sm:text-lg font-black font-mono num flex items-center gap-2 ${
                     isLight ? 'text-[#3d2317]' : 'text-white'
                   }`}>
                     <span>{item.value} KG{item.reps ? ` × ${item.reps}` : ''}</span>
                     {item.notes && (
-                      <span className={`text-[10px] font-normal italic ${
+                      <span className={`text-2xs font-normal italic ${
                         isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                       }`}>
                         — {item.notes}
@@ -648,7 +649,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
 
             <form onSubmit={handleCreateFavoriteExercise} className="space-y-3.5">
               <div>
-                <label className={`text-[10px] font-bold uppercase block mb-1 ${
+                <label className={`text-2xs font-bold uppercase block mb-1 ${
                   isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                 }`}>
                   Nom de l'exercice
@@ -669,7 +670,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className={`text-[10px] font-bold uppercase block mb-1 ${
+                  <label className={`text-2xs font-bold uppercase block mb-1 ${
                     isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                   }`}>
                     Catégorie
@@ -693,7 +694,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 </div>
 
                 <div>
-                  <label className={`text-[10px] font-bold uppercase block mb-1 ${
+                  <label className={`text-2xs font-bold uppercase block mb-1 ${
                     isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                   }`}>
                     Charge de départ (KG)
@@ -703,7 +704,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                     step="0.5"
                     value={newFavoriteStartingWeight}
                     onChange={(e) => setNewFavoriteStartingWeight(parseFloat(e.target.value) || 0)}
-                    className={`w-full rounded-xl px-3 py-2 text-xs font-mono font-bold border focus:outline-none focus:border-[#F97316] ${
+                    className={`w-full rounded-xl px-3 py-2 text-xs font-mono num font-bold border focus:outline-none focus:border-[#F97316] ${
                       isLight
                         ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]'
                         : 'bg-[#121212] border-white/10 text-white'
@@ -770,7 +771,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
             <form onSubmit={handleSaveMeasurement} className="space-y-4">
               {/* Stepper value */}
               <div className="space-y-1.5 text-center">
-                <label className={`text-[11px] font-bold uppercase block ${
+                <label className={`text-caption font-bold uppercase block ${
                   isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                 }`}>
                   Valeur en KG
@@ -778,7 +779,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 <div className="flex items-center justify-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setNewVal((v) => Math.max(10, parseFloat((v - 0.5).toFixed(1))))}
+                    onClick={() => setNewVal((v) => Math.max(isWeight ? LIMITS.bodyWeightKg[0] : 0.5, parseFloat((v - 0.5).toFixed(1))))}
                     className={`w-9 h-9 rounded-xl font-black text-lg flex items-center justify-center cursor-pointer ${
                       isLight ? 'bg-black/10 hover:bg-black/15 text-[#3d2317]' : 'bg-white/10 hover:bg-white/20 text-white'
                     }`}
@@ -790,7 +791,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                     step="0.1"
                     value={newVal}
                     onChange={(e) => setNewVal(parseFloat(e.target.value) || 0)}
-                    className={`w-28 text-center text-3xl font-black font-mono rounded-xl py-1 border focus:outline-none focus:border-[#6366F1] ${
+                    className={`w-28 text-center text-3xl font-black font-mono num rounded-xl py-1 border focus:outline-none focus:border-[#6366F1] ${
                       isLight
                         ? 'bg-[#fff7f0] border-[#7d5a47]/20 text-[#3d2317]'
                         : 'bg-black/40 border-white/20 text-white'
@@ -798,7 +799,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                   />
                   <button
                     type="button"
-                    onClick={() => setNewVal((v) => parseFloat((v + 0.5).toFixed(1)))}
+                    onClick={() => setNewVal((v) => Math.min(isWeight ? LIMITS.bodyWeightKg[1] : LIMITS.loadKg[1], parseFloat((v + 0.5).toFixed(1))))}
                     className={`w-9 h-9 rounded-xl font-black text-lg flex items-center justify-center cursor-pointer ${
                       isLight ? 'bg-black/10 hover:bg-black/15 text-[#3d2317]' : 'bg-white/10 hover:bg-white/20 text-white'
                     }`}
@@ -811,7 +812,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
 
               {/* Date (one measure per day: a new entry replaces the one of the same day) */}
               <div className="space-y-1">
-                <label className={`text-[10px] font-bold uppercase flex items-center gap-1 ${
+                <label className={`text-2xs font-bold uppercase flex items-center gap-1 ${
                   isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                 }`}>
                   <Calendar className="w-3 h-3" />
@@ -828,7 +829,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                       : 'bg-[#121212] border-white/10 text-white'
                   }`}
                 />
-                <p className={`text-[10px] ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
+                <p className={`text-2xs ${isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'}`}>
                   Une seule mesure par jour : elle remplace celle déjà saisie à cette date.
                 </p>
               </div>
@@ -836,7 +837,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
               {/* Notes (record entries only: weigh-ins have no note field) */}
               {!isWeight && (
                 <div className="space-y-1">
-                  <label className={`text-[10px] font-bold uppercase ${
+                  <label className={`text-2xs font-bold uppercase ${
                     isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
                   }`}>
                     Note ou contexte (optionnel)

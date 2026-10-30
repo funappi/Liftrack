@@ -100,12 +100,12 @@ function GraduatedGauge({
       </div>
 
       {/* Graduation labels */}
-      <div className={`flex justify-between items-center text-[9px] font-mono px-0.5 ${
+      <div className={`flex justify-between items-center text-3xs font-mono num px-0.5 ${
         isLight ? 'text-[#7d5a47]' : 'text-[#A7A7A7]'
       }`}>
         <span>{minVal}{unit}</span>
         {tierLabel && (
-          <span className="font-extrabold uppercase text-[9px] tracking-wide" style={{ color }}>
+          <span className="font-extrabold uppercase text-3xs tracking-wide" style={{ color }}>
             {tierLabel}
           </span>
         )}
@@ -129,7 +129,7 @@ const OptionalWristInput: React.FC<OptionalWristInputProps> = ({ show, onToggle,
     <button
       type="button"
       onClick={onToggle}
-      className="text-[11px] font-bold text-[#F59E0B] hover:underline flex items-center gap-1.5"
+      className="text-caption font-bold text-[#F59E0B] hover:underline flex items-center gap-1.5"
     >
       {show ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
       {show
@@ -141,7 +141,7 @@ const OptionalWristInput: React.FC<OptionalWristInputProps> = ({ show, onToggle,
       <div className="mt-3 p-3 rounded-xl bg-[#121212] border border-white/5 space-y-1.5">
         <div className="flex justify-between items-center text-xs">
           <span className="font-bold text-[#D1D5DB]">Tour de poignet (Ossature Martin)</span>
-          <span className="font-black text-[#F59E0B] font-mono">{wristCm} cm</span>
+          <span className="font-black text-[#F59E0B] font-mono num">{wristCm} cm</span>
         </div>
         <input
           type="range"
@@ -358,7 +358,7 @@ export function BodyCompositionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+    <div className="num fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
       <div 
         id="modal-body-composition"
         className="w-full max-w-2xl bg-[#141414] border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 space-y-6 shadow-2xl relative max-h-[92vh] overflow-y-auto no-scrollbar"
@@ -367,11 +367,11 @@ export function BodyCompositionModal({
         <div className="flex items-start justify-between border-b border-white/[0.08] pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#EC4899]/15 border border-[#EC4899]/30 text-[10px] font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#EC4899]/15 border border-[#EC4899]/30 text-2xs font-black uppercase tracking-widest text-[#EC4899] flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
                 BIOMÉTRIE & OBJECTIFS
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[#A7A7A7]">
+              <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-2xs font-bold text-[#A7A7A7]">
                 MULTI-FORMULES SCIENTIFIQUES
               </span>
             </div>
@@ -395,13 +395,13 @@ export function BodyCompositionModal({
         {/* 1. SÉLECTEUR DE FORMULE AVEC POURCENTAGE DE PRÉCISION SCIENTIFIQUE */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-caption font-black text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5 text-[#EC4899]" />
               Formule de calcul & Précision
             </span>
             <button
               onClick={() => setShowFormulaDetails(!showFormulaDetails)}
-              className="text-[11px] font-bold text-[#00C6FF] hover:underline flex items-center gap-1"
+              className="text-caption font-bold text-[#00C6FF] hover:underline flex items-center gap-1"
             >
               <Info className="w-3.5 h-3.5" />
               {showFormulaDetails ? 'Masquer comparaison' : 'Comparer les formules'}
@@ -429,7 +429,7 @@ export function BodyCompositionModal({
                     }`}>
                       {meta.name}
                     </span>
-                    <span className={`text-[10px] font-black font-mono px-2 py-0.5 rounded-md ${
+                    <span className={`text-2xs font-black font-mono num px-2 py-0.5 rounded-md ${
                       isSelected
                         ? 'bg-[#EC4899]/20 text-[#EC4899] border border-[#EC4899]/40 shadow-sm'
                         : 'bg-white/5 text-[#00C6FF]'
@@ -438,18 +438,18 @@ export function BodyCompositionModal({
                     </span>
                   </div>
 
-                  <p className="text-[10px] text-[#A7A7A7] mt-1 line-clamp-1">
+                  <p className="text-2xs text-[#A7A7A7] mt-1 line-clamp-1">
                     {meta.shortDesc}
                   </p>
 
-                  <div className="mt-1.5 flex items-center justify-between text-[9px]">
+                  <div className="mt-1.5 flex items-center justify-between text-3xs">
                     <span className={`px-1.5 py-0.2 rounded font-bold ${
                       isSelected ? 'bg-white/10 text-white' : 'text-[#737373]'
                     }`}>
                       {meta.badge}
                     </span>
                     {isSelected && (
-                      <span className="text-[#EC4899] font-black text-[10px] flex items-center gap-0.5">
+                      <span className="text-[#EC4899] font-black text-2xs flex items-center gap-0.5">
                         <Check className="w-3 h-3" />
                         Actif
                       </span>
@@ -461,7 +461,7 @@ export function BodyCompositionModal({
           </div>
 
           {/* Annotation scientifique élégante (Image 1) */}
-          <div className="flex items-center justify-between text-[10px] text-[#A7A7A7] px-1 pt-0.5">
+          <div className="flex items-center justify-between text-2xs text-[#A7A7A7] px-1 pt-0.5">
             <span className="flex items-center gap-1">
               <span className="text-[#EC4899] font-black text-xs">*</span>
               <span>Indice d'étalonnage clinique (concordance vs DEXA & modèle à 4 compartiments)</span>
@@ -480,20 +480,20 @@ export function BodyCompositionModal({
                   <span className="font-black text-white uppercase text-xs tracking-wide">
                     {currentFormulaMeta.name}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#00C6FF]/15 text-[#00C6FF] font-black border border-[#00C6FF]/30">
+                  <span className="text-2xs px-2 py-0.5 rounded-md bg-[#00C6FF]/15 text-[#00C6FF] font-black border border-[#00C6FF]/30">
                     {currentFormulaMeta.precisionPercent}% DE CONCORDANCE
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white font-bold">
+                  <span className="text-2xs px-2 py-0.5 rounded-full bg-white/10 text-white font-bold">
                     {currentFormulaMeta.shortDesc}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black border border-[#EC4899]/30">
+                  <span className="text-2xs px-2 py-0.5 rounded-full bg-[#EC4899]/20 text-[#EC4899] font-black border border-[#EC4899]/30">
                     {currentFormulaMeta.toolRequirement}
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] text-[#A7A7A7] leading-relaxed">
+              <p className="text-caption text-[#A7A7A7] leading-relaxed">
                 {currentFormulaMeta.explanation}
               </p>
             </div>
@@ -507,33 +507,33 @@ export function BodyCompositionModal({
                 Comparatif instantané des méthodes sur tes mensurations
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-                <div className="p-2 rounded-xl bg-[#181818] border border-white/5">
-                  <span className="text-[10px] text-[#A7A7A7] block">US Navy (91%)</span>
-                  <span className="font-black text-sm text-[#EC4899]">
+                <div className="p-2 rounded-control bg-[#181818] border border-white/5 flex flex-col h-full">
+                  <span className="text-2xs text-[#A7A7A7] block line-clamp-2 min-h-[2.6em]">US Navy (91%)</span>
+                  <span className="block font-black text-sm whitespace-nowrap text-[#EC4899]">
                     {results.formulaBreakdown.usNavyFatPercent}%
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">Mensurations</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-auto pt-0.5 line-clamp-1">Mensurations</span>
                 </div>
-                <div className="p-2 rounded-xl bg-[#181818] border border-white/5">
-                  <span className="text-[10px] text-[#A7A7A7] block">Deurenberg (82%)</span>
-                  <span className="font-black text-sm text-[#00C6FF]">
+                <div className="p-2 rounded-control bg-[#181818] border border-white/5 flex flex-col h-full">
+                  <span className="text-2xs text-[#A7A7A7] block line-clamp-2 min-h-[2.6em]">Deurenberg (82%)</span>
+                  <span className="block font-black text-sm whitespace-nowrap text-[#00C6FF]">
                     {results.formulaBreakdown.deurenbergFatPercent}%
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">IMC & Âge</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-auto pt-0.5 line-clamp-1">IMC & Âge</span>
                 </div>
-                <div className="p-2 rounded-xl bg-[#181818] border border-white/5">
-                  <span className="text-[10px] text-[#A7A7A7] block">Masse Sèche Boer (87%)</span>
-                  <span className="font-black text-sm text-[#10B981]">
+                <div className="p-2 rounded-control bg-[#181818] border border-white/5 flex flex-col h-full">
+                  <span className="text-2xs text-[#A7A7A7] block line-clamp-2 min-h-[2.6em]">Masse Sèche Boer (87%)</span>
+                  <span className="block font-black text-sm whitespace-nowrap text-[#10B981]">
                     {results.formulaBreakdown.boerLeanMassKg} kg
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">LBM direct</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-auto pt-0.5 line-clamp-1">LBM direct</span>
                 </div>
-                <div className="p-2 rounded-xl bg-[#181818] border border-white/5">
-                  <span className="text-[10px] text-[#A7A7A7] block">Masse Sèche James</span>
-                  <span className="font-black text-sm text-[#F59E0B]">
+                <div className="p-2 rounded-control bg-[#181818] border border-white/5 flex flex-col h-full">
+                  <span className="text-2xs text-[#A7A7A7] block line-clamp-2 min-h-[2.6em]">Masse Sèche James</span>
+                  <span className="block font-black text-sm whitespace-nowrap text-[#F59E0B]">
                     {results.formulaBreakdown.jamesLeanMassKg} kg
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block mt-0.5">Stature/Poids</span>
+                  <span className="text-3xs text-[#A7A7A7] block mt-auto pt-0.5 line-clamp-1">Stature/Poids</span>
                 </div>
               </div>
             </div>
@@ -548,7 +548,7 @@ export function BodyCompositionModal({
                 <Scale className="w-4 h-4 text-[#00C6FF]" />
                 Panel de Mesures : {currentFormulaMeta.name}
               </span>
-              <p className="text-[11px] text-[#A7A7A7]">
+              <p className="text-caption text-[#A7A7A7]">
                 {selectedFormula === 'deurenberg' && 'Champs nécessaires : Sexe, Âge, Poids et Taille.'}
                 {selectedFormula === 'boer_derived' && 'Champs nécessaires : Sexe, Poids et Taille.'}
                 {selectedFormula === 'us_navy' && `Champs nécessaires : Poids, Taille, Tour de taille et Tour de cou${gender === 'femme' ? ', Hanches' : ''}.`}
@@ -558,7 +558,7 @@ export function BodyCompositionModal({
             <button
               type="button"
               onClick={handleReset}
-              className="text-[11px] font-bold text-[#A7A7A7] hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded-lg bg-white/5"
+              className="text-caption font-bold text-[#A7A7A7] hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded-lg bg-white/5"
             >
               <RotateCcw className="w-3 h-3" />
               Réinitialiser
@@ -570,7 +570,7 @@ export function BodyCompositionModal({
             {/* Sexe biologique */}
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+                <label className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
                   Sexe biologique
                   <span className="text-[#EC4899] font-black">*Requis</span>
                 </label>
@@ -606,15 +606,15 @@ export function BodyCompositionModal({
             {/* Âge (crucial pour Deurenberg, synthèse & hydratation) */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-[10px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+                <label className="text-2xs font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
                   Âge
                   {selectedFormula === 'deurenberg' ? (
                     <span className="text-[#EC4899] font-black">*Clé Deurenberg</span>
                   ) : (
-                    <span className="text-[#A7A7A7] text-[9px]">(Métabolisme)</span>
+                    <span className="text-[#A7A7A7] text-3xs">(Métabolisme)</span>
                   )}
                 </label>
-                <span className="text-xs font-black text-white font-mono">{age} ans</span>
+                <span className="text-xs font-black text-white font-mono num">{age} ans</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -649,12 +649,12 @@ export function BodyCompositionModal({
             {/* Poids avec pavé de défilement fluide SANS colonne native */}
             <div className="p-3.5 rounded-xl bg-[#181818] border border-white/5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+                <span className="text-caption font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
                   Poids Corporel
                   <span className="text-[#EC4899] font-black">*Requis</span>
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-white font-mono">{weightKg}</span>
+                  <span className="text-2xl font-black text-white font-mono num">{weightKg}</span>
                   <span className="text-xs font-bold text-[#EC4899]">KG</span>
                 </div>
               </div>
@@ -662,12 +662,12 @@ export function BodyCompositionModal({
               {/* Pavé de défilement fluide sans ascenseur vertical encombrant */}
               <input
                 type="range"
-                min="40"
-                max="150"
+                min={LIMITS.bodyWeightKg[0]}
+                max={LIMITS.bodyWeightKg[1]}
                 step="0.5"
                 value={weightKg}
                 onChange={(e) => setWeightKg(parseFloat(e.target.value))}
-                style={getSliderTrack(weightKg, 40, 150, '#EC4899')}
+                style={getSliderTrack(weightKg, LIMITS.bodyWeightKg[0], LIMITS.bodyWeightKg[1], '#EC4899')}
                 className="w-full accent-[#EC4899] h-2 rounded-lg cursor-pointer appearance-none transition-all shadow-inner"
               />
 
@@ -678,8 +678,8 @@ export function BodyCompositionModal({
                     <button
                       key={d}
                       type="button"
-                      onClick={() => setWeightKg((prev) => Math.max(35, Math.round((prev + d) * 10) / 10))}
-                      className="px-2 py-0.5 rounded-md bg-[#242424] text-[10px] font-bold text-[#A7A7A7] hover:text-white"
+                      onClick={() => setWeightKg((prev) => Math.max(LIMITS.bodyWeightKg[0], Math.round((prev + d) * 10) / 10))}
+                      className="px-2 py-0.5 rounded-md bg-[#242424] text-2xs font-bold text-[#A7A7A7] hover:text-white"
                     >
                       {d} kg
                     </button>
@@ -690,8 +690,8 @@ export function BodyCompositionModal({
                     <button
                       key={d}
                       type="button"
-                      onClick={() => setWeightKg((prev) => Math.round((prev + d) * 10) / 10)}
-                      className="px-2 py-0.5 rounded-md bg-[#242424] text-[10px] font-bold text-[#A7A7A7] hover:text-white"
+                      onClick={() => setWeightKg((prev) => Math.min(LIMITS.bodyWeightKg[1], Math.round((prev + d) * 10) / 10))}
+                      className="px-2 py-0.5 rounded-md bg-[#242424] text-2xs font-bold text-[#A7A7A7] hover:text-white"
                     >
                       +{d} kg
                     </button>
@@ -703,12 +703,12 @@ export function BodyCompositionModal({
             {/* Taille */}
             <div className="p-3.5 rounded-xl bg-[#181818] border border-white/5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
+                <span className="text-caption font-bold text-[#A7A7A7] uppercase flex items-center gap-1">
                   Taille
                   <span className="text-[#00C6FF] font-black">*Requis</span>
                 </span>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-white font-mono">{heightCm}</span>
+                  <span className="text-2xl font-black text-white font-mono num">{heightCm}</span>
                   <span className="text-xs font-bold text-[#00C6FF]">CM</span>
                 </div>
               </div>
@@ -724,7 +724,7 @@ export function BodyCompositionModal({
                 className="w-full accent-[#00C6FF] h-2 rounded-lg cursor-pointer appearance-none transition-all shadow-inner"
               />
 
-              <div className="flex items-center justify-between pt-1 text-[10px] text-[#A7A7A7]">
+              <div className="flex items-center justify-between pt-1 text-2xs text-[#A7A7A7]">
                 <span>130 cm</span>
                 <span className="font-semibold text-white">IMC : {results.bmi} ({results.bmiCategory})</span>
                 <span>220 cm</span>
@@ -744,7 +744,7 @@ export function BodyCompositionModal({
                   <h4 className="text-xs font-black text-white uppercase">
                     Aucun mètre ruban nécessaire pour Deurenberg
                   </h4>
-                  <p className="text-[11px] text-[#A7A7A7] leading-relaxed">
+                  <p className="text-caption text-[#A7A7A7] leading-relaxed">
                     La formule de Deurenberg utilise exclusivement ton <span className="text-white font-semibold">Poids ({weightKg} kg)</span>, ta <span className="text-white font-semibold">Taille ({heightCm} cm)</span>, ton <span className="text-white font-semibold">Âge ({age} ans)</span> et ton <span className="text-white font-semibold">Sexe ({gender})</span>. Les mesures de cou et taille ne sont pas utilisées.
                   </p>
                 </div>
@@ -770,7 +770,7 @@ export function BodyCompositionModal({
                   <h4 className="text-xs font-black text-white uppercase">
                     Modèle clinique direct (Poids & Taille uniquement)
                   </h4>
-                  <p className="text-[11px] text-[#A7A7A7] leading-relaxed">
+                  <p className="text-caption text-[#A7A7A7] leading-relaxed">
                     Les équations médicales de Boer et de James évaluent directement la masse maigre (LBM) par rapport à la taille et au poids. Aucune circonférence de cou ou de taille n&apos;est requise.
                   </p>
                 </div>
@@ -788,11 +788,11 @@ export function BodyCompositionModal({
             /* Cas US Navy & Synthèse : Circonférences au mètre ruban requises et interactives */
             <div className="space-y-3 pt-1 animate-in fade-in duration-200">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-black text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
+                <span className="text-caption font-black text-[#A7A7A7] uppercase tracking-wider flex items-center gap-1.5">
                   <HeartPulse className="w-3.5 h-3.5 text-[#EC4899]" />
                   Mensurations requises (Mètre ruban au repos)
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EC4899]/15 text-[#EC4899] font-bold">
+                <span className="text-2xs px-2 py-0.5 rounded-full bg-[#EC4899]/15 text-[#EC4899] font-bold">
                   Actif pour {currentFormulaMeta.name}
                 </span>
               </div>
@@ -804,7 +804,7 @@ export function BodyCompositionModal({
                     <span className="font-bold text-[#D1D5DB]">
                       Tour de taille (au nombril) <span className="text-[#EC4899]">*Requis</span>
                     </span>
-                    <span className="font-black text-white font-mono">{waistCm} cm</span>
+                    <span className="font-black text-white font-mono num">{waistCm} cm</span>
                   </div>
                   <input
                     type="range"
@@ -824,7 +824,7 @@ export function BodyCompositionModal({
                     <span className="font-bold text-[#D1D5DB]">
                       Tour de cou (sous la pomme d&apos;Adam) <span className="text-[#00C6FF]">*Requis</span>
                     </span>
-                    <span className="font-black text-white font-mono">{neckCm} cm</span>
+                    <span className="font-black text-white font-mono num">{neckCm} cm</span>
                   </div>
                   <input
                     type="range"
@@ -845,7 +845,7 @@ export function BodyCompositionModal({
                       <span className="font-bold text-[#D1D5DB]">
                         Tour de hanches (partie la plus large) <span className="text-[#DD2476]">*Requis</span>
                       </span>
-                      <span className="font-black text-white font-mono">{hipCm} cm</span>
+                      <span className="font-black text-white font-mono num">{hipCm} cm</span>
                     </div>
                     <input
                       type="range"
@@ -864,7 +864,7 @@ export function BodyCompositionModal({
                 <div className="p-3 rounded-xl bg-[#181818] border border-white/5 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-bold text-[#D1D5DB]">Tour de poignet (Ossature)</span>
-                    <span className="font-black text-[#F59E0B] font-mono">{wristCm} cm</span>
+                    <span className="font-black text-[#F59E0B] font-mono num">{wristCm} cm</span>
                   </div>
                   <input
                     type="range"
@@ -920,7 +920,7 @@ export function BodyCompositionModal({
             </div>
 
             {/* Légende de la barre */}
-            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#A7A7A7] px-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-[#A7A7A7] px-1">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#EC4899]" />
                 <span>Masse Grasse ({results.fatPercent}%)</span>
@@ -948,32 +948,32 @@ export function BodyCompositionModal({
                 <span className="text-xs font-black uppercase text-white tracking-wide">
                   Masse Sèche Totale (Maigre) :
                 </span>
-                <span className="text-sm font-black text-[#00C6FF] font-mono">
+                <span className="text-sm font-black text-[#00C6FF] font-mono num">
                   {results.leanMassKg} kg ({results.leanMassPercent}%)
                 </span>
               </div>
-              <span className="text-[10px] text-[#A7A7A7] bg-white/5 px-2 py-0.5 rounded-full border border-white/5 self-start sm:self-auto">
+              <span className="text-2xs text-[#A7A7A7] bg-white/5 px-2 py-0.5 rounded-full border border-white/5 self-start sm:self-auto">
                 Tout ce qui n'est pas graisse
               </span>
             </div>
-            <p className="text-[11px] text-[#A7A7A7] leading-relaxed">
+            <p className="text-caption text-[#A7A7A7] leading-relaxed">
               Décomposée en 3 piliers : <span className="text-[#00C6FF] font-bold">Masse Musculaire ({results.muscleMassKg} kg)</span> + <span className="text-[#F59E0B] font-bold">Masse Osseuse ({results.boneMassKg} kg)</span> + <span className="text-[#3B82F6] font-bold">Organes & Fluides vitaux ({results.organMassKg} kg)</span>.
             </p>
           </div>
 
           {/* 4 Cartes distinctes : Masse Grasse, Masse Musculaire, Masse Osseuse, Masse des Organes (Image 2) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-stretch">
             {/* 1. MASSE GRASSE */}
-            <div className="p-4 rounded-2xl bg-gradient-to-b from-[#1C1318] to-[#121212] border border-[#EC4899]/30 space-y-2.5 relative overflow-hidden flex flex-col justify-between">
+            <div className="p-4 rounded-card bg-gradient-to-b from-[#1C1318] to-[#121212] border border-[#EC4899]/30 relative overflow-hidden flex flex-col h-full gap-2.5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#EC4899] flex items-center gap-1">
-                    <Flame className="w-3.5 h-3.5" />
-                    Masse Grasse
+                  <span className="min-w-0 text-2xs font-black uppercase tracking-wider text-[#EC4899] flex items-center gap-1">
+                    <Flame className="w-3.5 h-3.5 shrink-0" />
+                    <span className="line-clamp-1">Masse Grasse</span>
                   </span>
-                  <div className="flex items-center">
+                  <div className="flex items-center shrink-0">
                     <span 
-                      className="text-[10px] px-2 py-0.5 rounded-full font-black uppercase text-white"
+                      className="text-2xs px-2 py-0.5 rounded-full font-black uppercase text-white"
                       style={{ backgroundColor: results.fatCategoryColor }}
                     >
                       {results.fatCategory}
@@ -990,18 +990,18 @@ export function BodyCompositionModal({
                 </div>
 
                 <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-white font-mono">{results.fatPercent}%</span>
+                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span className="text-3xl font-black text-white font-mono num">{results.fatPercent}%</span>
                     <span className="text-xs font-bold text-[#EC4899]">({results.fatKg} kg)</span>
                   </div>
-                  <p className="text-[10.5px] text-[#A7A7A7] leading-tight">
+                  <p className="text-caption text-[#A7A7A7] leading-tight line-clamp-2 min-h-[2.5em]">
                     Tissu adipeux sous-cutané et viscéral.
                   </p>
                 </div>
               </div>
 
               {/* Jauge graduée avec curseur lumineux style Image 5 (Image 4 & 5) */}
-              <div className="space-y-1.5 pt-1 border-t border-white/5">
+              <div className="mt-auto space-y-1.5 pt-1 border-t border-white/5">
                 <GraduatedGauge
                   currentVal={results.fatPercent}
                   minVal={gender === 'homme' ? 6 : 12}
@@ -1015,7 +1015,7 @@ export function BodyCompositionModal({
                     : [{ value: 16 }, { value: 24 }, { value: 31 }, { value: 38 }]
                   }
                 />
-                <div className="text-[10px] text-[#A7A7A7] flex justify-between pt-0.5">
+                <div className="text-2xs text-[#A7A7A7] flex justify-between pt-0.5">
                   <span>Norme {gender} :</span>
                   <span className="font-semibold text-white">
                     {gender === 'homme' ? '12 - 20%' : '18 - 28%'}
@@ -1025,15 +1025,15 @@ export function BodyCompositionModal({
             </div>
 
             {/* 2. MASSE MUSCULAIRE (Squelettique contractile SMM) */}
-            <div className="p-4 rounded-2xl bg-gradient-to-b from-[#101824] to-[#121212] border border-[#00C6FF]/30 space-y-2.5 relative overflow-hidden flex flex-col justify-between">
+            <div className="p-4 rounded-card bg-gradient-to-b from-[#101824] to-[#121212] border border-[#00C6FF]/30 relative overflow-hidden flex flex-col h-full gap-2.5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#00C6FF] flex items-center gap-1">
-                    <Dumbbell className="w-3.5 h-3.5" />
-                    Masse Musculaire
+                  <span className="min-w-0 text-2xs font-black uppercase tracking-wider text-[#00C6FF] flex items-center gap-1">
+                    <Dumbbell className="w-3.5 h-3.5 shrink-0" />
+                    <span className="line-clamp-1">Masse Musculaire</span>
                   </span>
-                  <div className="flex items-center">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-black uppercase bg-[#00C6FF]/20 text-[#00C6FF] border border-[#00C6FF]/30">
+                  <div className="flex items-center shrink-0">
+                    <span className="text-2xs px-2 py-0.5 rounded-full font-black uppercase bg-[#00C6FF]/20 text-[#00C6FF] border border-[#00C6FF]/30">
                       {results.muscleCategory}
                     </span>
                     <button
@@ -1048,19 +1048,19 @@ export function BodyCompositionModal({
                 </div>
 
                 <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-white font-mono">{results.muscleMassKg}</span>
+                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span className="text-3xl font-black text-white font-mono num">{results.muscleMassKg}</span>
                     <span className="text-xs font-bold text-[#00C6FF]">KG</span>
-                    <span className="text-[11px] text-[#A7A7A7]">({results.muscleMassPercent}%)</span>
+                    <span className="text-caption text-[#A7A7A7]">({results.muscleMassPercent}%)</span>
                   </div>
-                  <p className="text-[10.5px] text-[#A7A7A7] leading-tight">
+                  <p className="text-caption text-[#A7A7A7] leading-tight line-clamp-2 min-h-[2.5em]">
                     Muscles striés squelettiques actifs (SMM).
                   </p>
                 </div>
               </div>
 
               {/* Jauge graduée avec curseur lumineux style Image 5 (Image 4 & 5) */}
-              <div className="space-y-1.5 pt-1 border-t border-white/5">
+              <div className="mt-auto space-y-1.5 pt-1 border-t border-white/5">
                 <GraduatedGauge
                   currentVal={results.muscleMassPercent}
                   minVal={gender === 'homme' ? 35 : 28}
@@ -1074,7 +1074,7 @@ export function BodyCompositionModal({
                     : [{ value: 35 }, { value: 42 }, { value: 48 }]
                   }
                 />
-                <div className="text-[10px] text-[#A7A7A7] flex justify-between pt-0.5">
+                <div className="text-2xs text-[#A7A7A7] flex justify-between pt-0.5">
                   <span>Norme {gender} :</span>
                   <span className="font-semibold text-white">
                     {gender === 'homme' ? '45 - 56%' : '35 - 46%'}
@@ -1084,15 +1084,15 @@ export function BodyCompositionModal({
             </div>
 
             {/* 3. MASSE OSSEUSE */}
-            <div className="p-4 rounded-2xl bg-gradient-to-b from-[#1C1810] to-[#121212] border border-[#F59E0B]/30 space-y-2.5 relative overflow-hidden flex flex-col justify-between">
+            <div className="p-4 rounded-card bg-gradient-to-b from-[#1C1810] to-[#121212] border border-[#F59E0B]/30 relative overflow-hidden flex flex-col h-full gap-2.5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#F59E0B] flex items-center gap-1">
-                    <Scale className="w-3.5 h-3.5" />
-                    Masse Osseuse
+                  <span className="min-w-0 text-2xs font-black uppercase tracking-wider text-[#F59E0B] flex items-center gap-1">
+                    <Scale className="w-3.5 h-3.5 shrink-0" />
+                    <span className="line-clamp-1">Masse Osseuse</span>
                   </span>
-                  <div className="flex items-center">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-black uppercase bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/30">
+                  <div className="flex items-center shrink-0">
+                    <span className="text-2xs px-2 py-0.5 rounded-full font-black uppercase bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/30">
                       {results.boneMassCategory}
                     </span>
                     <button
@@ -1107,19 +1107,19 @@ export function BodyCompositionModal({
                 </div>
 
                 <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-white font-mono">{results.boneMassKg}</span>
+                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span className="text-3xl font-black text-white font-mono num">{results.boneMassKg}</span>
                     <span className="text-xs font-bold text-[#F59E0B]">KG</span>
-                    <span className="text-[11px] text-[#A7A7A7]">({results.boneMassPercent}%)</span>
+                    <span className="text-caption text-[#A7A7A7]">({results.boneMassPercent}%)</span>
                   </div>
-                  <p className="text-[10.5px] text-[#A7A7A7] leading-tight">
+                  <p className="text-caption text-[#A7A7A7] leading-tight line-clamp-2 min-h-[2.5em]">
                     Minéraux du squelette sec (Martin/BMC).
                   </p>
                 </div>
               </div>
 
               {/* Jauge graduée avec curseur lumineux style Image 5 (Image 4 & 5) */}
-              <div className="space-y-1.5 pt-1 border-t border-white/5">
+              <div className="mt-auto space-y-1.5 pt-1 border-t border-white/5">
                 <GraduatedGauge
                   currentVal={results.boneMassKg}
                   minVal={gender === 'homme' ? 2.0 : 1.5}
@@ -1133,7 +1133,7 @@ export function BodyCompositionModal({
                     : [{ value: 2.2 }, { value: 3.1 }]
                   }
                 />
-                <div className="text-[10px] text-[#A7A7A7] flex justify-between pt-0.5">
+                <div className="text-2xs text-[#A7A7A7] flex justify-between pt-0.5">
                   <span>Norme {gender} :</span>
                   <span className="font-semibold text-white">
                     {gender === 'homme' ? '3.0 - 4.2 kg' : '2.2 - 3.4 kg'}
@@ -1143,15 +1143,15 @@ export function BodyCompositionModal({
             </div>
 
             {/* 4. MASSE DES ORGANES & FLUIDES VITAUX */}
-            <div className="p-4 rounded-2xl bg-gradient-to-b from-[#101420] to-[#121212] border border-[#3B82F6]/30 space-y-2.5 relative overflow-hidden flex flex-col justify-between">
+            <div className="p-4 rounded-card bg-gradient-to-b from-[#101420] to-[#121212] border border-[#3B82F6]/30 relative overflow-hidden flex flex-col h-full gap-2.5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#3B82F6] flex items-center gap-1">
-                    <HeartPulse className="w-3.5 h-3.5" />
-                    Masse des Organes
+                  <span className="min-w-0 text-2xs font-black uppercase tracking-wider text-[#3B82F6] flex items-center gap-1">
+                    <HeartPulse className="w-3.5 h-3.5 shrink-0" />
+                    <span className="line-clamp-1">Masse des Organes</span>
                   </span>
-                  <div className="flex items-center">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-black uppercase bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/30">
+                  <div className="flex items-center shrink-0">
+                    <span className="text-2xs px-2 py-0.5 rounded-full font-black uppercase bg-[#3B82F6]/20 text-[#3B82F6] border border-[#3B82F6]/30">
                       Vitale
                     </span>
                     <button
@@ -1166,19 +1166,19 @@ export function BodyCompositionModal({
                 </div>
 
                 <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black text-white font-mono">{results.organMassKg}</span>
+                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span className="text-3xl font-black text-white font-mono num">{results.organMassKg}</span>
                     <span className="text-xs font-bold text-[#3B82F6]">KG</span>
-                    <span className="text-[11px] text-[#A7A7A7]">({results.organMassPercent}%)</span>
+                    <span className="text-caption text-[#A7A7A7]">({results.organMassPercent}%)</span>
                   </div>
-                  <p className="text-[10.5px] text-[#A7A7A7] leading-tight">
+                  <p className="text-caption text-[#A7A7A7] leading-tight line-clamp-2 min-h-[2.5em]">
                     Viscères vitaux, cœur, cerveau, sang & lymphe.
                   </p>
                 </div>
               </div>
 
               {/* Jauge graduée avec curseur lumineux style Image 5 (Image 4 & 5) */}
-              <div className="space-y-1.5 pt-1 border-t border-white/5">
+              <div className="mt-auto space-y-1.5 pt-1 border-t border-white/5">
                 <GraduatedGauge
                   currentVal={results.organMassPercent}
                   minVal={12}
@@ -1189,7 +1189,7 @@ export function BodyCompositionModal({
                   isLight={isLight}
                   ticks={[{ value: 18 }, { value: 23 }, { value: 28 }]}
                 />
-                <div className="text-[10px] text-[#A7A7A7] flex justify-between pt-0.5">
+                <div className="text-2xs text-[#A7A7A7] flex justify-between pt-0.5">
                   <span>Dépense au repos :</span>
                   <span className="font-semibold text-white">~60 - 70% BMR</span>
                 </div>
@@ -1205,12 +1205,12 @@ export function BodyCompositionModal({
               </div>
               <div>
                 <span className="font-bold text-white block">Eau corporelle totale (Watson)</span>
-                <span className="text-[11px] text-[#A7A7A7]">Hydratation essentielle des tissus</span>
+                <span className="text-caption text-[#A7A7A7]">Hydratation essentielle des tissus</span>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-base font-black text-white font-mono">{results.waterLiters} L</span>
-              <span className="text-[10px] text-[#A7A7A7] block">~{results.waterPercent}% du poids total</span>
+              <span className="text-base font-black text-white font-mono num">{results.waterLiters} L</span>
+              <span className="text-2xs text-[#A7A7A7] block">~{results.waterPercent}% du poids total</span>
             </div>
           </div>
         </div>
@@ -1220,7 +1220,7 @@ export function BodyCompositionModal({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30 text-2xs font-black uppercase">
                   COACHING STRATÉGIQUE
                 </span>
                 <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5">
@@ -1228,7 +1228,7 @@ export function BodyCompositionModal({
                   Objectif Corporel : Sèche ou Prise de Masse ?
                 </h3>
               </div>
-              <p className="text-[11px] text-[#A7A7A7] mt-0.5">
+              <p className="text-caption text-[#A7A7A7] mt-0.5">
                 Laisse l&apos;application te guider avec son analyse ou définis ton propre cap.
               </p>
             </div>
@@ -1274,7 +1274,7 @@ export function BodyCompositionModal({
               <div className="p-4 rounded-2xl bg-gradient-to-b from-[#1C1824] to-[#121212] border border-[#7C3AED]/40 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
+                    <span className={`px-2.5 py-1 rounded-full text-caption font-black uppercase tracking-wider ${
                       recommendation.type === 'seche'
                         ? 'bg-[#FF512F]/20 text-[#FF512F] border border-[#FF512F]/30'
                         : recommendation.type === 'prise_de_masse'
@@ -1283,12 +1283,12 @@ export function BodyCompositionModal({
                     }`}>
                       {recommendation.title}
                     </span>
-                    <span className="text-[10px] text-[#A7A7A7] font-semibold">
+                    <span className="text-2xs text-[#A7A7A7] font-semibold">
                       Calculé d&apos;après ton {results.fatPercent}% de MG
                     </span>
                   </div>
 
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white font-bold flex items-center gap-1">
+                  <span className="text-2xs px-2 py-0.5 rounded-full bg-white/10 text-white font-bold flex items-center gap-1">
                     <Zap className="w-3 h-3 text-[#F59E0B]" />
                     Durée conseillée : {recommendation.estimatedDurationWeeks}
                   </span>
@@ -1306,11 +1306,11 @@ export function BodyCompositionModal({
                 {/* Chiffres clés de la recommandation */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-white/5">
                   <div className="p-2.5 rounded-xl bg-[#0D0D0D] border border-white/5 text-center">
-                    <span className="text-[10px] text-[#A7A7A7] uppercase block">Poids cible</span>
-                    <span className="text-lg font-black text-white font-mono">
+                    <span className="text-2xs text-[#A7A7A7] uppercase block">Poids cible</span>
+                    <span className="text-lg font-black text-white font-mono num">
                       {recommendation.targetWeightKg} kg
                     </span>
-                    <span className={`text-[10px] font-bold block ${
+                    <span className={`text-2xs font-bold block ${
                       recommendation.fatDeltaKg < 0 ? 'text-[#10B981]' : 'text-[#00C6FF]'
                     }`}>
                       {recommendation.fatDeltaKg > 0 ? `+${recommendation.fatDeltaKg}` : recommendation.fatDeltaKg} kg
@@ -1318,31 +1318,31 @@ export function BodyCompositionModal({
                   </div>
 
                   <div className="p-2.5 rounded-xl bg-[#0D0D0D] border border-white/5 text-center">
-                    <span className="text-[10px] text-[#A7A7A7] uppercase block">Taux MG visé</span>
-                    <span className="text-lg font-black text-[#EC4899] font-mono">
+                    <span className="text-2xs text-[#A7A7A7] uppercase block">Taux MG visé</span>
+                    <span className="text-lg font-black text-[#EC4899] font-mono num">
                       {recommendation.targetFatPercent}%
                     </span>
-                    <span className="text-[10px] text-[#A7A7A7] block">
+                    <span className="text-2xs text-[#A7A7A7] block">
                       vs {results.fatPercent}% actuel
                     </span>
                   </div>
 
                   <div className="p-2.5 rounded-xl bg-[#0D0D0D] border border-white/5 text-center">
-                    <span className="text-[10px] text-[#A7A7A7] uppercase block">Ajustement calorique</span>
+                    <span className="text-2xs text-[#A7A7A7] uppercase block">Ajustement calorique</span>
                     <span className="text-xs font-black text-[#F59E0B] block mt-1">
                       {recommendation.dailyCalorieDelta}
                     </span>
-                    <span className="text-[10px] text-[#A7A7A7] block">
+                    <span className="text-2xs text-[#A7A7A7] block">
                       Métabolisme stable
                     </span>
                   </div>
 
                   <div className="p-2.5 rounded-xl bg-[#0D0D0D] border border-white/5 text-center">
-                    <span className="text-[10px] text-[#A7A7A7] uppercase block">Protéines cibles</span>
-                    <span className="text-lg font-black text-[#00C6FF] font-mono">
+                    <span className="text-2xs text-[#A7A7A7] uppercase block">Protéines cibles</span>
+                    <span className="text-lg font-black text-[#00C6FF] font-mono num">
                       ~{recommendation.proteinTargetGrams} g/j
                     </span>
-                    <span className="text-[10px] text-[#A7A7A7] block">
+                    <span className="text-2xs text-[#A7A7A7] block">
                       ~2.0 g / kg
                     </span>
                   </div>
@@ -1350,7 +1350,7 @@ export function BodyCompositionModal({
 
                 {/* Choix utilisateur : Adopter la recommandation */}
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="text-[11px] text-[#A7A7A7] flex items-center gap-1.5">
+                  <div className="text-caption text-[#A7A7A7] flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-[#10B981]" />
                     {selectedGoalChoice === 'recommendation' ? (
                       <span className="text-[#10B981] font-bold">
@@ -1381,7 +1381,7 @@ export function BodyCompositionModal({
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* Choix du type d'objectif : Sèche vs Prise de Masse vs Recomposition */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-black text-[#A7A7A7] uppercase tracking-wider block">
+                <label className="text-caption font-black text-[#A7A7A7] uppercase tracking-wider block">
                   Quel est ton objectif prioritaire ?
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1407,7 +1407,7 @@ export function BodyCompositionModal({
                         customGoalType === 'seche' ? 'text-[#FF512F]' : 'text-[#A7A7A7]'
                       }`} />
                     </div>
-                    <p className="text-[10px] text-[#A7A7A7] mt-1">
+                    <p className="text-2xs text-[#A7A7A7] mt-1">
                       Dessiner les abdos et éliminer le gras sous-cutané.
                     </p>
                   </button>
@@ -1434,7 +1434,7 @@ export function BodyCompositionModal({
                         customGoalType === 'prise_de_masse' ? 'text-[#10B981]' : 'text-[#A7A7A7]'
                       }`} />
                     </div>
-                    <p className="text-[10px] text-[#A7A7A7] mt-1">
+                    <p className="text-2xs text-[#A7A7A7] mt-1">
                       Prendre du volume musculaire et de la force.
                     </p>
                   </button>
@@ -1461,7 +1461,7 @@ export function BodyCompositionModal({
                         customGoalType === 'recomposition' ? 'text-[#00C6FF]' : 'text-[#A7A7A7]'
                       }`} />
                     </div>
-                    <p className="text-[10px] text-[#A7A7A7] mt-1">
+                    <p className="text-2xs text-[#A7A7A7] mt-1">
                       Maintien du poids avec gain de tonicité.
                     </p>
                   </button>
@@ -1471,11 +1471,11 @@ export function BodyCompositionModal({
               {/* Slider Poids Cible Choisi */}
               <div className="p-3.5 rounded-xl bg-[#121212] border border-white/5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#A7A7A7] uppercase">
+                  <span className="text-caption font-bold text-[#A7A7A7] uppercase">
                     Ton Poids Cible Visé
                   </span>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-black text-white font-mono">
+                    <span className="text-2xl font-black text-white font-mono num">
                       {customTargetWeight}
                     </span>
                     <span className="text-xs font-bold text-[#00C6FF]">KG</span>
@@ -1514,7 +1514,7 @@ export function BodyCompositionModal({
                         key={d}
                         type="button"
                         onClick={() => setCustomTargetWeight((prev) => Math.max(40, Math.round((prev + d) * 10) / 10))}
-                        className="px-2 py-0.5 rounded-md bg-[#202020] text-[10px] font-bold text-[#A7A7A7] hover:text-white"
+                        className="px-2 py-0.5 rounded-md bg-[#202020] text-2xs font-bold text-[#A7A7A7] hover:text-white"
                       >
                         {d} kg
                       </button>
@@ -1526,7 +1526,7 @@ export function BodyCompositionModal({
                         key={d}
                         type="button"
                         onClick={() => setCustomTargetWeight((prev) => Math.round((prev + d) * 10) / 10)}
-                        className="px-2 py-0.5 rounded-md bg-[#202020] text-[10px] font-bold text-[#A7A7A7] hover:text-white"
+                        className="px-2 py-0.5 rounded-md bg-[#202020] text-2xs font-bold text-[#A7A7A7] hover:text-white"
                       >
                         +{d} kg
                       </button>
@@ -1538,35 +1538,35 @@ export function BodyCompositionModal({
               {/* Rendu dynamique des métriques pour ce choix personnalisé */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-white/5 text-center">
-                  <span className="text-[10px] text-[#A7A7A7] uppercase block">Taux MG estimé</span>
-                  <span className="text-base font-black text-[#EC4899] font-mono">
+                  <span className="text-2xs text-[#A7A7A7] uppercase block">Taux MG estimé</span>
+                  <span className="text-base font-black text-[#EC4899] font-mono num">
                     ~{customGoalStats.estimatedTargetFatPercent}%
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block">à l&apos;atteinte du poids</span>
+                  <span className="text-3xs text-[#A7A7A7] block">à l&apos;atteinte du poids</span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-white/5 text-center">
-                  <span className="text-[10px] text-[#A7A7A7] uppercase block">Gras à éliminer</span>
-                  <span className="text-base font-black text-[#FF512F] font-mono">
+                  <span className="text-2xs text-[#A7A7A7] uppercase block">Gras à éliminer</span>
+                  <span className="text-base font-black text-[#FF512F] font-mono num">
                     {customGoalStats.fatDeltaKg > 0 ? `+${customGoalStats.fatDeltaKg}` : customGoalStats.fatDeltaKg} kg
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block">Tissu adipeux</span>
+                  <span className="text-3xs text-[#A7A7A7] block">Tissu adipeux</span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-white/5 text-center">
-                  <span className="text-[10px] text-[#A7A7A7] uppercase block">Gain musculaire</span>
-                  <span className="text-base font-black text-[#10B981] font-mono">
+                  <span className="text-2xs text-[#A7A7A7] uppercase block">Gain musculaire</span>
+                  <span className="text-base font-black text-[#10B981] font-mono num">
                     +{customGoalStats.muscleDeltaKg} kg
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block">Tissu contractile</span>
+                  <span className="text-3xs text-[#A7A7A7] block">Tissu contractile</span>
                 </div>
 
                 <div className="p-2.5 rounded-xl bg-[#121212] border border-white/5 text-center">
-                  <span className="text-[10px] text-[#A7A7A7] uppercase block">Plan calorique</span>
+                  <span className="text-2xs text-[#A7A7A7] uppercase block">Plan calorique</span>
                   <span className="text-xs font-black text-[#F59E0B] block mt-0.5">
                     {customGoalStats.calorieAdvice}
                   </span>
-                  <span className="text-[9px] text-[#A7A7A7] block">
+                  <span className="text-3xs text-[#A7A7A7] block">
                     ~{customGoalStats.proteinTargetGrams}g protéines
                   </span>
                 </div>
@@ -1574,7 +1574,7 @@ export function BodyCompositionModal({
 
               {/* Bouton d'adoption de l'objectif personnalisé */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-[11px] text-[#A7A7A7] flex items-center gap-1.5">
+                <div className="text-caption text-[#A7A7A7] flex items-center gap-1.5">
                   <Check className="w-3.5 h-3.5 text-[#00C6FF]" />
                   {selectedGoalChoice === 'custom' ? (
                     <span className="text-[#00C6FF] font-bold">
@@ -1609,7 +1609,7 @@ export function BodyCompositionModal({
             <h4 className="font-bold text-[#F59E0B]">
               Note scientifique & balance spécialisée
             </h4>
-            <p className="text-[11px] text-[#D1D5DB] leading-relaxed">
+            <p className="text-caption text-[#D1D5DB] leading-relaxed">
               Ces pourcentages sont calculés à partir de formules anthropométriques reconnues (US Navy 91%, Deurenberg 82%, Boer 87%). Bien qu&apos;extrêmement fiables pour suivre ta tendance de progression et adapter ta diète (sèche ou prise de masse), une <span className="text-white font-semibold">balance spécialisée à impédancemétrie médicale multi-fréquence</span> ou un <span className="text-white font-semibold">scanner DEXA</span> reste le gold standard absolu.
             </p>
           </div>
@@ -1632,7 +1632,7 @@ export function BodyCompositionModal({
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             {saveError && (
-              <p role="alert" className="flex-1 min-w-0 text-[11px] font-bold text-rose-400">{saveError}</p>
+              <p role="alert" className="flex-1 min-w-0 text-caption font-bold text-rose-400">{saveError}</p>
             )}
             <button
               type="button"
@@ -1682,7 +1682,7 @@ export function BodyCompositionModal({
             <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-full bg-[#EC4899]/15 text-[#EC4899] border border-[#EC4899]/30 text-[10px] font-black uppercase">
+                  <span className="px-2 py-0.5 rounded-full bg-[#EC4899]/15 text-[#EC4899] border border-[#EC4899]/30 text-2xs font-black uppercase">
                     RÉFÉRENCE ANTHROPOMÉTRIQUE
                   </span>
                   <span className="text-xs text-[#A7A7A7]">Norme Internationale</span>
@@ -1706,7 +1706,7 @@ export function BodyCompositionModal({
             </div>
 
             {/* Onglets rapides pour switcher entre les 4 compartiments */}
-            <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#1A1A1A] rounded-xl border border-white/5 text-[11px] font-bold">
+            <div className="grid grid-cols-4 gap-1.5 p-1 bg-[#1A1A1A] rounded-xl border border-white/5 text-caption font-bold">
               <button
                 type="button"
                 onClick={() => setActiveLadderCompartment('fat')}
@@ -1757,14 +1757,14 @@ export function BodyCompositionModal({
             <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
               <span className="text-xs text-[#A7A7A7]">Ta mesure actuelle ({gender}) :</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-white font-mono">
+                <span className="text-sm font-black text-white font-mono num">
                   {activeLadderCompartment === 'fat' && `${results.fatPercent}% (${results.fatKg} kg)`}
                   {activeLadderCompartment === 'muscle' && `${results.muscleMassKg} kg (${results.muscleMassPercent}%)`}
                   {activeLadderCompartment === 'bone' && `${results.boneMassKg} kg (${results.boneMassPercent}%)`}
                   {activeLadderCompartment === 'organ' && `${results.organMassKg} kg (${results.organMassPercent}%)`}
                 </span>
                 <span 
-                  className="text-[10px] px-2 py-0.5 rounded-full font-black uppercase text-white shadow-sm"
+                  className="text-2xs px-2 py-0.5 rounded-full font-black uppercase text-white shadow-sm"
                   style={{ 
                     backgroundColor: activeLadderCompartment === 'fat' 
                       ? results.fatCategoryColor 
@@ -1848,7 +1848,7 @@ export function BodyCompositionModal({
                           <span className="text-xs font-black uppercase text-white block">
                             {tier.name}
                           </span>
-                          <span className="text-[10px] text-[#A7A7A7]">
+                          <span className="text-2xs text-[#A7A7A7]">
                             {tier.rangeLabel}
                           </span>
                         </div>
@@ -1856,28 +1856,28 @@ export function BodyCompositionModal({
 
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-mono font-bold text-white bg-black/40 px-2 py-0.5 rounded-md border border-white/10">
+                          <span className="text-xs font-mono num font-bold text-white bg-black/40 px-2 py-0.5 rounded-md border border-white/10">
                             {minLimit} - {maxLimit} {COMPARTMENT_LADDERS[activeLadderCompartment].unit === '% du poids corporel' ? '%' : 'kg'}
                           </span>
                           {isCurrent && (
-                            <span className="px-2 py-0.5 rounded-full bg-[#00C6FF] text-black font-black text-[9px] uppercase tracking-wider shadow-sm">
+                            <span className="px-2 py-0.5 rounded-full bg-[#00C6FF] text-black font-black text-3xs uppercase tracking-wider shadow-sm">
                               Tu es ici
                             </span>
                           )}
                         </div>
                         {/* Objectifs de poids à viser en dessous des pourcentages (Images 4, 5, 6) */}
                         {targetWeightText && (
-                          <span className="text-[10px] font-bold text-[#00C6FF] bg-[#00C6FF]/10 px-2 py-0.5 rounded-md border border-[#00C6FF]/20 text-right">
+                          <span className="text-2xs font-bold text-[#00C6FF] bg-[#00C6FF]/10 px-2 py-0.5 rounded-md border border-[#00C6FF]/20 text-right">
                             {targetWeightText}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <p className="text-[11px] text-[#D1D5DB] mt-1.5 leading-snug">
+                    <p className="text-caption text-[#D1D5DB] mt-1.5 leading-snug">
                       {tier.description}
                     </p>
-                    <p className="text-[10px] text-[#A7A7A7] mt-0.5">
+                    <p className="text-2xs text-[#A7A7A7] mt-0.5">
                       <span className="font-bold text-[#00C6FF]">Conseil :</span> {tier.advice}
                     </p>
                   </div>
