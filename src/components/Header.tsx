@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isLight = theme === 'warm-light';
 
   return (
-    <header className={`sticky top-0 z-30 backdrop-blur-md px-5 pt-4 pb-3 border-b flex items-center justify-between transition-colors duration-200 ${
+    <header className={`sticky top-0 z-30 backdrop-blur-md px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-3 border-b flex items-center justify-between transition-colors duration-200 ${
       isLight ? 'bg-[#f3dfcb]/98 border-[#7d5a47]/20' : 'bg-[#161311]/98 border-[#3e342b]/80'
     }`}>
       {/* Brand & User Greeting */}
