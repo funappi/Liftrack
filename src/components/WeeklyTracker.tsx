@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar as Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, Trash2 } from 'lucide-react';
+import { Clock, Flame, CheckCircle, Plus, ChevronRight, Zap, Check, Trash2 } from 'lucide-react';
 import { ScheduledDay, Workout } from '../types';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
 import { DayKey, getParisDayKey } from '../utils/dates';
@@ -167,16 +167,6 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                   {day.dayKey}
                 </span>
 
-                {/* Subtle indicator if today according to French timezone */}
-                <div className="h-1.5 flex items-center justify-center">
-                  {day.dayKey === currentParisDayKey && (
-                    <span
-                      className="w-1.5 h-1.5 rounded-full bg-[#00C6FF] shadow-sm shadow-[#00C6FF]/60"
-                      title="Aujourd'hui (Fuseau horaire français)"
-                    />
-                  )}
-                </div>
-
                 {/* 2. Interactive Checkbox UNDERNEATH: Perfectly aligned horizontally */}
                 <button
                   type="button"
@@ -260,7 +250,7 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
             <div className="flex flex-col sm:flex-row gap-2 justify-center pt-1">
               <button
                 onClick={handleOpenScheduleForSelected}
-                className="px-4 py-2.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-xs font-black uppercase text-white transition-all shadow-md shadow-[#0088FF]/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-xs font-black uppercase text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[3]" />
                 <span>Programmer une séance pour ce jour</span>
@@ -323,7 +313,6 @@ export const WeeklyTracker: React.FC<WeeklyTrackerProps> = ({
                           <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                           {sessionWorkout?.durationMin ?? session.durationMin} MIN
                         </span>
-                        <span>•</span>
                         <span className="flex items-center gap-1 text-[#FF512F]">
                           <Flame className="w-3.5 h-3.5 fill-[#FF512F]" />
                           {sessionWorkout?.estimatedCalories ?? session.calories} KCAL

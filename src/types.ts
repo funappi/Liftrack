@@ -180,6 +180,7 @@ export interface WorkoutSetSession {
   weightKg: number;
   reps: number;
   completed: boolean;
+  durationSeconds?: number; // measured with the set chrono
 }
 
 export interface WorkoutExerciseSession {

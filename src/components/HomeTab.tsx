@@ -185,7 +185,6 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           </div>
           <div className="min-w-0">
             <span className="text-2xs font-black uppercase tracking-wider text-white/90 block flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-white" />
               SÉANCE DU JOUR EN DIRECT
             </span>
             <span className="text-sm sm:text-base font-black uppercase tracking-tight block">
@@ -210,7 +209,6 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           <div className="flex items-center gap-2 min-w-0">
             <h3 className="text-lg font-black text-white tracking-tight uppercase flex items-center gap-2 min-w-0">
               <span className="truncate">Ta progression</span>
-              <span className="w-2 h-2 rounded-full bg-[#00C6FF] shadow-sm shadow-[#00C6FF]/50" />
             </h3>
             <span className="text-2xs text-[#A7A7A7] font-bold hidden sm:inline">
               (Toucher pour modifier)
@@ -669,12 +667,10 @@ export const HomeTab: React.FC<HomeTabProps> = ({
                   <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                   {heroWorkout.durationMin} MIN
                 </span>
-                <span>•</span>
                 <span className="flex items-center gap-1 text-[#FF512F]">
                   <Flame className="w-3.5 h-3.5 fill-[#FF512F]" />
                   {heroWorkout.intensity}
                 </span>
-                <span>•</span>
                 <span>{heroWorkout.exerciseCount} EXERCICES</span>
               </div>
 

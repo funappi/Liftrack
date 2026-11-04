@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { CUSTOM_WORKOUT_PREFIX } from '../utils/workouts';
-import { Plus, Trash2, Dumbbell, Clock, Check, ChevronUp, ChevronDown, Target, Info } from 'lucide-react';
+import { Plus, Trash2, Dumbbell, Clock, Check, ChevronUp, ChevronDown, Target, Info, X } from 'lucide-react';
 import { Workout, Exercise, WorkoutCategory } from '../types';
 import { loadDefaultRestSeconds } from '../utils/preferences';
+import { estimateExerciseSeconds, formatMinSec } from '../utils/workoutTime';
 import { ExerciseCard, SheetButton, SheetCard, SheetLabel, SheetShell, Stepper, sheetInputClass } from './workout/WorkoutSheet';
 
 interface CreateWorkoutModalProps {
@@ -221,7 +222,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
             <button
               type="button"
               onClick={() => setShowAddExModal(true)}
-              className="px-3 py-1.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-[#0088FF]/20 shrink-0"
+              className="px-3 py-1.5 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
             >
               <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Ajouter</span>
@@ -248,13 +249,19 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                   index={idx}
                   targetMuscles={ex.targetMuscles}
                   name={
-                    <input
-                      type="text"
-                      value={ex.name}
-                      placeholder="Nom de l'exercice"
-                      onChange={(e) => handleUpdateExercise(idx, 'name', e.target.value)}
-                      className="bg-transparent text-sm font-black text-white border-b border-transparent focus:border-white/20 focus:outline-none w-full"
-                    />
+                    <div className="flex items-center min-w-0">
+                      <input
+                        type="text"
+                        value={ex.name}
+                        placeholder="Nom de l'exercice"
+                        onChange={(e) => handleUpdateExercise(idx, 'name', e.target.value)}
+                        className="bg-transparent text-sm font-black text-white border-b border-transparent focus:border-white/20 focus:outline-none w-full min-w-0"
+                      />
+                      <span className="flex items-center gap-1 text-2xs font-mono num font-bold text-[#A7A7A7] shrink-0 ml-2" title="Durée estimée de l'exercice">
+                      <Clock className="w-3 h-3" />
+                      {formatMinSec(estimateExerciseSeconds(ex.sets, ex.restSeconds || 60))}
+                    </span>
+                    </div>
                   }
                   controls={
                     <>
@@ -371,7 +378,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                 onClick={closePicker}
                 className={`p-1 rounded-full cursor-pointer ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -420,7 +427,7 @@ export const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onSaveWo
                     <div>
                       <span className="text-xs font-bold text-white block group-hover:text-[#EC4899]">{item.name}</span>
                       <span className="text-2xs text-[#A7A7A7]">
-                        {item.muscles.join(', ')} • {item.defaultRest}s repos
+                        {item.muscles.join(', ')} · {item.defaultRest}s repos
                       </span>
                     </div>
                     <Plus className="w-4 h-4 text-[#A7A7A7] group-hover:text-[#EC4899]" />

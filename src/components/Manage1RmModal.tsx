@@ -384,7 +384,7 @@ export const Manage1RmModal: React.FC<Manage1RmModalProps> = ({ onClose, theme }
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase">Nouvel Exercice 1RM</span>
               <button type="button" onClick={() => setShowAddForm(false)} className="text-xs text-[#737373] hover:text-white">
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

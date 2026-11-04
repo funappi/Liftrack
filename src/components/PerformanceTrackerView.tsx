@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Scale, ArrowLeft, Check, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Plus, Calendar, Scale, ArrowLeft, Check, Star, X } from 'lucide-react';
 import { useVoltData } from '../data/VoltDataContext';
 import { sortedHistory as sortedExerciseHistory, weightSeries } from '../data/selectors';
 import { ISODate, LIMITS, parseISODate, todayISO } from '../data/model';
@@ -285,7 +285,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
               <optgroup label="Mes Exercices Favoris">
                 {favoriteExercises.map((m) => (
                   <option key={m.id} value={m.id}>
-                    ⭐ {m.name}
+                    {m.name}
                   </option>
                 ))}
               </optgroup>
@@ -484,7 +484,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 onClick={() => setHoveredPoint(null)}
                 className={`text-2xs ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -634,7 +634,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 onClick={() => setShowAddFavoriteModal(false)}
                 className="text-xs font-bold opacity-60 hover:opacity-100 cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
@@ -755,7 +755,7 @@ export const PerformanceTrackerView: React.FC<PerformanceTrackerViewProps> = ({
                 onClick={() => setShowAddModal(false)}
                 className="text-xs font-bold opacity-60 hover:opacity-100 cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

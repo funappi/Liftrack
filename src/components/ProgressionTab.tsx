@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useState } from 'react';
-import { Trophy, Plus, Award, Activity, Lock, Edit3, Pencil, Sparkles, Scale, TrendingUp, Target } from 'lucide-react';
+import { Trophy, Plus, Award, Activity, Lock, Edit3, Pencil, Sparkles, Scale, TrendingUp, Target, X } from 'lucide-react';
 import { UserStats, AchievementBadge } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
@@ -1027,7 +1027,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
                 onClick={() => setEditingStartExerciseId(null)}
                 className={`p-1 rounded-full ${isLight ? 'text-[#7d5a47] hover:text-[#3d2317]' : 'text-[#A7A7A7] hover:text-white'}`}
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

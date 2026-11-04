@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Calendar as Clock, Flame, Plus, ChevronRight, Trash2, Play } from 'lucide-react';
+import { Clock, Flame, Plus, ChevronRight, Trash2, Play } from 'lucide-react';
 import { ScheduledDay, Workout } from '../types';
 import { CreateWorkoutModal } from './CreateWorkoutModal';
 import { ScheduleWorkoutModal } from './ScheduleWorkoutModal';
@@ -135,7 +135,6 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-[#c05a3e]' : 'bg-[#EC4899]'}`} />
                   <span className={`text-caption font-black uppercase tracking-wider ${isLight ? 'text-[#b85d38]' : 'text-[#EC4899]'}`}>
                     ENTRAÎNEMENT SUR-MESURE
                   </span>
@@ -210,7 +209,6 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                             <Clock className="w-3.5 h-3.5 text-[#EC4899]" />
                             {workout.durationMin} MIN
                           </span>
-                          <span>•</span>
                           <span className="flex items-center gap-1 text-[#FF512F]">
                             <Flame className="w-3.5 h-3.5 fill-[#FF512F]" />
                             {workout.estimatedCalories} KCAL
@@ -278,7 +276,7 @@ export const WorkoutsTab: React.FC<WorkoutsTabProps> = ({
                         <button
                           type="button"
                           onClick={() => onStartWorkout(workout)}
-                          className={`py-2 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-caption font-black uppercase flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#0088FF]/20 cursor-pointer ${
+                          className={`py-2 rounded-xl bg-[#0088FF] hover:bg-[#0070DD] text-white text-caption font-black uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                             onScheduleWorkout ? '' : 'col-span-2'
                           }`}
                         >

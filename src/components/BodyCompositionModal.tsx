@@ -1,24 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  X, 
-  Activity, 
-  Check, 
-  Sparkles, 
-  Info, 
-  Flame, 
-  Scale, 
-  ShieldAlert, 
-  Sliders, 
-  RotateCcw,
-  User,
-  HeartPulse,
-  Target,
-  Dumbbell,
-  
-  Zap,
-  ChevronDown,
-  ChevronUp
-} from 'lucide-react';
+import { X, Activity, Check, Sparkles, Info, Flame, Scale, ShieldAlert, Sliders, RotateCcw, User, HeartPulse, Target, Dumbbell, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 import { 
   calculateBodyComposition, 
   BodyCompositionInputs, 
@@ -738,7 +719,7 @@ export function BodyCompositionModal({
             <div className="p-4 rounded-2xl bg-[#181818] border border-[#00C6FF]/20 space-y-3 animate-in fade-in duration-200">
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-xl bg-[#00C6FF]/15 text-[#00C6FF] flex items-center justify-center font-black shrink-0 text-sm">
-                  ✓
+                  <Check className="w-4 h-4" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="text-xs font-black text-white uppercase">

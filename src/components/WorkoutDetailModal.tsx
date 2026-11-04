@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Clock, Flame, Dumbbell, Play, Check, Info, Target } from 'lucide-react';
 import { Workout, Exercise } from '../types';
 import { audioSynth } from '../utils/audioSynth';
+import { estimateExerciseSeconds, formatMinSec } from '../utils/workoutTime';
 import { ExerciseCard, SheetButton, SheetCard, SheetShell, Stepper } from './workout/WorkoutSheet';
 
 interface WorkoutDetailModalProps {
@@ -108,9 +109,15 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
                 highlighted={isChecked}
                 targetMuscles={exercise.targetMuscles || []}
                 name={
-                  <span className={`text-sm font-black text-white truncate block ${isChecked ? 'line-through opacity-60' : ''}`}>
-                    {exercise.name}
-                  </span>
+                  <div className="flex items-center min-w-0">
+                    <span className={`text-sm font-black text-white truncate block ${isChecked ? 'line-through opacity-60' : ''}`}>
+                      {exercise.name}
+                    </span>
+                    <span className="flex items-center gap-1 text-2xs font-mono num font-bold text-[#A7A7A7] shrink-0 ml-2" title="Durée estimée de l'exercice">
+                      <Clock className="w-3 h-3" />
+                      {formatMinSec(estimateExerciseSeconds(exercise.sets, exercise.restSeconds || 60))}
+                    </span>
+                  </div>
                 }
                 controls={
                   <button
@@ -118,7 +125,7 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({ workout,
                     onClick={() => toggleCheck(exercise.id)}
                     className={`w-control-sm h-control-sm rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
                       isChecked
-                        ? 'bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20'
+                        ? 'bg-emerald-500 border-emerald-400 text-white'
                         : 'border-white/20 bg-transparent hover:border-white/40'
                     }`}
                     title={isChecked ? 'Validé' : 'Marquer comme validé'}

@@ -11,6 +11,13 @@ export const loadDefaultRestSeconds = (): number => {
 
 export const saveDefaultRestSeconds = (seconds: number) => saveJSON(DEFAULT_REST_KEY, seconds);
 
+// Countdown (seconds) shown before the set chrono starts; 0 = start immediately
+const SET_COUNTDOWN_KEY = 'volt_set_countdown';
+
+export const loadSetCountdownSeconds = (): number => (loadJSON<number>(SET_COUNTDOWN_KEY, 3) === 0 ? 0 : 3);
+
+export const saveSetCountdownSeconds = (seconds: number) => saveJSON(SET_COUNTDOWN_KEY, seconds);
+
 export const loadSoundEnabled = (): boolean => loadJSON<boolean>(SOUND_KEY, true) !== false;
 
 export const saveSoundEnabled = (enabled: boolean) => saveJSON(SOUND_KEY, enabled);
