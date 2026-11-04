@@ -204,7 +204,7 @@ export const ProgressionTab: React.FC<ProgressionTabProps> = ({
         </div>
 
         <button
-          onClick={() => setEditingStatType('currentWeight')}
+          onClick={() => setEditingStatType('nextGoal')}
           className="px-3 py-1.5 rounded-full bg-[#181818] border border-white/10 hover:border-[#EC4899]/50 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md"
         >
           <Edit3 className="w-3.5 h-3.5 text-[#EC4899]" />

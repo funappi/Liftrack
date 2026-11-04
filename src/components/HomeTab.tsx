@@ -144,7 +144,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
         </div>
 
         <button
-          onClick={() => setEditingStatType('currentWeight')}
+          onClick={() => setEditingStatType('nextGoal')}
           className="px-3 py-1.5 rounded-full bg-[#181818] border border-white/10 hover:border-[#EC4899]/50 text-xs font-black text-white flex items-center gap-1.5 transition-all shadow-md group"
           title="Modifier tes données"
         >
@@ -244,7 +244,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           {/* Card: Poids Actuel (Clickable to edit) */}
           <div
             id="stat-card-poids-actuel"
-            onClick={() => setEditingStatType('currentWeight')}
+            onClick={() => setEditingStatType('nextGoal')}
             className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
             {/* Subtle edit prompt indicator on hover */}
@@ -276,7 +276,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           {/* Card: Objectif Poids (Clickable to edit) */}
           <div
             id="stat-card-objectif-poids"
-            onClick={() => setEditingStatType('targetWeight')}
+            onClick={() => setEditingStatType('nextGoal')}
             className="p-4 rounded-2xl bg-[#181818] border border-white/[0.08] hover:border-[#00C6FF]/60 transition-all duration-200 flex flex-col space-y-1 group cursor-pointer relative overflow-hidden shadow-xl active:scale-[0.98]"
           >
             <div className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-black/60 px-1.5 py-0.5 rounded text-3xs text-[#00C6FF] font-bold">
