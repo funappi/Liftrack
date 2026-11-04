@@ -170,9 +170,12 @@ export default function App() {
   // User stats shown everywhere: counters, weight and composition are derived from the histories
   const stats = useMemo<UserStats>(() => {
     const composition = latestComposition(data);
+    const weightKg = currentWeight(data) ?? userStats.currentWeightKg;
     return {
       ...userStats,
-      currentWeightKg: currentWeight(data) ?? userStats.currentWeightKg,
+      currentWeightKg: weightKg,
+      // The challenge is a weight goal: its current/target always mirror the weigh-ins and the weight target
+      nextGoal: { ...userStats.nextGoal, current: weightKg, target: userStats.targetWeightKg },
       totalWorkouts: totalVisits(data),
       totalCaloriesBurned: totalKcal(data),
       weeklyCompletedWorkouts: checkedDaysCount(data),
@@ -197,7 +200,17 @@ export default function App() {
   // Writes: derived fields go to the histories, the rest to the stored profile
   const handleUpdateUserStats = (updated: Partial<UserStats>) => {
     const { currentWeightKg, totalWorkouts, totalCaloriesBurned, bodyComposition, streakDays: _streak, ...rest } = updated;
-    if (typeof currentWeightKg === 'number') logBodyMetrics({ weightKg: currentWeightKg });
+    let weightToLog = currentWeightKg;
+    if (rest.nextGoal) {
+      // Editing the challenge feeds the weigh-ins and the weight target (single source of truth);
+      // the direction (loss / gain) follows start vs target
+      const g = rest.nextGoal;
+      if (typeof weightToLog !== 'number' && g.current !== stats.currentWeightKg) weightToLog = g.current;
+      if (typeof rest.targetWeightKg !== 'number') rest.targetWeightKg = g.target;
+      const start = g.startValue ?? g.current;
+      rest.nextGoal = { ...g, goalType: g.target < start ? 'perte_poids' : g.target > start ? 'prise_masse' : 'autre' };
+    }
+    if (typeof weightToLog === 'number') logBodyMetrics({ weightKg: weightToLog });
     if (bodyComposition) {
       logBodyMetrics({
         fatPercent: bodyComposition.fatPercent,

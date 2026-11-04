@@ -105,8 +105,23 @@ export const HomeTab: React.FC<HomeTabProps> = ({
       ? (Math.abs(current - target) < 0.1 ? 100 : 0)
       : Math.min(100, Math.max(0, Math.round((done / total) * 100)));
     const delta = Math.round((current - start) * 10) / 10;
+    const fmt = (v: number) => (Math.round(Math.abs(v) * 10) / 10).toLocaleString('fr-FR');
+    const remaining = isPertePoids ? current - target : target - current;
+    const verb = isPertePoids ? 'perdre' : 'gagner';
+    let description: string;
+    if (remaining <= 0.05) {
+      description = `Objectif atteint : ${fmt(target)} kg.`;
+    } else {
+      description = `Encore ${fmt(remaining)} kg à ${verb} pour atteindre ${fmt(target)} kg`;
+      if (Math.abs(done) >= 0.05) {
+        description += done > 0
+          ? ` · ${fmt(done)} kg déjà ${isPertePoids ? 'perdus' : 'gagnés'}`
+          : ` · ${fmt(done)} kg dans le mauvais sens`;
+      }
+    }
     return {
       percent,
+      description,
       isPertePoids,
       start,
       current,
@@ -481,7 +496,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
           </div>
 
           <p className="text-xs text-[#A7A7A7] leading-relaxed">
-            {userStats.nextGoal.description}
+            {goalProgress ? goalProgress.description : userStats.nextGoal.description}
           </p>
 
           {/* Animated Progress Bar */}
@@ -496,7 +511,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-caption font-bold text-[#A7A7A7] num">
                 <span>Départ : {goalProgress.start} kg</span>
                 <span className="text-[#00C6FF] font-semibold">
-                  {goalProgress.isPertePoids ? `Actuel : ${goalProgress.current} kg` : goalProgress.deltaText}
+                  Actuel : {goalProgress.current} kg ({goalProgress.deltaText})
                 </span>
                 <span className="text-white">Cible : {goalProgress.target} kg</span>
               </div>
