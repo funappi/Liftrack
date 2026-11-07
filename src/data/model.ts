@@ -44,6 +44,20 @@ export interface BodyMetricEntry {
   formula?: string;
 }
 
+/** One validated set of a live session */
+export interface LoggedSet {
+  weightKg: number;
+  reps: number;
+  /** Warm-up sets are kept for the record but never count in volume, records or progression */
+  warmup?: boolean;
+}
+
+export interface LoggedExercise {
+  name: string;
+  notes?: string;
+  sets: LoggedSet[];
+}
+
 export interface CompletedSession {
   id: string;
   date: ISODate;
@@ -54,6 +68,10 @@ export interface CompletedSession {
   durationSec: number;
   kcal: number;
   volumeKg: number;
+  /** Validated sets per exercise (live sessions only): feeds "previous" and the progression suggestion */
+  exercises?: LoggedExercise[];
+  /** Free note about the whole session */
+  notes?: string;
 }
 
 export interface VoltData {

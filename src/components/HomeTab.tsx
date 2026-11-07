@@ -1,3 +1,4 @@
+import { computeGoalProgress } from '../utils/goalProgress';
 import React, { useState, useMemo } from 'react';
 import { Play, Flame, ArrowRight, Zap, Target, Dumbbell, Clock, Edit3, Lock, Award, Scale, Utensils } from 'lucide-react';
 import { Workout, UserStats, AchievementBadge, ScheduledDay } from '../types';
@@ -11,6 +12,8 @@ import { useVoltData } from '../data/VoltDataContext';
 import { weightSeries } from '../data/selectors';
 import { todayISO } from '../data/model';
 import { BlockGrid } from './layout/BlockGrid';
+import { MascotCoach } from './MascotCoach';
+import { useMascotEnabled } from '../utils/preferences';
 import { DEFAULT_PROFILE, GOAL_LABELS, metabolismForUser } from '../utils/metabolism';
 
 interface HomeTabProps {
@@ -44,6 +47,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
   theme,
 }) => {
   const isLight = theme === 'warm-light';
+  const mascotEnabled = useMascotEnabled();
   // Modal states for editing stats and viewing badges
   const [editingStatType, setEditingStatType] = useState<EditableStatType | null>(null);
   const [selectedBadge, setSelectedBadge] = useState<AchievementBadge | null>(null);
@@ -98,36 +102,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
     const current = userStats.currentWeightKg;
     const target = userStats.targetWeightKg;
     const start = userStats.nextGoal.startValue ?? weights[0]?.weightKg ?? current;
-    const isPertePoids = start > target || (start === target && current > target);
-    const total = Math.abs(target - start);
-    const done = isPertePoids ? start - current : current - start;
-    const percent = total < 0.1
-      ? (Math.abs(current - target) < 0.1 ? 100 : 0)
-      : Math.min(100, Math.max(0, Math.round((done / total) * 100)));
-    const delta = Math.round((current - start) * 10) / 10;
-    const fmt = (v: number) => (Math.round(Math.abs(v) * 10) / 10).toLocaleString('fr-FR');
-    const remaining = isPertePoids ? current - target : target - current;
-    const verb = isPertePoids ? 'perdre' : 'gagner';
-    let description: string;
-    if (remaining <= 0.05) {
-      description = `Objectif atteint : ${fmt(target)} kg.`;
-    } else {
-      description = `Encore ${fmt(remaining)} kg à ${verb} pour atteindre ${fmt(target)} kg`;
-      if (Math.abs(done) >= 0.05) {
-        description += done > 0
-          ? ` · ${fmt(done)} kg déjà ${isPertePoids ? 'perdus' : 'gagnés'}`
-          : ` · ${fmt(done)} kg dans le mauvais sens`;
-      }
-    }
-    return {
-      percent,
-      description,
-      isPertePoids,
-      start,
-      current,
-      target,
-      deltaText: delta === 0 ? 'Départ' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)} kg`,
-    };
+    return computeGoalProgress(start, current, target);
   }, [hasWeight, hasTarget, userStats.currentWeightKg, userStats.targetWeightKg, userStats.nextGoal.startValue, weights]);
 
   return (
@@ -157,6 +132,7 @@ export const HomeTab: React.FC<HomeTabProps> = ({
       <BlockGrid
         tab="home"
         blocks={{
+          coach: mascotEnabled && <MascotCoach userStats={userStats} />,
           'quick-start': (
             <div className="@container min-w-0">
       {/* BOUTON EXERCICE / SÉANCE EN DIRECT (ACCÈS DIRECT DEMANDÉ PAR L'UTILISATEUR) */}

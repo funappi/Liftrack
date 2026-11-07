@@ -4,6 +4,8 @@
 const BACKUP_APP = 'volt-athlete';
 const BACKUP_VERSION = 1;
 const BACKUP_KEY_PREFIX = 'volt_';
+// Transient state, never saved nor restored (an old backup must not resurrect a dead session)
+const BACKUP_EXCLUDED_KEYS = ['volt_live_draft'];
 
 export interface BackupFile {
   app: typeof BACKUP_APP;
@@ -18,7 +20,7 @@ export function exportBackup(storage: StorageLike = localStorage, now: Date = ne
   const data: Record<string, string> = {};
   for (let i = 0; i < storage.length; i++) {
     const key = storage.key(i);
-    if (!key || !key.startsWith(BACKUP_KEY_PREFIX)) continue;
+    if (!key || !key.startsWith(BACKUP_KEY_PREFIX) || BACKUP_EXCLUDED_KEYS.includes(key)) continue;
     const value = storage.getItem(key);
     if (value !== null) data[key] = value;
   }
@@ -80,7 +82,7 @@ export function parseBackup(text: string): ParseResult {
 export function restoreBackup(backup: BackupFile, storage: StorageLike = localStorage): number {
   let written = 0;
   for (const [key, value] of Object.entries(backup.data)) {
-    if (!key.startsWith(BACKUP_KEY_PREFIX)) continue;
+    if (!key.startsWith(BACKUP_KEY_PREFIX) || BACKUP_EXCLUDED_KEYS.includes(key)) continue;
     storage.setItem(key, value);
     written++;
   }

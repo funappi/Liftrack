@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { AlertTriangle, Check, Download, Timer, Upload, Volume2, VolumeX } from 'lucide-react';
-import { loadDefaultRestSeconds, loadSoundEnabled, saveDefaultRestSeconds, saveSoundEnabled } from '../../utils/preferences';
+import { AlertTriangle, Check, Download, Timer, Smile, Upload, Volume2, VolumeX } from 'lucide-react';
+import { loadDefaultRestSeconds, loadMascotEnabled, loadSoundEnabled, saveDefaultRestSeconds, saveMascotEnabled, saveSoundEnabled } from '../../utils/preferences';
 import { BackupFile, backupFileName, exportBackup, parseBackup, restoreBackup } from '../../utils/backup';
 
 export interface OtherSettingsSectionProps {
@@ -42,6 +42,14 @@ export function OtherSettingsSection({ theme }: OtherSettingsSectionProps) {
     const next = !soundOn;
     setSoundOn(next);
     saveSoundEnabled(next);
+  };
+
+  // Home mascot
+  const [mascotOn, setMascotOn] = useState<boolean>(() => loadMascotEnabled());
+  const toggleMascot = () => {
+    const next = !mascotOn;
+    setMascotOn(next);
+    saveMascotEnabled(next);
   };
 
   // Backup
@@ -170,6 +178,35 @@ export function OtherSettingsSection({ theme }: OtherSettingsSectionProps) {
           >
             <span
               className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${soundOn ? 'translate-x-5' : ''}`}
+            />
+          </button>
+        </div>
+
+        <div className={`my-4 h-px ${isLight ? 'bg-[#7d5a47]/15' : 'bg-white/[0.06]'}`} />
+
+        {/* Home mascot */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <span className={`flex items-center gap-1.5 text-sm font-black ${strong}`}>
+              <Smile className={`w-4 h-4 ${mascotOn ? 'text-[#EC4899]' : muted}`} />
+              Mascotte coach
+            </span>
+            <p className={`text-xs mt-0.5 ${muted}`}>
+              Un espace dédié au-dessus de tes statistiques, avec des messages de motivation. Désactivée, l'accueil n'affiche que tes statistiques.
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={mascotOn}
+            aria-label="Mascotte coach sur l'accueil"
+            onClick={toggleMascot}
+            className={`relative w-12 h-7 shrink-0 rounded-full transition-colors ${
+              mascotOn ? 'bg-gradient-to-r from-[#7C3AED] to-[#EC4899]' : isLight ? 'bg-[#e5d2c1]' : 'bg-[#2a2a2a]'
+            }`}
+          >
+            <span
+              className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${mascotOn ? 'translate-x-5' : ''}`}
             />
           </button>
         </div>

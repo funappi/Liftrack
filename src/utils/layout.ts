@@ -14,6 +14,7 @@ export interface LayoutItem {
 /** Blocks of each screen, in their default order (all full width by default) */
 export const LAYOUT_BLOCKS: Record<LayoutTab, { id: string; label: string }[]> = {
   home: [
+    { id: 'coach', label: 'Mascotte coach' },
     { id: 'quick-start', label: 'Séance en direct' },
     { id: 'stats', label: 'Statistiques' },
     { id: 'calories', label: 'Énergie dépensée' },
@@ -56,8 +57,12 @@ export const loadLayout = (tab: LayoutTab): LayoutItem[] => {
     (item, i, arr) =>
       item && known.has(item.id) && ['wide', 'left', 'right'].includes(item.width) && arr.findIndex((x) => x.id === item.id) === i
   );
-  const missing = LAYOUT_BLOCKS[tab].filter((b) => !valid.some((v) => v.id === b.id)).map((b) => ({ id: b.id, width: 'wide' as const }));
-  return [...valid, ...missing];
+  // Blocks added after the layout was saved go to their default position
+  const result: LayoutItem[] = [...valid];
+  LAYOUT_BLOCKS[tab].forEach((b, i) => {
+    if (!result.some((v) => v.id === b.id)) result.splice(Math.min(i, result.length), 0, { id: b.id, width: 'wide' });
+  });
+  return result;
 };
 
 export const saveLayout = (tab: LayoutTab, items: LayoutItem[]) => {

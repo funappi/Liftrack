@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { loadJSON, saveJSON } from './storage';
 
 // User preferences edited in Settings > Autres paramètres
@@ -21,3 +22,25 @@ export const saveSetCountdownSeconds = (seconds: number) => saveJSON(SET_COUNTDO
 export const loadSoundEnabled = (): boolean => loadJSON<boolean>(SOUND_KEY, true) !== false;
 
 export const saveSoundEnabled = (enabled: boolean) => saveJSON(SOUND_KEY, enabled);
+
+// Home mascot coach: shown above the statistics unless switched off in Settings
+const MASCOT_ENABLED_KEY = 'volt_mascot_enabled';
+const MASCOT_EVENT = 'volt-mascot-enabled-change';
+
+export const loadMascotEnabled = (): boolean => loadJSON<boolean>(MASCOT_ENABLED_KEY, true) !== false;
+
+export const saveMascotEnabled = (enabled: boolean) => {
+  saveJSON(MASCOT_ENABLED_KEY, enabled);
+  window.dispatchEvent(new Event(MASCOT_EVENT));
+};
+
+/** Current on/off state of the mascot, refreshed as soon as it is changed in Settings */
+export const useMascotEnabled = (): boolean => {
+  const [enabled, setEnabled] = useState(loadMascotEnabled);
+  useEffect(() => {
+    const refresh = () => setEnabled(loadMascotEnabled());
+    window.addEventListener(MASCOT_EVENT, refresh);
+    return () => window.removeEventListener(MASCOT_EVENT, refresh);
+  }, []);
+  return enabled;
+};

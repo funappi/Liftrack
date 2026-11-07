@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Check, Flame, Zap, Award, Sparkles, ChevronRight } from 'lucide-react';
 import { UserStats } from '../types';
 import { LIMITS } from '../data/model';
+import { computeGoalProgress } from '../utils/goalProgress';
 import { audioSynth } from '../utils/audioSynth';
 import confetti from 'canvas-confetti';
 
@@ -287,20 +288,17 @@ export const EditStatModal: React.FC<EditStatModalProps> = ({
               {/* Live preview: same computation as the Home card, whichever direction (loss / gain) */}
               {(() => {
                 const sN = Number(goalStart), cN = Number(goalCurrent), tN = Number(goalTarget);
-                const loss = tN < sN;
-                const total = Math.abs(tN - sN);
-                const done = loss ? sN - cN : cN - sN;
-                const pct = total < 0.1 ? 0 : Math.min(100, Math.max(0, Math.round((done / total) * 100)));
-                const left = Math.round(Math.abs(loss ? cN - tN : tN - cN) * 10) / 10;
+                if (![sN, cN, tN].every(Number.isFinite)) return null;
+                const gp = computeGoalProgress(sN, cN, tN);
                 return (
                   <div className="space-y-1.5">
                     <div className="w-full h-2.5 rounded-full bg-[#181818] overflow-hidden p-0.5 border border-white/[0.06]">
-                      <div className="h-full rounded-full bg-gradient-to-r from-[#7C3AED] via-[#EC4899] to-[#00C6FF] transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#7C3AED] via-[#EC4899] to-[#00C6FF] transition-all" style={{ width: `${gp.percent}%` }} />
                     </div>
                     <p className="text-xs text-[#A7A7A7] text-center">
-                      <span className="font-black text-white num">{pct}%</span>
+                      <span className="font-black text-white num">{gp.percent}%</span>
                       {' · '}
-                      {(loss ? cN <= tN : cN >= tN) ? 'objectif atteint' : `encore ${left} kg à ${loss ? 'perdre' : 'gagner'}`}
+                      {gp.reached ? 'objectif atteint' : `encore ${gp.remainingKg} kg à ${gp.isPertePoids ? 'perdre' : 'gagner'}`}
                     </p>
                   </div>
                 );

@@ -181,6 +181,7 @@ export interface WorkoutSetSession {
   reps: number;
   completed: boolean;
   durationSeconds?: number; // measured with the set chrono
+  warmup?: boolean; // warm-up set: excluded from volume and progression
 }
 
 export interface WorkoutExerciseSession {

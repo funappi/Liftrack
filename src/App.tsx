@@ -15,6 +15,7 @@ import { HomeTab } from './components/HomeTab';
 import { WorkoutsTab } from './components/WorkoutsTab';
 import { ProgressionTab } from './components/ProgressionTab';
 import { WorkoutDetailModal } from './components/WorkoutDetailModal';
+import { deriveUserStats } from './data/derive';
 import { LiveWorkoutView } from './components/LiveWorkoutView';
 import { loadJSON, saveJSON } from './utils/storage';
 import { CUSTOM_WORKOUT_PREFIX, isCustomWorkout } from './utils/workouts';
@@ -168,34 +169,7 @@ export default function App() {
   const { data, logBodyMetrics, addSession, setBaseline } = voltData;
 
   // User stats shown everywhere: counters, weight and composition are derived from the histories
-  const stats = useMemo<UserStats>(() => {
-    const composition = latestComposition(data);
-    const weightKg = currentWeight(data) ?? userStats.currentWeightKg;
-    return {
-      ...userStats,
-      currentWeightKg: weightKg,
-      // The challenge is a weight goal: its current/target always mirror the weigh-ins and the weight target
-      nextGoal: { ...userStats.nextGoal, current: weightKg, target: userStats.targetWeightKg },
-      totalWorkouts: totalVisits(data),
-      totalCaloriesBurned: totalKcal(data),
-      weeklyCompletedWorkouts: checkedDaysCount(data),
-      streakDays: 0,
-      bodyComposition:
-        composition && userStats.bodyComposition
-          ? {
-              ...userStats.bodyComposition,
-              fatPercent: composition.fatPercent ?? userStats.bodyComposition.fatPercent,
-              fatKg: composition.fatKg ?? userStats.bodyComposition.fatKg,
-              leanMassKg: composition.leanMassKg ?? userStats.bodyComposition.leanMassKg,
-              muscleMassKg: composition.muscleMassKg ?? userStats.bodyComposition.muscleMassKg,
-              boneMassKg: composition.boneMassKg ?? userStats.bodyComposition.boneMassKg,
-              organMassKg: composition.organMassKg ?? userStats.bodyComposition.organMassKg,
-              waterLiters: composition.waterLiters ?? userStats.bodyComposition.waterLiters,
-              date: composition.date,
-            }
-          : userStats.bodyComposition,
-    };
-  }, [userStats, data]);
+  const stats = useMemo<UserStats>(() => deriveUserStats(userStats, data), [userStats, data]);
 
   // Writes: derived fields go to the histories, the rest to the stored profile
   const handleUpdateUserStats = (updated: Partial<UserStats>) => {

@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Clock, Check, Plus, MoreVertical, Settings, 
   Trash2, ChevronDown, Play, Pause, X, Dumbbell, ShieldAlert, 
-  Edit2, SkipForward, Keyboard, Timer,
+  Edit2, SkipForward, Keyboard, Timer, TrendingUp, Flame,
 } from 'lucide-react';
 import { Workout, WorkoutExerciseSession, WorkoutSetSession } from '../types';
 import { audioSynth } from '../utils/audioSynth';
 import { loadSoundEnabled, loadSetCountdownSeconds, saveSetCountdownSeconds } from '../utils/preferences';
+import { CompletedSession, LoggedExercise } from '../data/model';
+import { clearLiveDraft, LiveDraft, saveLiveDraft } from '../utils/liveDraft';
+import { formatSet, lastPerformance, parseRepRange, suggestNext } from '../utils/overload';
 import { averageSetSeconds, estimateExerciseSeconds, formatMinSec } from '../utils/workoutTime';
 
 interface LiveWorkoutViewProps {
   workout: Workout;
-  onFinish: (summary: { workout: Workout; durationSeconds: number; completedSetsCount: number; totalVolumeKg: number }) => void;
+  /** Past sessions: "previous" column and the progression suggestion come from them */
+  history?: CompletedSession[];
+  /** Session restored after the app was closed in the middle of a workout */
+  draft?: LiveDraft | null;
+  onFinish: (summary: {
+    workout: Workout;
+    durationSeconds: number;
+    completedSetsCount: number;
+    totalVolumeKg: number;
+    exercises: LoggedExercise[];
+    notes?: string;
+  }) => void;
   onExit: () => void;
 }
 
@@ -31,19 +45,23 @@ const EXERCISE_LIBRARY = [
 
 export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
   workout,
+  history = [],
+  draft = null,
   onFinish,
   onExit,
 }) => {
   // Workout title state
-  const [workoutTitle, setWorkoutTitle] = useState(workout.title || 'Entraînement');
+  const [workoutTitle, setWorkoutTitle] = useState(draft?.title || workout.title || 'Entraînement');
   const [isRenaming, setIsRenaming] = useState(false);
 
   // Chronometer elapsed workout time
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(draft?.elapsedSeconds ?? 0);
+  const [sessionNotes, setSessionNotes] = useState(draft?.sessionNotes ?? '');
   const [isPaused, setIsPaused] = useState(false);
 
   // Active exercises in this workout session: ALL weights & reps initialized to 0 as requested!
   const [sessionExercises, setSessionExercises] = useState<WorkoutExerciseSession[]>(() => {
+    if (draft?.exercises.length) return draft.exercises;
     if (workout.exercises && workout.exercises.length > 0) {
       return workout.exercises.map((ex, exIdx) => ({
         id: ex.id || `ex-${exIdx}`,
@@ -191,10 +209,88 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
     ex.sets.forEach((st) => {
       if (st.completed) {
         totalCompletedSets += 1;
-        totalVolumeKg += st.weightKg * st.reps;
+        if (!st.warmup) totalVolumeKg += st.weightKg * st.reps;
       }
     });
   });
+
+  // Last performance per exercise (from the history) and the progression it suggests
+  const lastByName = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof lastPerformance>>();
+    for (const ex of sessionExercises) map.set(ex.name.trim().toLowerCase(), lastPerformance(history, ex.name));
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history, sessionExercises.map((e) => e.name).join('|')]);
+
+  const rangeFor = (exercise: WorkoutExerciseSession) => {
+    const planned = workout.exercises?.find((e) => e.id === exercise.id || e.name === exercise.name);
+    return parseRepRange(planned?.reps);
+  };
+
+  // Label of a set: warm-ups are "É", working sets are numbered among themselves
+  const setLabel = (sets: WorkoutSetSession[], idx: number) =>
+    sets[idx].warmup ? 'É' : String(sets.slice(0, idx + 1).filter((s) => !s.warmup).length);
+
+  // Draft: survives a closed app / locked phone. Written on every change, elapsed time every 10 s.
+  const persistDraft = (elapsed: number) =>
+    saveLiveDraft({
+      workout,
+      title: workoutTitle,
+      elapsedSeconds: elapsed,
+      exercises: sessionExercises,
+      sessionNotes,
+      savedAt: new Date().toISOString(),
+    });
+  useEffect(() => {
+    persistDraft(elapsedSeconds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionExercises, workoutTitle, sessionNotes]);
+  useEffect(() => {
+    if (elapsedSeconds > 0 && elapsedSeconds % 10 === 0) persistDraft(elapsedSeconds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elapsedSeconds]);
+
+  // Apply the suggested load/reps to every pending working set of an exercise
+  const handleApplySuggestion = (exerciseId: string, weightKg: number, reps: number) => {
+    setSessionExercises((prev) =>
+      prev.map((ex) =>
+        ex.id !== exerciseId
+          ? ex
+          : { ...ex, sets: ex.sets.map((st) => (st.completed || st.warmup ? st : { ...st, weightKg, reps })) }
+      )
+    );
+  };
+
+  // Toggle a set between warm-up and working set
+  const handleToggleWarmup = (exerciseId: string, setIndex: number) => {
+    setSessionExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id !== exerciseId) return ex;
+        const sets = [...ex.sets];
+        sets[setIndex] = { ...sets[setIndex], warmup: !sets[setIndex].warmup };
+        return { ...ex, sets };
+      })
+    );
+  };
+
+  // Insert a warm-up set at the very beginning of an exercise
+  const handleAddWarmup = (exerciseId: string) => {
+    setSessionExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id !== exerciseId) return ex;
+        const warm: WorkoutSetSession = {
+          id: `w-${ex.id}-${Date.now()}`,
+          setNumber: 1,
+          previous: '-',
+          weightKg: 0,
+          reps: 0,
+          completed: false,
+          warmup: true,
+        };
+        return { ...ex, sets: [warm, ...ex.sets].map((st, i) => ({ ...st, setNumber: i + 1 })) };
+      })
+    );
+  };
 
   // Start rest timer helper
   const handleStartRestTimer = (
@@ -420,7 +516,19 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
 
   // Finish workout handler
   const handleTriggerFinish = () => {
+    const exercises: LoggedExercise[] = sessionExercises
+      .map((ex) => ({
+        name: ex.name,
+        notes: ex.notes.trim() || undefined,
+        sets: ex.sets
+          .filter((st) => st.completed && (st.weightKg > 0 || st.reps > 0))
+          .map((st) => ({ weightKg: st.weightKg, reps: st.reps, ...(st.warmup ? { warmup: true } : {}) })),
+      }))
+      .filter((ex) => ex.sets.length > 0);
+    clearLiveDraft();
     onFinish({
+      exercises,
+      notes: sessionNotes.trim() || undefined,
       workout: {
         ...workout,
         title: workoutTitle,
@@ -673,6 +781,45 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
               />
             </div>
 
+            {/* Progressive overload: what to aim for, from the last session */}
+            {(() => {
+              const last = lastByName.get(exercise.name.trim().toLowerCase());
+              if (!last) return null;
+              const suggestion = suggestNext(last, rangeFor(exercise));
+              const hasPending = exercise.sets.some((st) => !st.completed && !st.warmup);
+              return (
+                <div className="rounded-xl bg-[#0088FF]/[0.07] border border-[#0088FF]/20 px-3 py-2 space-y-1.5">
+                  <span className="text-caption text-[#A7A7A7] block">
+                    Dernière fois ({last.date.split('-').reverse().slice(0, 2).join('/')}) :{' '}
+                    <span className="font-mono num font-bold text-white">{last.sets.map(formatSet).join(' · ')}</span>
+                  </span>
+                  {suggestion && (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-xs font-bold text-[#0088FF] min-w-0" title={suggestion.reason}>
+                        <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">
+                          Objectif : <span className="font-mono num">{suggestion.weightKg} kg × {suggestion.reps}</span>
+                          {suggestion.kind === 'increase-load' ? ' (+ charge)' : ' (+ 1 rep)'}
+                        </span>
+                      </span>
+                      {hasPending && (
+                        <button
+                          type="button"
+                          onClick={() => handleApplySuggestion(exercise.id, suggestion.weightKg, suggestion.reps)}
+                          className="shrink-0 px-2.5 py-1 rounded-lg bg-[#0088FF] hover:bg-[#0070DD] text-caption font-black text-white cursor-pointer"
+                        >
+                          Appliquer
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  {last.notes && (
+                    <p className="text-caption text-[#A7A7A7] italic">Note : {last.notes}</p>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* Repos button: Click to open Keyboard Rest Editor */}
             <div className="flex items-center justify-between">
               <button
@@ -729,9 +876,18 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                 >
                   {/* SÉRIE Badge & Delete Action */}
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-7 h-7 rounded-xl bg-[#1A1A1A] border border-white/10 flex items-center justify-center text-xs font-bold text-white shrink-0 num">
-                      {set.setNumber}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleWarmup(exercise.id, sIdx)}
+                      className={`w-7 h-7 rounded-xl border flex items-center justify-center text-xs font-bold shrink-0 num cursor-pointer ${
+                        set.warmup
+                          ? 'bg-amber-400/15 border-amber-400/40 text-amber-300'
+                          : 'bg-[#1A1A1A] border-white/10 text-white'
+                      }`}
+                      title={set.warmup ? "Série d'échauffement (touche pour la passer en série de travail)" : "Touche pour marquer comme série d'échauffement"}
+                    >
+                      {setLabel(exercise.sets, sIdx)}
+                    </button>
                     {exercise.sets.length > 1 && (
                       <button
                         type="button"
@@ -752,7 +908,11 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                         {formatMinSec(set.durationSeconds)}
                       </span>
                     ) : (
-                      set.previous
+                      (() => {
+                        const last = lastByName.get(exercise.name.trim().toLowerCase());
+                        const workIdx = exercise.sets.slice(0, sIdx).filter((x) => !x.warmup).length;
+                        return !set.warmup && last?.sets[workIdx] ? formatSet(last.sets[workIdx]) : set.previous;
+                      })()
                     )}
                   </div>
 
@@ -820,6 +980,16 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                 <span>Ajouter une Série</span>
               </button>
 
+              <button
+                type="button"
+                onClick={() => handleAddWarmup(exercise.id)}
+                className="px-3 py-2.5 rounded-xl bg-[#1A1A1A] hover:bg-amber-400/10 border border-white/10 hover:border-amber-400/30 text-xs font-bold text-[#A7A7A7] hover:text-amber-300 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                title="Ajouter une série d'échauffement au début"
+              >
+                <Flame className="w-3.5 h-3.5" />
+                <span className="text-caption">Échauffement</span>
+              </button>
+
               {exercise.sets.length > 1 && (
                 <button
                   type="button"
@@ -834,6 +1004,21 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
             </div>
           </div>
         ))}
+
+        {/* Session note */}
+        <div className="space-y-1.5 pt-2">
+          <label htmlFor="live-session-notes" className="text-caption font-bold uppercase tracking-wider text-[#A7A7A7] block">
+            Notes de séance
+          </label>
+          <textarea
+            id="live-session-notes"
+            value={sessionNotes}
+            onChange={(e) => setSessionNotes(e.target.value)}
+            rows={3}
+            placeholder="Ressenti, douleurs, énergie, ce qu'il faudra changer la prochaine fois…"
+            className="w-full bg-[#121212] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-[#666666] focus:outline-none focus:border-[#0088FF] resize-none"
+          />
+        </div>
       </div>
 
       {/* ⏱ 4. RUNNING CHRONO DOCK (User requested: "trouve un endroit ou mettre le chrono qui defile...") */}
@@ -1304,6 +1489,7 @@ export const LiveWorkoutView: React.FC<LiveWorkoutViewProps> = ({
                 type="button"
                 onClick={() => {
                   setShowAbandonConfirmModal(false);
+                  clearLiveDraft();
                   onExit();
                 }}
                 className="w-full py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/20 text-xs font-bold uppercase transition-colors cursor-pointer"
