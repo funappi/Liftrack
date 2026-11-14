@@ -100,6 +100,12 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
         {section === 'goals' && <GoalsSection userStats={userStats} onUpdateUserStats={onUpdateUserStats} theme={theme} />}
         {section === 'notifications' && <NotificationSettings theme={theme} getContext={getNotificationContext} />}
         {section === 'other' && <OtherSettingsSection theme={theme} />}
+        <footer className="pt-2 text-center text-xs opacity-60">
+          Made by{' '}
+          <a href="https://github.com/orgs/funappi/repositories" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
+            Funappi
+          </a>
+        </footer>
       </div>
     </div>
   );
