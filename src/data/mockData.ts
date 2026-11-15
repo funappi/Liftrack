@@ -1,23 +1,23 @@
 import { Workout, UserStats, ScheduledDay, AchievementBadge, PersonalRecord, MeasurementEntry } from '../types';
 
 export const initialUserStats: UserStats = {
-  name: "Alexandre",
-  role: "ATHLÈTE ÉLITE",
-  email: "alexandre@volt.gym",
+  name: "Sacha",
+  role: "ATHLÈTE",
+  email: "sacha@volt.gym",
   avatarUrl: `${import.meta.env.BASE_URL}img/photo-1534528741775-53994a69daeb-300.jpg`,
-  currentWeightKg: 82,
-  targetWeightKg: 85,
-  streakDays: 12,
-  totalWorkouts: 38,
-  totalCaloriesBurned: 4280,
-  weeklyHours: 5.4,
-  voltScore: 94,
-  weeklyGoalWorkouts: 5,
-  weeklyCompletedWorkouts: 4,
+  currentWeightKg: 74,
+  targetWeightKg: 77,
+  streakDays: 5,
+  totalWorkouts: 21,
+  totalCaloriesBurned: 2150,
+  weeklyHours: 3.2,
+  voltScore: 71,
+  weeklyGoalWorkouts: 4,
+  weeklyCompletedWorkouts: 2,
   nextGoal: {
     title: "Objectif Masse & Puissance",
-    current: 82,
-    target: 85,
+    current: 74,
+    target: 77,
     unit: "KG",
     description: "+3 kg de masse musculaire sèche d'ici la fin du trimestre"
   },
@@ -25,7 +25,7 @@ export const initialUserStats: UserStats = {
     type: "VOLT BLACK PASS",
     tier: "ACCÈS ILLIMITÉ 24/7",
     validUntil: "31 DÉC 2026",
-    qrCodeId: "VOLT-8829-ATHL"
+    qrCodeId: "VOLT-0000-DEMO"
   }
 };
 
@@ -333,66 +333,66 @@ export const samplePersonalRecords: PersonalRecord[] = [
   {
     id: "pr-1",
     exercise: "Développé couché",
-    weightKg: 105,
-    previousWeightKg: 100,
+    weightKg: 80,
+    previousWeightKg: 77.5,
     date: "Il y a 3 jours",
     category: "Poitrine",
     history: [
-      { id: "h-1-1", date: "15 Jan", weightKg: 85, reps: 5, notes: "Reprise d'entraînement" },
-      { id: "h-1-2", date: "02 Fév", weightKg: 90, reps: 5, notes: "Bonne forme" },
-      { id: "h-1-3", date: "24 Fév", weightKg: 95, reps: 3, notes: "Transition 3RM" },
-      { id: "h-1-4", date: "18 Mar", weightKg: 97.5, reps: 3, notes: "Charge stable" },
-      { id: "h-1-5", date: "10 Avr", weightKg: 100, reps: 2, notes: "Club des 100 kg !" },
-      { id: "h-1-6", date: "08 Mai", weightKg: 102.5, reps: 1, notes: "Nouveau record test" },
-      { id: "h-1-7", date: "11 Sep", weightKg: 105, reps: 1, notes: "PR validé avec barre nette" }
+      { id: "h-1-1", date: "15 Jan", weightKg: 60, reps: 5, notes: "Reprise d'entraînement" },
+      { id: "h-1-2", date: "02 Fév", weightKg: 65, reps: 5, notes: "Bonne forme" },
+      { id: "h-1-3", date: "24 Fév", weightKg: 70, reps: 3, notes: "Transition 3RM" },
+      { id: "h-1-4", date: "18 Mar", weightKg: 72.5, reps: 3, notes: "Charge stable" },
+      { id: "h-1-5", date: "10 Avr", weightKg: 75, reps: 2, notes: "Cap des 75 kg !" },
+      { id: "h-1-6", date: "08 Mai", weightKg: 77.5, reps: 1, notes: "Nouveau record test" },
+      { id: "h-1-7", date: "11 Sep", weightKg: 80, reps: 1, notes: "PR validé avec barre nette" }
     ]
   },
   {
     id: "pr-2",
     exercise: "Squat",
-    weightKg: 140,
-    previousWeightKg: 135,
+    weightKg: 105,
+    previousWeightKg: 100,
     date: "Il y a 10 jours",
     category: "Jambes",
     history: [
-      { id: "h-2-1", date: "10 Jan", weightKg: 110, reps: 5, notes: "Début du cycle de force" },
-      { id: "h-2-2", date: "28 Jan", weightKg: 117.5, reps: 5, notes: "Profondeur contrôlée" },
-      { id: "h-2-3", date: "16 Fév", weightKg: 125, reps: 3, notes: "Excellente poussée" },
-      { id: "h-2-4", date: "12 Mar", weightKg: 130, reps: 3, notes: "Ceinture lombaire" },
-      { id: "h-2-5", date: "05 Avr", weightKg: 135, reps: 2, notes: "Presque au palier 140" },
-      { id: "h-2-6", date: "04 Sep", weightKg: 140, reps: 1, notes: "Record historique explosé !" }
+      { id: "h-2-1", date: "10 Jan", weightKg: 82.5, reps: 5, notes: "Début du cycle de force" },
+      { id: "h-2-2", date: "28 Jan", weightKg: 87.5, reps: 5, notes: "Profondeur contrôlée" },
+      { id: "h-2-3", date: "16 Fév", weightKg: 92.5, reps: 3, notes: "Excellente poussée" },
+      { id: "h-2-4", date: "12 Mar", weightKg: 97.5, reps: 3, notes: "Ceinture lombaire" },
+      { id: "h-2-5", date: "05 Avr", weightKg: 100, reps: 2, notes: "Presque au palier 105" },
+      { id: "h-2-6", date: "04 Sep", weightKg: 105, reps: 1, notes: "Record historique explosé !" }
     ]
   },
   {
     id: "pr-3",
     exercise: "Soulevé de terre",
-    weightKg: 170,
-    previousWeightKg: 162.5,
+    weightKg: 130,
+    previousWeightKg: 125,
     date: "Il y a 2 semaines",
     category: "Chaîne postérieure",
     history: [
-      { id: "h-3-1", date: "12 Jan", weightKg: 130, reps: 5, notes: "Reprise technique" },
-      { id: "h-3-2", date: "05 Fév", weightKg: 142.5, reps: 4, notes: "Prise mixte" },
-      { id: "h-3-3", date: "26 Fév", weightKg: 150, reps: 3, notes: "Solide au verrouillage" },
-      { id: "h-3-4", date: "20 Mar", weightKg: 157.5, reps: 2, notes: "Bonne vitesse d'arraché" },
-      { id: "h-3-5", date: "18 Avr", weightKg: 162.5, reps: 1, notes: "Charge lourde validée" },
-      { id: "h-3-6", date: "31 Aoû", weightKg: 170, reps: 1, notes: "Barre des 170 kg franchie !" }
+      { id: "h-3-1", date: "12 Jan", weightKg: 100, reps: 5, notes: "Reprise technique" },
+      { id: "h-3-2", date: "05 Fév", weightKg: 107.5, reps: 4, notes: "Prise mixte" },
+      { id: "h-3-3", date: "26 Fév", weightKg: 115, reps: 3, notes: "Solide au verrouillage" },
+      { id: "h-3-4", date: "20 Mar", weightKg: 120, reps: 2, notes: "Bonne vitesse d'arraché" },
+      { id: "h-3-5", date: "18 Avr", weightKg: 125, reps: 1, notes: "Charge lourde validée" },
+      { id: "h-3-6", date: "31 Aoû", weightKg: 130, reps: 1, notes: "Barre des 130 kg franchie !" }
     ]
   },
   {
     id: "pr-4",
     exercise: "Overhead Press",
-    weightKg: 65,
-    previousWeightKg: 62.5,
+    weightKg: 47.5,
+    previousWeightKg: 45,
     date: "Le mois dernier",
     category: "Épaules",
     history: [
-      { id: "h-4-1", date: "18 Jan", weightKg: 50, reps: 6, notes: "Focus verrouillage haut" },
-      { id: "h-4-2", date: "10 Fév", weightKg: 55, reps: 5, notes: "Gainage strict" },
-      { id: "h-4-3", date: "08 Mar", weightKg: 57.5, reps: 4, notes: "Très propre" },
-      { id: "h-4-4", date: "02 Avr", weightKg: 60, reps: 3, notes: "Palier clé" },
-      { id: "h-4-5", date: "25 Avr", weightKg: 62.5, reps: 2, notes: "Belle stabilité" },
-      { id: "h-4-6", date: "15 Aoû", weightKg: 65, reps: 1, notes: "PR strict validé !" }
+      { id: "h-4-1", date: "18 Jan", weightKg: 35, reps: 6, notes: "Focus verrouillage haut" },
+      { id: "h-4-2", date: "10 Fév", weightKg: 37.5, reps: 5, notes: "Gainage strict" },
+      { id: "h-4-3", date: "08 Mar", weightKg: 40, reps: 4, notes: "Très propre" },
+      { id: "h-4-4", date: "02 Avr", weightKg: 42.5, reps: 3, notes: "Palier clé" },
+      { id: "h-4-5", date: "25 Avr", weightKg: 45, reps: 2, notes: "Belle stabilité" },
+      { id: "h-4-6", date: "15 Aoû", weightKg: 47.5, reps: 1, notes: "PR strict validé !" }
     ]
   }
 ];
@@ -873,7 +873,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-1',
     metricType: 'poids',
-    value: 85.1,
+    value: 74.0,
     unit: 'KG',
     dateStr: '12-07-2026 20:00',
     timestamp: 1783886400000,
@@ -884,7 +884,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-2',
     metricType: 'poids',
-    value: 85.2,
+    value: 73.8,
     unit: 'KG',
     dateStr: '30-06-2026 16:29',
     timestamp: 1782836940000,
@@ -895,7 +895,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-3',
     metricType: 'poids',
-    value: 86.4,
+    value: 73.2,
     unit: 'KG',
     dateStr: '15-05-2026 08:30',
     timestamp: 1778833800000,
@@ -905,7 +905,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-4',
     metricType: 'poids',
-    value: 87.0,
+    value: 72.8,
     unit: 'KG',
     dateStr: '10-04-2026 19:15',
     timestamp: 1775841300000,
@@ -915,7 +915,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-5',
     metricType: 'poids',
-    value: 86.8,
+    value: 72.9,
     unit: 'KG',
     dateStr: '22-03-2026 09:00',
     timestamp: 1774170000000,
@@ -925,7 +925,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-6',
     metricType: 'poids',
-    value: 87.5,
+    value: 72.3,
     unit: 'KG',
     dateStr: '14-02-2026 18:45',
     timestamp: 1771091100000,
@@ -935,7 +935,7 @@ export const sampleMeasurements: MeasurementEntry[] = [
   {
     id: 'm-7',
     metricType: 'poids',
-    value: 88.0,
+    value: 71.8,
     unit: 'KG',
     dateStr: '05-01-2026 08:15',
     timestamp: 1767600900000,
